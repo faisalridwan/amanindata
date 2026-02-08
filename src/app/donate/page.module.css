@@ -550,10 +550,10 @@
         display: flex;
         flex-wrap: nowrap;
         overflow-x: auto;
-        justify-content: flex-start;
-        width: 100%;
+        justify-content: center;
+        width: fit-content;
         max-width: 100%;
-        margin: 0 0 24px 0;
+        margin: 0 auto 24px auto;
         padding: 4px;
         -webkit-overflow-scrolling: touch;
         gap: 8px;
