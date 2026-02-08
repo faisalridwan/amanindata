@@ -7,6 +7,27 @@ import styles from './Footer.module.css'
 export default function Footer() {
     return (
         <footer className={styles.footer}>
+            {/* CTA Section */}
+            <div className={styles.ctaSection}>
+                <div className={`container ${styles.ctaContainer}`}>
+                    <div className={styles.ctaText}>
+                        <h2>Siap Melindungi Dokumen Anda?</h2>
+                        <p>Gratis, aman, dan mudah digunakan. Tidak perlu daftar.</p>
+                    </div>
+                    <div className={styles.ctaButtons}>
+                        <Link href="/donate" className={styles.btnCtaPrimary}>
+                            <Heart size={16} /> Donasi
+                        </Link>
+                        <Link href="/" className={styles.btnCtaSecondary}>
+                            <FileImage size={16} /> Watermark Dokumen
+                        </Link>
+                        <Link href="/signature" className={styles.btnCtaSecondary}>
+                            <PenTool size={16} /> Tanda Tangan
+                        </Link>
+                    </div>
+                </div>
+            </div>
+
             <div className={`container ${styles.footerContent}`}>
                 {/* Brand */}
                 <div className={styles.brand}>

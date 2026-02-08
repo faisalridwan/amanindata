@@ -164,6 +164,11 @@
 
 .typeBtn {
     flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    /* Space between icon and text */
     padding: 10px;
     background: var(--bg-primary);
     border: none;

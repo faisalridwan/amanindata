@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { Upload, Crop, Type, Palette, Download, RotateCcw, FileImage, CreditCard, Users, FileText, Building, File, Check } from 'lucide-react'
+import { Upload, Crop, Type, Palette, Download, RotateCcw, FileImage, CreditCard, Users, FileText, Building, File, Check, Grid } from 'lucide-react'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import styles from './page.module.css'
@@ -22,7 +22,7 @@ export default function Home() {
     const [croppedImage, setCroppedImage] = useState(null)
 
     // Watermark states
-    const [watermarkType, setWatermarkType] = useState('tiled')
+    const [watermarkType, setWatermarkType] = useState('single')
     const [watermarkText, setWatermarkText] = useState('')
     const [fontSize, setFontSize] = useState(30)
     const [fontFamily, setFontFamily] = useState('Arial')
@@ -223,68 +223,132 @@ export default function Home() {
         }
     }
 
-    const [isMovingCrop, setIsMovingCrop] = useState(false)
+    // Advanced Crop Logic
+    const [cropInteraction, setCropInteraction] = useState(null) // 'create', 'move', 'nw', 'ne', 'sw', 'se', 'n', 's', 'e', 'w'
     const [dragStart, setDragStart] = useState({ x: 0, y: 0 })
     const [cropStartOrigin, setCropStartOrigin] = useState({ x: 0, y: 0 })
     const [cropEndOrigin, setCropEndOrigin] = useState({ x: 0, y: 0 })
 
+    const HANDLE_SIZE = 20; // Hit area size
+
+    const getCropBox = () => {
+        if (!cropStart || !cropEnd) return null
+        return {
+            x: Math.min(cropStart.x, cropEnd.x),
+            y: Math.min(cropStart.y, cropEnd.y),
+            w: Math.abs(cropEnd.x - cropStart.x),
+            h: Math.abs(cropEnd.y - cropStart.y)
+        }
+    }
+
+    const checkInteraction = (x, y) => {
+        const box = getCropBox()
+        if (!box) return 'create'
+
+        // Check handles
+        // Corners
+        if (Math.abs(x - box.x) < HANDLE_SIZE && Math.abs(y - box.y) < HANDLE_SIZE) return 'nw'
+        if (Math.abs(x - (box.x + box.w)) < HANDLE_SIZE && Math.abs(y - box.y) < HANDLE_SIZE) return 'ne'
+        if (Math.abs(x - box.x) < HANDLE_SIZE && Math.abs(y - (box.y + box.h)) < HANDLE_SIZE) return 'sw'
+        if (Math.abs(x - (box.x + box.w)) < HANDLE_SIZE && Math.abs(y - (box.y + box.h)) < HANDLE_SIZE) return 'se'
+
+        // Edges
+        if (Math.abs(x - (box.x + box.w / 2)) < HANDLE_SIZE && Math.abs(y - box.y) < HANDLE_SIZE) return 'n'
+        if (Math.abs(x - (box.x + box.w / 2)) < HANDLE_SIZE && Math.abs(y - (box.y + box.h)) < HANDLE_SIZE) return 's'
+        if (Math.abs(x - box.x) < HANDLE_SIZE && Math.abs(y - (box.y + box.h / 2)) < HANDLE_SIZE) return 'w'
+        if (Math.abs(x - (box.x + box.w)) < HANDLE_SIZE && Math.abs(y - (box.y + box.h / 2)) < HANDLE_SIZE) return 'e'
+
+        // Inside
+        if (x > box.x && x < box.x + box.w && y > box.y && y < box.y + box.h) return 'move'
+
+        return 'create'
+    }
+
+    const updateCursor = (interaction, canvas) => {
+        switch (interaction) {
+            case 'nw': case 'se': canvas.style.cursor = 'nwse-resize'; break;
+            case 'ne': case 'sw': canvas.style.cursor = 'nesw-resize'; break;
+            case 'n': case 's': canvas.style.cursor = 'ns-resize'; break;
+            case 'e': case 'w': canvas.style.cursor = 'ew-resize'; break;
+            case 'move': canvas.style.cursor = 'move'; break;
+            default: canvas.style.cursor = 'crosshair'; break;
+        }
+    }
+
     const handleCropMouseDown = (e) => {
         if (!isCropping) return;
         const coords = getCropCoords(e);
-        const canvas = cropCanvasRef.current;
+        const interaction = checkInteraction(coords.x, coords.y)
 
-        // Check if inside existing crop box
-        let inside = false;
-        if (cropStart && cropEnd) {
-            const x = Math.min(cropStart.x, cropEnd.x)
-            const y = Math.min(cropStart.y, cropEnd.y)
-            const w = Math.abs(cropEnd.x - cropStart.x)
-            const h = Math.abs(cropEnd.y - cropStart.y)
-            if (coords.x >= x && coords.x <= x + w && coords.y >= y && coords.y <= y + h) {
-                inside = true;
-            }
-        }
+        setCropInteraction(interaction)
+        setDragStart(coords)
 
-        if (inside) {
-            setIsMovingCrop(true);
-            setDragStart(coords);
-            setCropStartOrigin({ ...cropStart });
-            setCropEndOrigin({ ...cropEnd });
+        if (interaction === 'create') {
+            setCropStart(coords)
+            setCropEnd(coords)
         } else {
-            setCropStart(coords);
-            setCropEnd(coords);
-            setIsCropDragging(true);
+            // Needed for move/resize delta calculations
+            // Normalizing start/end to be TopLeft and BottomRight for easier math
+            const box = getCropBox()
+            setCropStartOrigin({ x: box.x, y: box.y })
+            setCropEndOrigin({ x: box.x + box.w, y: box.y + box.h })
         }
     }
 
     const handleCropMouseMove = (e) => {
         if (!isCropping) return;
+        const coords = getCropCoords(e);
+        const canvas = cropCanvasRef.current;
 
-        if (isMovingCrop) {
-            const coords = getCropCoords(e);
-            const dx = coords.x - dragStart.x;
-            const dy = coords.y - dragStart.y;
+        if (!cropInteraction) {
+            // Just hovering - update cursor
+            const hoverInteraction = checkInteraction(coords.x, coords.y)
+            updateCursor(hoverInteraction, canvas)
+            return
+        }
 
-            const canvas = cropCanvasRef.current;
-            const newStartX = Math.max(0, Math.min(canvas.width, cropStartOrigin.x + dx));
-            const newStartY = Math.max(0, Math.min(canvas.height, cropStartOrigin.y + dy));
-            const newEndX = Math.max(0, Math.min(canvas.width, cropEndOrigin.x + dx));
-            const newEndY = Math.max(0, Math.min(canvas.height, cropEndOrigin.y + dy));
+        // Dragging/Resizing
+        const dx = coords.x - dragStart.x;
+        const dy = coords.y - dragStart.y;
 
-            // Constrain to keep width/height same and within bounds roughly
-            // Simple constraint: shift both, clamp to bounds
+        if (cropInteraction === 'create') {
+            setCropEnd(coords)
+        } else if (cropInteraction === 'move') {
+            const w = cropEndOrigin.x - cropStartOrigin.x
+            const h = cropEndOrigin.y - cropStartOrigin.y
 
-            setCropStart({ x: cropStartOrigin.x + dx, y: cropStartOrigin.y + dy });
-            setCropEnd({ x: cropEndOrigin.x + dx, y: cropEndOrigin.y + dy });
+            let newX = cropStartOrigin.x + dx
+            let newY = cropStartOrigin.y + dy
 
-        } else if (isCropDragging) {
-            setCropEnd(getCropCoords(e))
+            // Constrain to canvas
+            newX = Math.max(0, Math.min(canvas.width - w, newX))
+            newY = Math.max(0, Math.min(canvas.height - h, newY))
+
+            setCropStart({ x: newX, y: newY })
+            setCropEnd({ x: newX + w, y: newY + h })
+
+        } else {
+            // Resizing
+            let newX1 = cropStartOrigin.x
+            let newY1 = cropStartOrigin.y
+            let newX2 = cropEndOrigin.x
+            let newY2 = cropEndOrigin.y
+
+            if (cropInteraction.includes('n')) newY1 += dy
+            if (cropInteraction.includes('s')) newY2 += dy
+            if (cropInteraction.includes('w')) newX1 += dx
+            if (cropInteraction.includes('e')) newX2 += dx
+
+            // Constrain (don't flip for simplicity, or handle flip by rect)
+            // Ideally we allow flipping but keep it simple: min width/height
+            // Or just setRaw and let Math.min/max handle drawing
+            setCropStart({ x: newX1, y: newY1 })
+            setCropEnd({ x: newX2, y: newY2 })
         }
     }
 
     const handleCropMouseUp = () => {
-        setIsCropDragging(false);
-        setIsMovingCrop(false);
+        setCropInteraction(null)
     }
 
     const applyCrop = () => {
@@ -430,39 +494,62 @@ export default function Home() {
             const w = Math.abs(cropEnd.x - cropStart.x), h = Math.abs(cropEnd.y - cropStart.y)
             ctx.clearRect(x, y, w, h)
             ctx.drawImage(uploadedImage, x, y, w, h, x, y, w, h)
-            ctx.strokeStyle = '#5B8DEF'; ctx.lineWidth = 3; ctx.strokeRect(x, y, w, h)
+            ctx.strokeStyle = '#5B8DEF'; ctx.lineWidth = 2;
+            // Dashed border for neatness
+            ctx.setLineDash([5, 5]);
+            ctx.strokeRect(x, y, w, h)
+            ctx.setLineDash([]);
 
-            // Draw drag handles
+            // Draw drag handles (Corners & Midpoints)
             ctx.fillStyle = '#5B8DEF'
-            const hs = 12 // Slightly larger handles
+            const hs = 12 // Handle size
+            const halfS = hs / 2
+
+            // Helper to draw handle
+            const drawHandle = (hx, hy) => {
+                ctx.fillRect(hx - halfS, hy - halfS, hs, hs)
+                ctx.strokeStyle = 'white'; ctx.lineWidth = 2;
+                ctx.strokeRect(hx - halfS, hy - halfS, hs, hs)
+            }
+
             // Corners
-            ctx.fillRect(x - hs / 2, y - hs / 2, hs, hs);
-            ctx.fillRect(x + w - hs / 2, y - hs / 2, hs, hs)
-            ctx.fillRect(x - hs / 2, y + h - hs / 2, hs, hs);
-            ctx.fillRect(x + w - hs / 2, y + h - hs / 2, hs, hs)
+            drawHandle(x, y) // NW
+            drawHandle(x + w, y) // NE
+            drawHandle(x, y + h) // SW
+            drawHandle(x + w, y + h) // SE
+
+            // Midpoints (only if big enough)
+            if (w > 40) {
+                drawHandle(x + w / 2, y) // N
+                drawHandle(x + w / 2, y + h) // S
+            }
+            if (h > 40) {
+                drawHandle(x, y + h / 2) // W
+                drawHandle(x + w, y + h / 2) // E
+            }
 
             // Dimensions text
             ctx.font = 'bold 14px Arial';
             ctx.fillStyle = 'white'
             ctx.textAlign = 'center'
-            ctx.shadowColor = 'black';
+            ctx.shadowColor = 'rgba(0,0,0,0.8)';
             ctx.shadowBlur = 4;
             // Draw text slightly lower than bottom edge
             ctx.fillText(`${Math.round(w)} × ${Math.round(h)}`, x + w / 2, y + h + 25)
 
             // Draw hint - HIGHER and single line
-            if (!isMovingCrop && !isCropDragging) {
+            if (!cropInteraction) {
                 ctx.font = 'bold 13px Arial';
                 ctx.fillStyle = '#ffffff';
                 ctx.shadowColor = 'rgba(0,0,0,0.8)';
                 ctx.shadowBlur = 4;
                 // Position higher up inside the box, or above if box is small
                 const textY = h > 40 ? y + h / 2 : y - 10;
-                ctx.fillText(`Geser area untuk memindahkan`, x + w / 2, textY)
+                ctx.fillText(`Geser / Tarik Ujung`, x + w / 2, textY)
                 ctx.shadowBlur = 0;
             }
         }
-    }, [isCropping, uploadedImage, cropStart, cropEnd, isMovingCrop, isCropDragging])
+    }, [isCropping, uploadedImage, cropStart, cropEnd, cropInteraction])
 
     return (
         <>
@@ -512,10 +599,10 @@ export default function Home() {
                             <label className={styles.label}><Type size={14} /> Jenis Watermark</label>
                             <div className={styles.typeRow}>
                                 <button className={`${styles.typeBtn} ${watermarkType === 'tiled' ? styles.active : ''}`} onClick={() => setWatermarkType('tiled')}>
-                                    Menyeluruh
+                                    <Grid size={16} /> Full Gambar
                                 </button>
                                 <button className={`${styles.typeBtn} ${watermarkType === 'single' ? styles.active : ''}`} onClick={() => setWatermarkType('single')}>
-                                    Satu Teks
+                                    <Type size={16} /> Satu Teks
                                 </button>
                             </div>
                         </div>
