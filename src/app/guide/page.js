@@ -159,7 +159,15 @@ export default function GuidePage() {
                         </details>
                         <details className={styles.faqItem}>
                             <summary>Apakah aplikasi ini gratis?</summary>
-                            <p>Ya, 100% Gratis tanpa biaya tersembunyi, tanpa langganan, dan tanpa iklan yang mengganggu.</p>
+                            <p><strong>Ya, AmaninKTP 100% gratis</strong> tanpa biaya tersembunyi dan tanpa langganan. Kami berkomitmen untuk tetap menyediakan layanan ini secara gratis bagi semua pengguna.</p>
+                        </details>
+                        <details className={styles.faqItem}>
+                            <summary>Apakah akan ada iklan di website ini?</summary>
+                            <p>Untuk menjaga kelangsungan layanan dan biaya operasional server, <strong>kemungkinan akan ada iklan</strong> yang ditampilkan di website ini ke depannya. Namun, kami akan memastikan iklan tidak mengganggu pengalaman pengguna dan fungsi utama aplikasi tetap berjalan dengan baik.</p>
+                        </details>
+                        <details className={styles.faqItem}>
+                            <summary>Bagaimana cara mendukung AmaninKTP?</summary>
+                            <p>Anda dapat mendukung pengembangan AmaninKTP dengan <strong>berdonasi</strong> melalui tombol "Donasi" di menu. Dukungan Anda membantu kami membiayai server, pengembangan fitur baru, dan menjaga layanan tetap gratis untuk semua orang.</p>
                         </details>
                         <details className={styles.faqItem}>
                             <summary>Bagaimana cara menghapus watermark?</summary>
@@ -168,6 +176,10 @@ export default function GuidePage() {
                         <details className={styles.faqItem}>
                             <summary>Apakah bisa di HP / Tablet?</summary>
                             <p>Bisa! AmaninKTP responsif dan ringan, bisa dibuka di browser Android (Chrome) maupun iOS (Safari).</p>
+                        </details>
+                        <details className={styles.faqItem}>
+                            <summary>Kemana donasi akan digunakan?</summary>
+                            <p>Donasi akan digunakan untuk: <strong>biaya server dan hosting</strong>, pengembangan fitur baru, pemeliharaan dan keamanan website, serta biaya operasional lainnya agar layanan tetap berjalan lancar.</p>
                         </details>
                     </div>
                 </section>
