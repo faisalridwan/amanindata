@@ -560,66 +560,133 @@ export default function SignaturePage() {
             const container = pageContainerRefs.current[pageIndex]
             if (!canvas || !container) return
 
-            // Apply zoom based on stable baseWidth
+            // Only re-render base image if dimensions changed significantly
+            // or if it's the first render.
+            // But we need to keep the canvas size in sync.
+
             const containerWidth = baseWidth * zoomLevel
             const aspectRatio = pageImg.height / pageImg.width
             const displayWidth = containerWidth
             const displayHeight = containerWidth * aspectRatio
 
-            canvas.width = pageImg.width
-            canvas.height = pageImg.height
+            // We only update if dimensions are different to avoid flicker/perf hit
+            if (canvas.width !== pageImg.width || canvas.height !== pageImg.height) {
+                canvas.width = pageImg.width
+                canvas.height = pageImg.height
+                const ctx = canvas.getContext('2d')
+                if (ctx) ctx.drawImage(pageImg, 0, 0, pageImg.width, pageImg.height)
+            }
 
             // Apply dimensions to style
             container.style.width = `${displayWidth}px`
             container.style.height = `${displayHeight}px`
             canvas.style.width = '100%'
             canvas.style.height = '100%'
-
-            const ctx = canvas.getContext('2d')
-            if (!ctx) return
-
-            ctx.drawImage(pageImg, 0, 0, pageImg.width, pageImg.height)
-
-            // Draw signatures
-            // Draw signatures: REMOVED to prevent double rendering on zoom. 
-            // Signatures are now only rendered via DOM overlays (sigOverlay) during editing.
-            // They will be burnt into the canvas only during PDF generation/download.
         })
-    }, [documentPages, placedSignatures, selectedSigIndex, zoomLevel]) // Ensure effect runs when dependencies change
+    }, [documentPages, zoomLevel])
+
+    const getCompositedCanvas = (pageIndex) => {
+        const pageImg = documentPages[pageIndex];
+        if (!pageImg) return null;
+
+        const canvas = document.createElement('canvas');
+        canvas.width = pageImg.width;
+        canvas.height = pageImg.height;
+        const ctx = canvas.getContext('2d');
+
+        // Draw base image
+        ctx.drawImage(pageImg, 0, 0);
+
+        // Draw signatures for this page
+        const signatures = placedSignatures.filter(s => s.pageIndex === pageIndex);
+        signatures.forEach(sig => {
+            const sigImg = new Image();
+            sigImg.src = sig.dataUrl;
+            // We need to wait for image to load if not cached, but dataUrl should be instant.
+            // However, drawImage with dataUrl source is synchronous in most browsers if source is already loaded.
+            // Since we created these from canvas, they are likely ready. 
+            // To be 100% safe in async context we might need promises, but for this helper
+            // we assume they are loaded as they are displayed on screen.
+            ctx.drawImage(sigImg, sig.x, sig.y, sig.width, sig.height);
+        });
+
+        // Return canvas immediately. If separate images are needed we'd use promises.
+        // For local generic images it should be fine.
+        return canvas;
+    }
+
+    // Helper to load image for compositing
+    const loadImage = (src) => {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => resolve(img);
+            img.onerror = reject;
+            img.src = src;
+        })
+    }
+
+    // Async version of compositing to be safe
+    const getCompositedCanvasAsync = async (pageIndex) => {
+        const pageImg = documentPages[pageIndex];
+        if (!pageImg) return null;
+
+        const canvas = document.createElement('canvas');
+        canvas.width = pageImg.width;
+        canvas.height = pageImg.height;
+        const ctx = canvas.getContext('2d');
+
+        ctx.drawImage(pageImg, 0, 0);
+
+        const signatures = placedSignatures.filter(s => s.pageIndex === pageIndex);
+        for (const sig of signatures) {
+            const sigImg = await loadImage(sig.dataUrl);
+            ctx.drawImage(sigImg, sig.x, sig.y, sig.width, sig.height);
+        }
+
+        return canvas;
+    }
 
     const downloadDocumentAsPDF = async () => {
         if (documentPages.length === 0) return
+        setIsLoadingPdf(true); // Reuse loading state for feedback
 
-        const { jsPDF } = await import('jspdf')
-        let pdf = null
+        try {
+            const { jsPDF } = await import('jspdf')
+            let pdf = null
 
-        for (let i = 0; i < documentPages.length; i++) {
-            const canvas = pageCanvasRefs.current[i]
-            if (!canvas) continue
+            for (let i = 0; i < documentPages.length; i++) {
+                const canvas = await getCompositedCanvasAsync(i);
+                if (!canvas) continue
 
-            const imgData = canvas.toDataURL('image/png')
-            const orientation = canvas.width > canvas.height ? 'landscape' : 'portrait'
+                const imgData = canvas.toDataURL('image/png')
+                const orientation = canvas.width > canvas.height ? 'landscape' : 'portrait'
 
-            if (i === 0) {
-                pdf = new jsPDF({
-                    orientation,
-                    unit: 'px',
-                    format: [canvas.width, canvas.height]
-                })
-            } else {
-                pdf.addPage([canvas.width, canvas.height], orientation)
+                if (i === 0) {
+                    pdf = new jsPDF({
+                        orientation,
+                        unit: 'px',
+                        format: [canvas.width, canvas.height]
+                    })
+                } else {
+                    pdf.addPage([canvas.width, canvas.height], orientation)
+                }
+
+                pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height)
             }
 
-            pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height)
-        }
-
-        if (pdf) {
-            pdf.save(`dokumen-bertandatangan-${Date.now()}.pdf`)
+            if (pdf) {
+                pdf.save(`dokumen-bertandatangan-${Date.now()}.pdf`)
+            }
+        } catch (e) {
+            console.error("Download failed", e);
+            alert("Gagal mengunduh dokumen");
+        } finally {
+            setIsLoadingPdf(false);
         }
     }
 
-    const downloadPageAsPNG = (pageIndex) => {
-        const canvas = pageCanvasRefs.current[pageIndex]
+    const downloadPageAsPNG = async (pageIndex) => {
+        const canvas = await getCompositedCanvasAsync(pageIndex);
         if (!canvas) return
         const link = document.createElement('a')
         link.download = `halaman-${pageIndex + 1}-bertandatangan.png`
@@ -628,7 +695,7 @@ export default function SignaturePage() {
     }
 
     const downloadPageAsPDF = async (pageIndex) => {
-        const canvas = pageCanvasRefs.current[pageIndex]
+        const canvas = await getCompositedCanvasAsync(pageIndex);
         if (!canvas) return
 
         const { jsPDF } = await import('jspdf')

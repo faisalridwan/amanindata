@@ -199,7 +199,17 @@ export default function Home() {
     }, [])
 
     // Crop functions
-    const startCrop = () => { setIsCropping(true); setCropStart(null); setCropEnd(null) }
+    // const startCrop = () => { setIsCropping(true); setCropStart(null); setCropEnd(null) } // OLD
+    const startCrop = () => {
+        setIsCropping(true);
+        // If we already have a cropped image, we want to allow re-cropping.
+        // We keep cropStart and cropEnd as they were.
+        if (!cropStart && uploadedImage) {
+            // Default to full image if no previous crop
+            setCropStart({ x: 0, y: 0 })
+            setCropEnd({ x: uploadedImage.width, y: uploadedImage.height })
+        }
+    }
 
     const getCropCoords = (e) => {
         const canvas = cropCanvasRef.current
@@ -213,14 +223,81 @@ export default function Home() {
         }
     }
 
-    const handleCropMouseDown = (e) => { if (!isCropping) return; const coords = getCropCoords(e); setCropStart(coords); setCropEnd(coords); setIsCropDragging(true) }
-    const handleCropMouseMove = (e) => { if (!isCropping || !isCropDragging) return; setCropEnd(getCropCoords(e)) }
-    const handleCropMouseUp = () => { setIsCropDragging(false) }
+    const [isMovingCrop, setIsMovingCrop] = useState(false)
+    const [dragStart, setDragStart] = useState({ x: 0, y: 0 })
+    const [cropStartOrigin, setCropStartOrigin] = useState({ x: 0, y: 0 })
+    const [cropEndOrigin, setCropEndOrigin] = useState({ x: 0, y: 0 })
+
+    const handleCropMouseDown = (e) => {
+        if (!isCropping) return;
+        const coords = getCropCoords(e);
+        const canvas = cropCanvasRef.current;
+
+        // Check if inside existing crop box
+        let inside = false;
+        if (cropStart && cropEnd) {
+            const x = Math.min(cropStart.x, cropEnd.x)
+            const y = Math.min(cropStart.y, cropEnd.y)
+            const w = Math.abs(cropEnd.x - cropStart.x)
+            const h = Math.abs(cropEnd.y - cropStart.y)
+            if (coords.x >= x && coords.x <= x + w && coords.y >= y && coords.y <= y + h) {
+                inside = true;
+            }
+        }
+
+        if (inside) {
+            setIsMovingCrop(true);
+            setDragStart(coords);
+            setCropStartOrigin({ ...cropStart });
+            setCropEndOrigin({ ...cropEnd });
+        } else {
+            setCropStart(coords);
+            setCropEnd(coords);
+            setIsCropDragging(true);
+        }
+    }
+
+    const handleCropMouseMove = (e) => {
+        if (!isCropping) return;
+
+        if (isMovingCrop) {
+            const coords = getCropCoords(e);
+            const dx = coords.x - dragStart.x;
+            const dy = coords.y - dragStart.y;
+
+            const canvas = cropCanvasRef.current;
+            const newStartX = Math.max(0, Math.min(canvas.width, cropStartOrigin.x + dx));
+            const newStartY = Math.max(0, Math.min(canvas.height, cropStartOrigin.y + dy));
+            const newEndX = Math.max(0, Math.min(canvas.width, cropEndOrigin.x + dx));
+            const newEndY = Math.max(0, Math.min(canvas.height, cropEndOrigin.y + dy));
+
+            // Constrain to keep width/height same and within bounds roughly
+            // Simple constraint: shift both, clamp to bounds
+
+            setCropStart({ x: cropStartOrigin.x + dx, y: cropStartOrigin.y + dy });
+            setCropEnd({ x: cropEndOrigin.x + dx, y: cropEndOrigin.y + dy });
+
+        } else if (isCropDragging) {
+            setCropEnd(getCropCoords(e))
+        }
+    }
+
+    const handleCropMouseUp = () => {
+        setIsCropDragging(false);
+        setIsMovingCrop(false);
+    }
 
     const applyCrop = () => {
         if (!uploadedImage || !cropStart || !cropEnd) return
-        const x = Math.min(cropStart.x, cropEnd.x), y = Math.min(cropStart.y, cropEnd.y)
-        const width = Math.abs(cropEnd.x - cropStart.x), height = Math.abs(cropEnd.y - cropStart.y)
+        let x = Math.min(cropStart.x, cropEnd.x), y = Math.min(cropStart.y, cropEnd.y)
+        let endX = Math.max(cropStart.x, cropEnd.x), endY = Math.max(cropStart.y, cropEnd.y)
+
+        // Clamp to image bounds
+        x = Math.max(0, x); y = Math.max(0, y);
+        endX = Math.min(uploadedImage.width, endX); endY = Math.min(uploadedImage.height, endY);
+
+        const width = endX - x, height = endY - y;
+
         if (width < 20 || height < 20) { alert('Area too small'); return }
 
         const cropCanvas = document.createElement('canvas')
@@ -228,11 +305,22 @@ export default function Home() {
         cropCanvas.getContext('2d').drawImage(uploadedImage, x, y, width, height, 0, 0, width, height)
 
         const croppedImg = new Image()
-        croppedImg.onload = () => { setCroppedImage(croppedImg); setTextPosition({ x: width / 2, y: height / 2 }); setIsCropping(false) }
+        croppedImg.onload = () => {
+            setCroppedImage(croppedImg);
+            setTextPosition({ x: width / 2, y: height / 2 });
+            setIsCropping(false)
+        }
         croppedImg.src = cropCanvas.toDataURL()
     }
 
-    const cancelCrop = () => { setIsCropping(false); setCropStart(null); setCropEnd(null) }
+    const cancelCrop = () => {
+        setIsCropping(false);
+        // Do not reset cropStart/cropEnd so we can re-open it same place
+        // If user wants to reset, they can re-drag or reload image
+        if (!croppedImage) {
+            setCropStart(null); setCropEnd(null)
+        }
+    }
 
     // Measure text dimensions
     useEffect(() => {
@@ -343,14 +431,33 @@ export default function Home() {
             ctx.clearRect(x, y, w, h)
             ctx.drawImage(uploadedImage, x, y, w, h, x, y, w, h)
             ctx.strokeStyle = '#5B8DEF'; ctx.lineWidth = 3; ctx.strokeRect(x, y, w, h)
+
+            // Draw drag handles
             ctx.fillStyle = '#5B8DEF'
             const hs = 10
-            ctx.fillRect(x - hs / 2, y - hs / 2, hs, hs); ctx.fillRect(x + w - hs / 2, y - hs / 2, hs, hs)
-            ctx.fillRect(x - hs / 2, y + h - hs / 2, hs, hs); ctx.fillRect(x + w - hs / 2, y + h - hs / 2, hs, hs)
-            ctx.font = '14px Arial'; ctx.textAlign = 'center'
-            ctx.fillText(`${Math.round(w)} × ${Math.round(h)}`, x + w / 2, y + h + 20)
+            // Corners
+            ctx.fillRect(x - hs / 2, y - hs / 2, hs, hs);
+            ctx.fillRect(x + w - hs / 2, y - hs / 2, hs, hs)
+            ctx.fillRect(x - hs / 2, y + h - hs / 2, hs, hs);
+            ctx.fillRect(x + w - hs / 2, y + h - hs / 2, hs, hs)
+
+            // Dimensions text
+            ctx.font = 'bold 14px Arial';
+            ctx.fillStyle = 'white'
+            ctx.textAlign = 'center'
+            ctx.shadowColor = 'black';
+            ctx.shadowBlur = 4;
+            ctx.fillText(`${Math.round(w)} × ${Math.round(h)}`, x + w / 2, y + h + 25)
+            ctx.shadowBlur = 0;
+
+            // Draw hint
+            if (!isMovingCrop && !isCropDragging) {
+                ctx.font = '12px Arial';
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.8)'
+                ctx.fillText(`Drag inside to move`, x + w / 2, y - 10)
+            }
         }
-    }, [isCropping, uploadedImage, cropStart, cropEnd])
+    }, [isCropping, uploadedImage, cropStart, cropEnd, isMovingCrop, isCropDragging])
 
     return (
         <>
