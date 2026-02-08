@@ -38,6 +38,7 @@ export default function SignaturePage() {
     const pageContainerRefs = useRef([])
     const fileInputRef = useRef(null)
     const docScrollRef = useRef(null)
+    const workspaceRef = useRef(null)
 
     const colors = [
         { value: '#000000', label: 'Hitam' },
@@ -381,13 +382,23 @@ export default function SignaturePage() {
 
     // Draw pages with signatures
     useEffect(() => {
+        // Calculate base width from viewport, not from current container width to avoid infinite growth
+        // Use docScrollRef or window width as base for calculation
+        // Fallback to a safe default if ref is not yet available
+        let baseWidth = 800;
+        if (docScrollRef.current) {
+            baseWidth = docScrollRef.current.clientWidth - 48; // Padding
+        } else if (containerRef.current) {
+            baseWidth = containerRef.current.clientWidth;
+        }
+
         documentPages.forEach((pageImg, pageIndex) => {
             const canvas = pageCanvasRefs.current[pageIndex]
             const container = pageContainerRefs.current[pageIndex]
             if (!canvas || !container) return
 
-            // Apply zoom
-            const containerWidth = container.parentElement.clientWidth * zoomLevel
+            // Apply zoom based on stable baseWidth
+            const containerWidth = baseWidth * zoomLevel
             const aspectRatio = pageImg.height / pageImg.width
             const displayWidth = containerWidth
             const displayHeight = containerWidth * aspectRatio
@@ -395,6 +406,7 @@ export default function SignaturePage() {
             canvas.width = pageImg.width
             canvas.height = pageImg.height
 
+            // Apply dimensions to style
             container.style.width = `${displayWidth}px`
             container.style.height = `${displayHeight}px`
             canvas.style.width = '100%'
@@ -406,27 +418,11 @@ export default function SignaturePage() {
             ctx.drawImage(pageImg, 0, 0, pageImg.width, pageImg.height)
 
             // Draw signatures
-            placedSignatures
-                .filter(sig => sig.pageIndex === pageIndex)
-                .forEach((sig, localIndex) => {
-                    const globalIndex = placedSignatures.findIndex(s => s.id === sig.id)
-                    const sigImg = new Image()
-                    sigImg.src = sig.dataUrl
-                    ctx.drawImage(sigImg, sig.x, sig.y, sig.width, sig.height)
-
-                    if (selectedSigIndex === globalIndex) {
-                        ctx.strokeStyle = '#4CAF50'
-                        ctx.lineWidth = 4
-                        ctx.setLineDash([10, 10])
-                        ctx.strokeRect(sig.x - 4, sig.y - 4, sig.width + 8, sig.height + 8)
-                        ctx.setLineDash([])
-
-                        ctx.fillStyle = '#4CAF50'
-                        ctx.fillRect(sig.x + sig.width - 16, sig.y + sig.height - 16, 20, 20)
-                    }
-                })
+            // Draw signatures: REMOVED to prevent double rendering on zoom. 
+            // Signatures are now only rendered via DOM overlays (sigOverlay) during editing.
+            // They will be burnt into the canvas only during PDF generation/download.
         })
-    }, [documentPages, placedSignatures, selectedSigIndex, zoomLevel])
+    }, [documentPages, placedSignatures, selectedSigIndex, zoomLevel]) // Ensure effect runs when dependencies change
 
     const downloadDocumentAsPDF = async () => {
         if (documentPages.length === 0) return
@@ -652,7 +648,7 @@ export default function SignaturePage() {
                             />
                         </div>
                     ) : (
-                        <div className={styles.documentWorkspace}>
+                        <div ref={workspaceRef} className={styles.documentWorkspace}>
                             <div className={styles.workspaceHeader}>
                                 <div className={styles.docInfo}>
                                     <FileText size={16} />
@@ -664,7 +660,6 @@ export default function SignaturePage() {
                                     </button>
                                 </div>
                             </div>
-
 
                             {savedSignatures.length > 0 && (
                                 <div className={styles.sigPicker}>
@@ -678,14 +673,6 @@ export default function SignaturePage() {
                                     )}
                                 </div>
                             )}
-
-                            {/* Scrollable Document Pages */}
-                            {/* Floating Zoom Controls */}
-                            <div className={styles.zoomControls}>
-                                <button onClick={handleZoomOut} title="Zoom Out"><ZoomOut size={16} /></button>
-                                <span>{Math.round(zoomLevel * 100)}%</span>
-                                <button onClick={handleZoomIn} title="Zoom In"><ZoomIn size={16} /></button>
-                            </div>
 
                             {/* Scrollable Document Pages */}
                             <div ref={docScrollRef} className={styles.docScroll}>
@@ -785,12 +772,18 @@ export default function SignaturePage() {
                                 ))}
                             </div>
 
-                            <div className={styles.downloadActions}>
+                            {/* Workspace Footer: Zoom & Main Download */}
+                            <div className={styles.workspaceFooter}>
+                                <div className={styles.zoomControls}>
+                                    <button onClick={handleZoomOut} title="Zoom Out"><ZoomOut size={16} /></button>
+                                    <span>{Math.round(zoomLevel * 100)}%</span>
+                                    <button onClick={handleZoomIn} title="Zoom In"><ZoomIn size={16} /></button>
+                                </div>
                                 <button
                                     className={styles.btnPrimary}
                                     onClick={downloadDocumentAsPDF}
                                 >
-                                    <Download size={18} /> Download Semua Halaman (PDF)
+                                    <Download size={18} /> Download PDF
                                 </button>
                             </div>
                         </div>
