@@ -258,20 +258,36 @@ export default function Home() {
 
     // Measure canvas display size
     useEffect(() => {
+        const canvas = canvasRef.current
+        if (!canvas || !imageLoaded) return
+
         const updateMetrics = () => {
-            const canvas = canvasRef.current
-            if (!canvas) return
             const rect = canvas.getBoundingClientRect()
-            setCanvasMetrics({
-                width: rect.width,
-                height: rect.height,
-                scale: rect.width / canvas.width
-            })
+            if (rect.width > 0 && canvas.width > 0) {
+                setCanvasMetrics({
+                    width: rect.width,
+                    height: rect.height,
+                    scale: rect.width / canvas.width
+                })
+            }
         }
 
-        updateMetrics()
+        // Create ResizeObserver to track canvas size changes accurately
+        const observer = new ResizeObserver(() => {
+            updateMetrics()
+        })
+
+        observer.observe(canvas)
+
+        // Initial check with a small delay to ensure canvas is painted
+        const timer = setTimeout(updateMetrics, 50)
+
         window.addEventListener('resize', updateMetrics)
-        return () => window.removeEventListener('resize', updateMetrics)
+        return () => {
+            observer.disconnect()
+            clearTimeout(timer)
+            window.removeEventListener('resize', updateMetrics)
+        }
     }, [imageLoaded, croppedImage, uploadedImage])
 
     const handleWatermarkUpdate = (updates) => {
@@ -346,7 +362,7 @@ export default function Home() {
             <main className="container">
                 {/* Hero */}
                 <header className={styles.hero}>
-                    <h1 className={styles.heroTitle}>Watermark KTP <span>Online</span></h1>
+                    <h1 className={styles.heroTitle}>📄 Watermark KTP <span>Online</span></h1>
                     <p className={styles.heroSubtitle}>Lindungi dokumen identitas dengan watermark. 100% di browser.</p>
                 </header>
 
@@ -504,10 +520,10 @@ export default function Home() {
                             </div>
                         ) : (
                             <div className={styles.canvasWrap} ref={cropWrapperRef}>
-                                <div className={styles.canvasContainer} style={{ width: canvasMetrics.width, height: canvasMetrics.height }}>
+                                <div className={styles.canvasContainer} style={canvasMetrics.width > 0 ? { width: canvasMetrics.width, height: canvasMetrics.height } : {}}>
                                     <canvas ref={canvasRef} className={styles.canvas} style={{ display: imageLoaded ? 'block' : 'none' }} />
 
-                                    {imageLoaded && watermarkType === 'single' && (
+                                    {imageLoaded && watermarkType === 'single' && canvasMetrics.width > 0 && (
                                         <WatermarkControls
                                             position={textPosition}
                                             dimensions={textDimensions}

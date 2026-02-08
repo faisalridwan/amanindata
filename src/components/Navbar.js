@@ -29,7 +29,7 @@ export default function Navbar({ onDonateClick }) {
         <nav className={styles.navbar}>
             <div className={`container ${styles.navContent}`}>
                 <Link href="/" className={styles.logo}>
-                    AmaninKTP
+                    📄 AmaninKTP
                 </Link>
 
                 <button
