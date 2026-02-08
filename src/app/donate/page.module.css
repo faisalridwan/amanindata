@@ -524,20 +524,25 @@
 
 @media (max-width: 640px) {
     .donationPage {
-        padding: 40px 20px;
+        padding: 40px 16px;
+        /* Slightly reduced side padding for more space */
+        max-width: 100%;
     }
 
     .heroTitle {
-        font-size: 32px;
+        font-size: 28px;
+        /* Smaller title */
     }
 
     .heroSubtitle {
-        font-size: 16px;
+        font-size: 14px;
+        padding: 0 10px;
     }
 
     .card {
-        padding: 24px;
-        border-radius: 30px;
+        padding: 20px;
+        border-radius: 24px;
+        box-shadow: 10px 10px 30px #d1d5db, -10px -10px 30px #ffffff;
     }
 
     /* Scrollable Tabs on Mobile */
@@ -546,16 +551,16 @@
         flex-wrap: nowrap;
         overflow-x: auto;
         justify-content: flex-start;
+        /* Ensure start alignment for scrolling */
         width: 100%;
         max-width: 100%;
-        margin-left: 0;
-        margin-right: 0;
-        padding-bottom: 12px;
-        /* Space for scrollbar if any */
+        margin: 0 0 24px 0;
+        padding: 4px;
         -webkit-overflow-scrolling: touch;
         gap: 8px;
-        background: transparent;
-        border: none;
+        background: rgba(255, 255, 255, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        border-radius: 16px;
     }
 
     .tabsContainer::-webkit-scrollbar {
@@ -564,10 +569,16 @@
 
     .tabBtn {
         flex: 0 0 auto;
-        padding: 10px 16px;
+        padding: 10px 20px;
         font-size: 13px;
-        background: rgba(255, 255, 255, 0.6);
-        border: 1px solid rgba(255, 255, 255, 0.8);
+        background: transparent;
+        border: none;
+        white-space: nowrap;
+    }
+
+    .tabBtn.activeTab {
+        background: white;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     }
 
     .paymentContent {
@@ -575,9 +586,10 @@
     }
 
     .paymentCard {
-        padding: 24px;
-        border-radius: 24px;
-        background: rgba(255, 255, 255, 0.6);
+        padding: 20px;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.6);
     }
 
     .cardHeaderLogo {
@@ -592,19 +604,22 @@
     }
 
     .presetChip {
-        padding: 12px 8px;
-        font-size: 12px;
+        padding: 10px 4px;
+        font-size: 11px;
     }
 
     .amountInput {
         font-size: 18px;
-        padding: 14px;
+        padding: 12px;
     }
 
     .qrisContainer {
-        padding: 20px;
+        padding: 16px;
         width: 100%;
-        max-width: 280px;
+        max-width: 100%;
+        /* Allow full width */
+        aspect-ratio: 1;
+        /* Keep square */
     }
 
     .qrisContainer svg {

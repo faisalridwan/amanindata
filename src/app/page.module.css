@@ -621,13 +621,20 @@
     }
 
     .cropBtns {
-        bottom: 8px;
-        padding: 6px 12px;
+        bottom: 24px;
+        /* Higher up to avoid bottom edge/thumb mix-up */
+        padding: 8px 16px;
+        width: 90%;
+        /* Wider touch hit area container */
+        justify-content: center;
     }
 
     .applyBtn,
     .cancelBtn {
-        padding: 8px 16px;
-        font-size: 12px;
+        padding: 12px 24px;
+        /* Larger touch targets */
+        font-size: 14px;
+        flex: 1;
+        /* Equal width buttons */
     }
 }

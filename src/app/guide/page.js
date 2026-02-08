@@ -1,12 +1,13 @@
 'use client'
 
 import { useState } from 'react'
-import { BookOpen, AlertTriangle, Lightbulb, MousePointer, Info, Shield, CheckCircle } from 'lucide-react'
+import { BookOpen, AlertTriangle, Lightbulb, MousePointer, Info, Shield, CheckCircle, ChevronDown } from 'lucide-react'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import styles from './page.module.css'
 
 export default function GuidePage() {
+    const [openIndex, setOpenIndex] = useState(0)
     // Using an array of objects for steps to ensure control over rendering
     const watermarkSteps = [
         {
@@ -190,34 +191,30 @@ export default function GuidePage() {
                 <section id="faq" className={styles.faqSection}>
                     <h2 className={styles.sectionTitle}>Pertanyaan Umum (FAQ)</h2>
                     <div className={styles.faqGrid}>
-                        <details className={styles.faqItem}>
-                            <summary>Apakah data saya disimpan di server?</summary>
-                            <p><strong>Tidak sama sekali.</strong> AmaninKTP bekerja 100% di browser Anda (Client-Side). File gambar Anda tidak pernah diupload ke internet. Saat Anda menutup tab, data hilang.</p>
-                        </details>
-                        <details className={styles.faqItem}>
-                            <summary>Apakah aplikasi ini gratis?</summary>
-                            <p><strong>Ya, AmaninKTP 100% gratis</strong> tanpa biaya tersembunyi dan tanpa langganan. Kami berkomitmen untuk tetap menyediakan layanan ini secara gratis bagi semua pengguna.</p>
-                        </details>
-                        <details className={styles.faqItem}>
-                            <summary>Apakah akan ada iklan di website ini?</summary>
-                            <p>Untuk menjaga kelangsungan layanan dan biaya operasional server, <strong>kemungkinan akan ada iklan</strong> yang ditampilkan di website ini ke depannya. Namun, kami akan memastikan iklan tidak mengganggu pengalaman pengguna dan fungsi utama aplikasi tetap berjalan dengan baik.</p>
-                        </details>
-                        <details className={styles.faqItem}>
-                            <summary>Bagaimana cara mendukung AmaninKTP?</summary>
-                            <p>Anda dapat mendukung pengembangan AmaninKTP dengan <strong>berdonasi</strong> melalui tombol "Donasi" di menu. Dukungan Anda membantu kami membiayai server, pengembangan fitur baru, dan menjaga layanan tetap gratis untuk semua orang.</p>
-                        </details>
-                        <details className={styles.faqItem}>
-                            <summary>Bagaimana cara menghapus watermark?</summary>
-                            <p>Tujuan watermark adalah <strong>agar sulit dihapus</strong> demi keamanan. Kami tidak menyediakan fitur penghapus watermark.</p>
-                        </details>
-                        <details className={styles.faqItem}>
-                            <summary>Apakah bisa di HP / Tablet?</summary>
-                            <p>Bisa! AmaninKTP responsif dan ringan, bisa dibuka di browser Android (Chrome) maupun iOS (Safari).</p>
-                        </details>
-                        <details className={styles.faqItem}>
-                            <summary>Kemana donasi akan digunakan?</summary>
-                            <p>Donasi akan digunakan untuk: <strong>biaya server dan hosting</strong>, pengembangan fitur baru, pemeliharaan dan keamanan website, serta biaya operasional lainnya agar layanan tetap berjalan lancar.</p>
-                        </details>
+                        {[
+                            { q: "Apakah data saya disimpan di server?", a: "Tidak sama sekali. AmaninKTP bekerja 100% di browser Anda (Client-Side). File gambar Anda tidak pernah diupload ke internet. Saat Anda menutup tab, data hilang." },
+                            { q: "Apakah aplikasi ini gratis?", a: "Ya, AmaninKTP 100% gratis tanpa biaya tersembunyi dan tanpa langganan. Kami berkomitmen untuk tetap menyediakan layanan ini secara gratis bagi semua pengguna." },
+                            { q: "Apakah akan ada iklan di website ini?", a: "Untuk menjaga kelangsungan layanan dan biaya operasional server, kemungkinan akan ada iklan yang ditampilkan di website ini ke depannya. Namun, kami akan memastikan iklan tidak mengganggu pengalaman pengguna dan fungsi utama aplikasi tetap berjalan dengan baik." },
+                            { q: "Bagaimana cara mendukung AmaninKTP?", a: "Anda dapat mendukung pengembangan AmaninKTP dengan berdonasi melalui tombol \"Donasi\" di menu. Dukungan Anda membantu kami membiayai server, pengembangan fitur baru, dan menjaga layanan tetap gratis untuk semua orang." },
+                            { q: "Bagaimana cara menghapus watermark?", a: "Tujuan watermark adalah agar sulit dihapus demi keamanan. Kami tidak menyediakan fitur penghapus watermark." },
+                            { q: "Apakah bisa di HP / Tablet?", a: "Bisa! AmaninKTP responsif dan ringan, bisa dibuka di browser Android (Chrome) maupun iOS (Safari)." },
+                            { q: "Kemana donasi akan digunakan?", a: "Donasi akan digunakan untuk: biaya server dan hosting, pengembangan fitur baru, pemeliharaan dan keamanan website, serta biaya operasional lainnya agar layanan tetap berjalan lancar." }
+                        ].map((item, i) => (
+                            <div key={i} className={`${styles.faqItem} ${openIndex === i ? styles.open : ''}`}>
+                                <button
+                                    className={styles.faqHeader}
+                                    onClick={() => setOpenIndex(openIndex === i ? -1 : i)}
+                                >
+                                    <span>{item.q}</span>
+                                    <ChevronDown size={20} className={styles.chevron} />
+                                </button>
+                                <div className={styles.faqContent}>
+                                    <div className={styles.innerContent}>
+                                        <p>{item.a}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 </section>
             </main>

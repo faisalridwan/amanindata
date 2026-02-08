@@ -165,27 +165,18 @@ export default function DonatePage() {
                                 className={`${styles.tabBtn} ${activeTab === 'qris' ? styles.activeTab : ''}`}
                                 onClick={() => setActiveTab('qris')}
                             >
-                                <div className={styles.logoIcon}>
-                                    <Image src="/images/logos/qris.svg" alt="QRIS" fill style={{ objectFit: 'contain' }} />
-                                </div>
                                 QRIS
                             </button>
                             <button
                                 className={`${styles.tabBtn} ${activeTab === 'bank' ? styles.activeTab : ''}`}
                                 onClick={() => setActiveTab('bank')}
                             >
-                                <div className={styles.logoIcon}>
-                                    <Image src="/images/logos/jago.svg" alt="Jago" fill style={{ objectFit: 'contain' }} />
-                                </div>
                                 Bank Jago
                             </button>
                             <button
                                 className={`${styles.tabBtn} ${activeTab === 'intl' ? styles.activeTab : ''}`}
                                 onClick={() => setActiveTab('intl')}
                             >
-                                <div className={styles.logoIcon}>
-                                    <Image src="/images/logos/paypal.svg" alt="PayPal" fill style={{ objectFit: 'contain' }} />
-                                </div>
                                 PayPal
                             </button>
                         </div>

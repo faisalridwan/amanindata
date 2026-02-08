@@ -434,7 +434,7 @@ export default function Home() {
 
             // Draw drag handles
             ctx.fillStyle = '#5B8DEF'
-            const hs = 10
+            const hs = 12 // Slightly larger handles
             // Corners
             ctx.fillRect(x - hs / 2, y - hs / 2, hs, hs);
             ctx.fillRect(x + w - hs / 2, y - hs / 2, hs, hs)
@@ -447,14 +447,19 @@ export default function Home() {
             ctx.textAlign = 'center'
             ctx.shadowColor = 'black';
             ctx.shadowBlur = 4;
+            // Draw text slightly lower than bottom edge
             ctx.fillText(`${Math.round(w)} × ${Math.round(h)}`, x + w / 2, y + h + 25)
-            ctx.shadowBlur = 0;
 
-            // Draw hint
+            // Draw hint - HIGHER and single line
             if (!isMovingCrop && !isCropDragging) {
-                ctx.font = '12px Arial';
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.8)'
-                ctx.fillText(`Drag inside to move`, x + w / 2, y - 10)
+                ctx.font = 'bold 13px Arial';
+                ctx.fillStyle = '#ffffff';
+                ctx.shadowColor = 'rgba(0,0,0,0.8)';
+                ctx.shadowBlur = 4;
+                // Position higher up inside the box, or above if box is small
+                const textY = h > 40 ? y + h / 2 : y - 10;
+                ctx.fillText(`Geser area untuk memindahkan`, x + w / 2, textY)
+                ctx.shadowBlur = 0;
             }
         }
     }, [isCropping, uploadedImage, cropStart, cropEnd, isMovingCrop, isCropDragging])

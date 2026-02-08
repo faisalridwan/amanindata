@@ -140,29 +140,62 @@
     .footerContent {
         grid-template-columns: 1fr;
         gap: var(--space-xl);
+        text-align: center;
+        /* Center align for tablet/mobile */
+    }
+
+    .brand {
+        max-width: 100%;
+        /* Full width */
+        margin: 0 auto;
     }
 
     .linksGrid {
         grid-template-columns: repeat(2, 1fr);
-    }
-
-    .brand {
-        max-width: none;
-        text-align: center;
+        text-align: left;
+        /* Keep links left aligned relative to their column if preferred, or center */
+        max-width: 500px;
+        margin: 0 auto;
     }
 }
 
 @media (max-width: 600px) {
     .linksGrid {
-        grid-template-columns: 1fr 1fr;
-        gap: var(--space-md);
+        grid-template-columns: 1fr;
+        /* Stack vertically on small screens */
+        gap: var(--space-lg);
+        text-align: center;
+    }
+
+    .linkSection h4 {
+        margin-bottom: var(--space-sm);
+        font-size: 15px;
+        /* Slightly larger heading for mobile touch */
+    }
+
+    .linkSection li {
+        margin-bottom: 10px;
+    }
+
+    .linkSection a,
+    .donateLink {
+        justify-content: center;
+        /* Center icons with text */
+        padding: 4px 0;
+        /* Touch target */
     }
 
     .legalContent {
-        gap: var(--space-sm);
+        flex-direction: column;
+        gap: 12px;
     }
 
     .legalContent a {
-        font-size: 12px;
+        font-size: 13px;
+    }
+
+    .divider {
+        display: none;
+        /* Hide pipes on mobile stack */
     }
 }
