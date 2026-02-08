@@ -78,6 +78,12 @@
     border-radius: 16px;
     padding: 20px;
     box-shadow: 4px 4px 12px rgba(174, 186, 202, 0.2), -4px -4px 12px rgba(255, 255, 255, 0.9);
+    border: var(--card-border, none);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+[data-theme="dark"] .signatureCard {
+    box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.4), -4px -4px 12px rgba(51, 65, 85, 0.2);
 }
 
 .signatureCanvas {
@@ -91,6 +97,13 @@
     overflow: hidden;
     touch-action: none;
     margin-bottom: 16px;
+    border: 2px solid transparent;
+    transition: border-color 0.3s ease;
+}
+
+[data-theme="dark"] .signatureCanvas {
+    border-color: rgba(71, 85, 105, 0.6);
+    box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.15), inset -2px -2px 6px rgba(200, 200, 200, 0.1);
 }
 
 .signatureCanvas canvas {

@@ -33,16 +33,13 @@ export default function Navbar() {
                     📄 AmaninKTP
                 </Link>
 
-                <div className={styles.rightSection}>
-                    <ThemeToggle />
-                    <button
-                        className={styles.menuToggle}
-                        onClick={() => setIsMenuOpen(!isMenuOpen)}
-                        aria-label="Toggle menu"
-                    >
-                        {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-                    </button>
-                </div>
+                <button
+                    className={styles.menuToggle}
+                    onClick={() => setIsMenuOpen(!isMenuOpen)}
+                    aria-label="Toggle menu"
+                >
+                    {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                </button>
 
                 <ul className={`${styles.navLinks} ${isMenuOpen ? styles.show : ''}`}>
                     {navItems.map((item) => (
@@ -66,6 +63,9 @@ export default function Navbar() {
                             <Heart size={16} />
                             <span>Donasi</span>
                         </Link>
+                    </li>
+                    <li className={styles.themeToggleItem}>
+                        <ThemeToggle />
                     </li>
                 </ul>
             </div>
