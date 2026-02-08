@@ -79,7 +79,6 @@
     position: relative;
     width: 100%;
     height: 350px;
-    /* Increased height */
     background: #FFFFFF;
     border-radius: 12px;
     box-shadow: inset 2px 2px 6px rgba(174, 186, 202, 0.25), inset -2px -2px 6px rgba(255, 255, 255, 0.9);
@@ -283,8 +282,22 @@
     position: relative;
     padding: 8px 12px;
     background: white;
+    border: 2px solid transparent;
     border-radius: 8px;
     box-shadow: 2px 2px 6px rgba(174, 186, 202, 0.2);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.savedItem:hover {
+    transform: translateY(-2px);
+    box-shadow: 4px 4px 10px rgba(174, 186, 202, 0.3);
+}
+
+.savedItem.activeSig {
+    border-color: #4CAF50;
+    background: #F1F8E9;
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
 }
 
 .savedItem img {
@@ -292,6 +305,21 @@
     width: auto;
     max-width: 100px;
     object-fit: contain;
+}
+
+.activeCheck {
+    position: absolute;
+    top: -6px;
+    left: -6px;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #4CAF50;
+    color: white;
+    border-radius: 50%;
+    border: 2px solid white;
 }
 
 .savedItem button {
@@ -411,6 +439,8 @@
     display: flex;
     flex-direction: column;
     gap: 16px;
+    position: relative;
+    /* Context for sticky controls */
 }
 
 .workspaceHeader {
@@ -450,26 +480,34 @@
     gap: 12px;
 }
 
+/* Sticky Zoom Controls */
 .zoomControls {
     display: flex;
     align-items: center;
     background: white;
-    border-radius: 8px;
-    padding: 2px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    border-radius: 24px;
+    padding: 6px 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .zoomControls button {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
     border: none;
     background: transparent;
     cursor: pointer;
-    color: var(--text-secondary);
-    border-radius: 6px;
+    color: var(--text-primary);
+    border-radius: 50%;
+    transition: background 0.2s;
 }
 
 .zoomControls button:hover {
@@ -478,10 +516,11 @@
 }
 
 .zoomControls span {
-    font-size: 12px;
-    font-weight: 500;
-    min-width: 40px;
+    font-size: 13px;
+    font-weight: 600;
+    min-width: 50px;
     text-align: center;
+    color: var(--text-primary);
 }
 
 .btnReset {
@@ -512,6 +551,7 @@
     background: linear-gradient(135deg, #E3F2FD, #BBDEFB);
     border-radius: 10px;
     flex-wrap: wrap;
+    min-height: 60px;
 }
 
 .sigPicker>span {
@@ -520,35 +560,26 @@
     font-weight: 500;
 }
 
-.sigPickerItem {
-    padding: 6px 10px;
+.activeSigPreview {
+    display: flex;
+    align-items: center;
+    padding: 4px 12px;
     background: white;
-    border: 2px solid transparent;
     border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.2s;
+    box-shadow: 0 2px 4px rgba(21, 101, 192, 0.2);
 }
 
-.sigPickerItem:hover {
-    border-color: #1565C0;
-    transform: scale(1.05);
-}
-
-.sigPickerItem img {
-    height: 24px;
+.activeSigPreview img {
+    height: 30px;
     width: auto;
-    max-width: 80px;
+    max-width: 120px;
     object-fit: contain;
 }
 
-.noSigsWarning {
-    padding: 16px;
-    background: #FFF3E0;
-    border: 1px solid #FFB74D;
-    border-radius: 10px;
-    font-size: 13px;
-    color: #E65100;
-    text-align: center;
+.noActiveSig {
+    font-size: 12px;
+    font-style: italic;
+    color: rgba(21, 101, 192, 0.6);
 }
 
 /* Document Scroll Container */
@@ -556,15 +587,16 @@
     max-height: 70vh;
     overflow-y: auto;
     overflow-x: auto;
-    /* Enable horizontal scroll for zoom */
     border-radius: 12px;
     background: #f5f5f5;
     padding: 24px;
+    padding-bottom: 80px;
+    /* Space for sticky zoom controls */
     display: flex;
     flex-direction: column;
     gap: 32px;
     align-items: center;
-    /* Center pages */
+    position: relative;
 }
 
 .pageWrapper {
@@ -572,9 +604,7 @@
     flex-direction: column;
     gap: 12px;
     width: max-content;
-    /* Allow width to grow with zoom */
     max-width: 100%;
-    /* But don't overflow if not zoomed */
 }
 
 .pageHeaderItem {
@@ -582,6 +612,7 @@
     align-items: center;
     justify-content: space-between;
     width: 100%;
+    margin-bottom: 4px;
 }
 
 .pageNumber {
@@ -592,6 +623,11 @@
     background: white;
     border-radius: 6px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.pageActions {
+    display: flex;
+    gap: 8px;
 }
 
 .btnPageAction {
@@ -611,6 +647,7 @@
 
 .btnPageAction:hover {
     color: var(--primary-dark);
+    transform: translateY(-1px);
 }
 
 .pageContainer {
@@ -618,12 +655,10 @@
     background: white;
     border-radius: 8px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    /* Dimensions set by inline styles based on zoom */
 }
 
 .pageCanvas {
     display: block;
-    /* Dimensions set by inline styles */
     border-radius: 8px;
 }
 
@@ -634,6 +669,7 @@
     border-radius: 4px;
     transition: border-color 0.2s;
     z-index: 10;
+    touch-action: none;
 }
 
 .sigOverlay:hover,
@@ -718,13 +754,6 @@
     transform: scale(1.05);
 }
 
-.docTip {
-    font-size: 12px;
-    color: var(--text-muted);
-    text-align: center;
-    padding: 8px;
-}
-
 /* Download Actions */
 .downloadActions {
     display: flex;
@@ -782,7 +811,6 @@
 
     .signatureCanvas {
         height: 250px;
-        /* Slightly smaller on mobile but still larger than before */
     }
 
     .signatureControls {
@@ -802,7 +830,8 @@
         max-height: 60vh;
         padding: 12px;
         align-items: flex-start;
-        /* Left align on mobile for better scrolling */
+        padding-bottom: 80px;
+        /* Ensure space for zoomed controls */
     }
 
     .workspaceHeader {
@@ -814,7 +843,13 @@
         justify-content: space-between;
     }
 
-    .btnPrimary {
-        width: 100%;
-    }
+    /* Move Zoom Controls to be sticky inside docScroll for mobile if needed, or keep global */
+    /* Currently they are flex inside docActions but we want them sticky bottom usually */
+    /* Update: Logic moved them outside docActions in CSS? No, they are inside docActions in JSX 
+       Wait, my previous CSS made .zoomControls sticky. 
+       BUT .zoomControls is inside .docActions which is in .workspaceHeader (top).
+       I need to move .zoomControls OUT of .workspaceHeader in JSX if I want it sticky at bottom of scroll logic?
+       Actually, the user requested "sticky di tengah" (sticky in middle/center) which usually means floating at bottom center of screen or container.
+       My JSX still has it inside workspaceHeader. I need to move it in JSX to be a sibling of docScroll or inside it.
+    */
 }

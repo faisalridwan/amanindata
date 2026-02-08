@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { PenTool, Upload, Trash2, Download, Plus, Move, Lock, X, RotateCcw, FileText, Image as ImageIcon, ChevronDown, ZoomIn, ZoomOut } from 'lucide-react'
+import { PenTool, Upload, Trash2, Download, Plus, Move, Lock, X, RotateCcw, FileText, Image as ImageIcon, ChevronDown, ZoomIn, ZoomOut, Check } from 'lucide-react'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import DonationModal from '@/components/DonationModal'
@@ -19,6 +19,7 @@ export default function SignaturePage() {
 
     // Saved Signatures
     const [savedSignatures, setSavedSignatures] = useState([])
+    const [activeSignatureId, setActiveSignatureId] = useState(null)
 
     // Document States
     const [documentPages, setDocumentPages] = useState([]) // Array of page images
@@ -54,18 +55,14 @@ export default function SignaturePage() {
             const rect = container.getBoundingClientRect()
             const ctx = canvas.getContext('2d')
 
-            // Save current content
+            // Save current content if needed, but usually clear on resize is safer or just redraw
+            // For simple signature, we might lose it on resize, which is acceptable or we could save dataUrl
             const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
 
-            // Set actual size in memory (scaled to account for pixel density if needed, 
-            // but for simplicity we match display size here to ensure 1:1 mapping)
             canvas.width = rect.width
             canvas.height = rect.height
 
-            // Restore content (might be stretched/cropped, but acceptable for resize)
-            // Ideally we'd redraw lines, but for simple usage this is okay
-            // ctx.putImageData(imageData, 0, 0) // Commented out as it often causes issues on resize
-            // Better to just let user redraw or keep as is if no resize happened
+            // ctx.putImageData(imageData, 0, 0) 
         }
 
         resizeCanvas()
@@ -78,7 +75,6 @@ export default function SignaturePage() {
         if (!canvasEl) return { x: 0, y: 0 }
         const rect = canvasEl.getBoundingClientRect()
 
-        // Calculate scale in case canvas display size differs from internal resolution
         const scaleX = canvasEl.width / rect.width
         const scaleY = canvasEl.height / rect.height
 
@@ -95,7 +91,6 @@ export default function SignaturePage() {
             clientY = e.clientY
         }
 
-        // More precise coordinate calculation
         return {
             x: (clientX - rect.left) * scaleX,
             y: (clientY - rect.top) * scaleY
@@ -103,7 +98,11 @@ export default function SignaturePage() {
     }, [])
 
     const startDrawing = useCallback((e) => {
-        e.preventDefault() // Prevent scrolling on touch
+        // Prevent default only if inside canvas to avoid blocking scroll elsewhere
+        if (e.target === canvasRef.current) {
+            e.preventDefault()
+        }
+
         const canvas = canvasRef.current
         if (!canvas) return
 
@@ -118,7 +117,9 @@ export default function SignaturePage() {
 
     const draw = useCallback((e) => {
         if (!isDrawing) return
-        e.preventDefault()
+        if (e.target === canvasRef.current) {
+            e.preventDefault()
+        }
 
         const canvas = canvasRef.current
         const ctx = canvas?.getContext('2d')
@@ -161,7 +162,9 @@ export default function SignaturePage() {
         if (!canvas || !hasDrawn) return
 
         const dataUrl = canvas.toDataURL('image/png')
-        setSavedSignatures(prev => [...prev, { id: Date.now(), dataUrl }])
+        const newId = Date.now()
+        setSavedSignatures(prev => [...prev, { id: newId, dataUrl }])
+        setActiveSignatureId(newId) // Auto-select new signature
         clearCanvas()
     }
 
@@ -177,6 +180,9 @@ export default function SignaturePage() {
 
     const deleteSignature = (id) => {
         setSavedSignatures(prev => prev.filter(s => s.id !== id))
+        if (activeSignatureId === id) {
+            setActiveSignatureId(null)
+        }
     }
 
     // Load PDF.js from CDN
@@ -261,13 +267,16 @@ export default function SignaturePage() {
         reader.readAsDataURL(file)
     }
 
-    const addSignatureToPage = (sig, pageIndex) => {
+    const addSignatureToPage = (sigId, pageIndex) => {
+        const sig = savedSignatures.find(s => s.id === sigId)
+        if (!sig) return
+
         const newSig = {
             id: Date.now(),
             pageIndex,
             dataUrl: sig.dataUrl,
-            x: 100,
-            y: 100,
+            x: 100, // Default position
+            y: 100, // Default position
             width: 200,
             height: 80
         }
@@ -284,6 +293,7 @@ export default function SignaturePage() {
         if (!canvas) return
 
         const rect = canvas.getBoundingClientRect()
+        // Determine scale relative to the actual displayed size vs canvas internal resolution
         const scaleX = canvas.width / rect.width
         const scaleY = canvas.height / rect.height
 
@@ -318,7 +328,7 @@ export default function SignaturePage() {
         const sig = placedSignatures[selectedSigIndex]
         if (sig.pageIndex !== pageIndex) return
 
-        e.preventDefault()
+        e.preventDefault() // Critical to prevent scroll/zoom while dragging
 
         const canvas = pageCanvasRefs.current[pageIndex]
         if (!canvas) return
@@ -376,7 +386,7 @@ export default function SignaturePage() {
             const container = pageContainerRefs.current[pageIndex]
             if (!canvas || !container) return
 
-            // Apply zoom to display width
+            // Apply zoom
             const containerWidth = container.parentElement.clientWidth * zoomLevel
             const aspectRatio = pageImg.height / pageImg.width
             const displayWidth = containerWidth
@@ -385,7 +395,6 @@ export default function SignaturePage() {
             canvas.width = pageImg.width
             canvas.height = pageImg.height
 
-            // Allow container to grow with zoom
             container.style.width = `${displayWidth}px`
             container.style.height = `${displayHeight}px`
             canvas.style.width = '100%'
@@ -396,7 +405,7 @@ export default function SignaturePage() {
 
             ctx.drawImage(pageImg, 0, 0, pageImg.width, pageImg.height)
 
-            // Draw signatures for this page
+            // Draw signatures
             placedSignatures
                 .filter(sig => sig.pageIndex === pageIndex)
                 .forEach((sig, localIndex) => {
@@ -453,11 +462,28 @@ export default function SignaturePage() {
     const downloadPageAsPNG = (pageIndex) => {
         const canvas = pageCanvasRefs.current[pageIndex]
         if (!canvas) return
-
         const link = document.createElement('a')
         link.download = `halaman-${pageIndex + 1}-bertandatangan.png`
         link.href = canvas.toDataURL('image/png')
         link.click()
+    }
+
+    const downloadPageAsPDF = async (pageIndex) => {
+        const canvas = pageCanvasRefs.current[pageIndex]
+        if (!canvas) return
+
+        const { jsPDF } = await import('jspdf')
+        const imgData = canvas.toDataURL('image/png')
+        const orientation = canvas.width > canvas.height ? 'landscape' : 'portrait'
+
+        const pdf = new jsPDF({
+            orientation,
+            unit: 'px',
+            format: [canvas.width, canvas.height]
+        })
+
+        pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height)
+        pdf.save(`halaman-${pageIndex + 1}-bertandatangan.pdf`)
     }
 
     const clearDocument = () => {
@@ -556,9 +582,21 @@ export default function SignaturePage() {
                                 <span className={styles.savedLabel}>Tersimpan:</span>
                                 <div className={styles.savedList}>
                                     {savedSignatures.map((sig) => (
-                                        <div key={sig.id} className={styles.savedItem}>
+                                        <div
+                                            key={sig.id}
+                                            className={`${styles.savedItem} ${activeSignatureId === sig.id ? styles.activeSig : ''}`}
+                                            onClick={() => setActiveSignatureId(sig.id)}
+                                        >
                                             <img src={sig.dataUrl} alt="Signature" />
-                                            <button onClick={() => deleteSignature(sig.id)}>
+                                            {activeSignatureId === sig.id && (
+                                                <div className={styles.activeCheck}>
+                                                    <Check size={12} />
+                                                </div>
+                                            )}
+                                            <button onClick={(e) => {
+                                                e.stopPropagation()
+                                                deleteSignature(sig.id)
+                                            }}>
                                                 <X size={12} />
                                             </button>
                                         </div>
@@ -621,35 +659,33 @@ export default function SignaturePage() {
                                     <span>{documentName} ({documentPages.length} halaman)</span>
                                 </div>
                                 <div className={styles.docActions}>
-                                    <div className={styles.zoomControls}>
-                                        <button onClick={handleZoomOut} title="Zoom Out"><ZoomOut size={16} /></button>
-                                        <span>{Math.round(zoomLevel * 100)}%</span>
-                                        <button onClick={handleZoomIn} title="Zoom In"><ZoomIn size={16} /></button>
-                                    </div>
                                     <button onClick={clearDocument} className={styles.btnReset}>
                                         <X size={14} /> Ganti Dokumen
                                     </button>
                                 </div>
                             </div>
 
+
                             {savedSignatures.length > 0 && (
                                 <div className={styles.sigPicker}>
-                                    <span>Pilih tanda tangan untuk ditambahkan ke halaman yang terlihat:</span>
-                                    {savedSignatures.map((sig) => (
-                                        <button
-                                            key={sig.id}
-                                            className={styles.sigPickerItem}
-                                            onClick={() => {
-                                                // Add to current viewport or default to first page
-                                                addSignatureToPage(sig, 0)
-                                                // Ideally scroll to page 0
-                                            }}
-                                        >
-                                            <img src={sig.dataUrl} alt="Signature" />
-                                        </button>
-                                    ))}
+                                    <span>Tanda Tangan Aktif:</span>
+                                    {activeSignatureId ? (
+                                        <div className={styles.activeSigPreview}>
+                                            <img src={savedSignatures.find(s => s.id === activeSignatureId)?.dataUrl} alt="Active Signature" />
+                                        </div>
+                                    ) : (
+                                        <span className={styles.noActiveSig}>Belum ada tanda tangan dipilih</span>
+                                    )}
                                 </div>
                             )}
+
+                            {/* Scrollable Document Pages */}
+                            {/* Floating Zoom Controls */}
+                            <div className={styles.zoomControls}>
+                                <button onClick={handleZoomOut} title="Zoom Out"><ZoomOut size={16} /></button>
+                                <span>{Math.round(zoomLevel * 100)}%</span>
+                                <button onClick={handleZoomIn} title="Zoom In"><ZoomIn size={16} /></button>
+                            </div>
 
                             {/* Scrollable Document Pages */}
                             <div ref={docScrollRef} className={styles.docScroll}>
@@ -660,13 +696,22 @@ export default function SignaturePage() {
                                     >
                                         <div className={styles.pageHeaderItem}>
                                             <div className={styles.pageNumber}>Halaman {pageIndex + 1}</div>
-                                            <button
-                                                className={styles.btnPageAction}
-                                                onClick={() => downloadPageAsPNG(pageIndex)}
-                                                title="Download halaman ini sebagai PNG"
-                                            >
-                                                <Download size={14} /> PNG
-                                            </button>
+                                            <div className={styles.pageActions}>
+                                                <button
+                                                    className={styles.btnPageAction}
+                                                    onClick={() => downloadPageAsPNG(pageIndex)}
+                                                    title="Download halaman ini sebagai PNG"
+                                                >
+                                                    <Download size={14} /> PNG
+                                                </button>
+                                                <button
+                                                    className={styles.btnPageAction}
+                                                    onClick={() => downloadPageAsPDF(pageIndex)}
+                                                    title="Download halaman ini sebagai PDF"
+                                                >
+                                                    <FileText size={14} /> PDF
+                                                </button>
+                                            </div>
                                         </div>
 
                                         <div
@@ -725,13 +770,13 @@ export default function SignaturePage() {
                                                 })}
 
                                             {/* Add signature button for this page */}
-                                            {savedSignatures.length > 0 && (
+                                            {activeSignatureId && (
                                                 <div className={styles.addSigToPage}>
                                                     <button
-                                                        onClick={() => addSignatureToPage(savedSignatures[0], pageIndex)}
-                                                        title="Tambah tanda tangan ke halaman ini"
+                                                        onClick={() => addSignatureToPage(activeSignatureId, pageIndex)}
+                                                        title="Tambah tanda tangan"
                                                     >
-                                                        <Plus size={14} /> Tambah TTD
+                                                        <Plus size={14} /> TTD
                                                     </button>
                                                 </div>
                                             )}
