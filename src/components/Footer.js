@@ -1,12 +1,10 @@
 'use client'
 
 import Link from 'next/link'
-import { FileImage, PenTool, BookOpen, Info, HelpCircle, Shield, Library, Mail, Heart } from 'lucide-react'
+import { FileImage, PenTool, BookOpen, Info, HelpCircle, Shield, Library, Mail, Heart, FileText } from 'lucide-react'
 import styles from './Footer.module.css'
 
 export default function Footer({ onDonateClick }) {
-    const currentYear = new Date().getFullYear()
-
     return (
         <footer className={styles.footer}>
             <div className={`container ${styles.footerContent}`}>
@@ -54,9 +52,6 @@ export default function Footer({ onDonateClick }) {
                                 <Link href="/guide#faq"><HelpCircle size={14} /> FAQ</Link>
                             </li>
                             <li>
-                                <Link href="/privacy"><Shield size={14} /> Kebijakan Privasi</Link>
-                            </li>
-                            <li>
                                 <Link href="/libraries"><Library size={14} /> Perpustakaan</Link>
                             </li>
                         </ul>
@@ -76,6 +71,15 @@ export default function Footer({ onDonateClick }) {
                             </li>
                         </ul>
                     </div>
+                </div>
+            </div>
+
+            {/* Legal Links */}
+            <div className={styles.legalBar}>
+                <div className={`container ${styles.legalContent}`}>
+                    <Link href="/privacy"><Shield size={14} /> Kebijakan Privasi</Link>
+                    <span className={styles.divider}>•</span>
+                    <Link href="/terms"><FileText size={14} /> Syarat & Ketentuan</Link>
                 </div>
             </div>
 

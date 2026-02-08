@@ -167,8 +167,8 @@ export default function Home() {
     }, [uploadedImage, croppedImage, watermarkType, fontSize, fontFamily, rotation, opacity, color, textPosition, textScale, showTextBorder, getFinalWatermarkText])
 
     useEffect(() => {
-        if (imageLoaded) draw()
-    }, [draw, imageLoaded])
+        if (imageLoaded && !isCropping) draw()
+    }, [draw, imageLoaded, isCropping])
 
     useEffect(() => {
         const sourceImage = croppedImage || uploadedImage
