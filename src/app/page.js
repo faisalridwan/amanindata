@@ -4,14 +4,11 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import { Upload, Crop, Type, Palette, Download, RotateCcw, FileImage, CreditCard, Users, FileText, Building, File, Check } from 'lucide-react'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
-import DonationModal from '@/components/DonationModal'
 import styles from './page.module.css'
 
 import WatermarkControls from '@/components/WatermarkControls'
 
 export default function Home() {
-    const [isDonationOpen, setIsDonationOpen] = useState(false)
-
     // Image states
     const [uploadedImage, setUploadedImage] = useState(null)
     const [originalFileName, setOriginalFileName] = useState('')
@@ -357,7 +354,7 @@ export default function Home() {
 
     return (
         <>
-            <Navbar onDonateClick={() => setIsDonationOpen(true)} />
+            <Navbar />
 
             <main className="container">
                 {/* Hero */}
@@ -557,8 +554,7 @@ export default function Home() {
                 </section>
             </main>
 
-            <Footer onDonateClick={() => setIsDonationOpen(true)} />
-            <DonationModal isOpen={isDonationOpen} onClose={() => setIsDonationOpen(false)} />
+            <Footer />
         </>
     )
 }

@@ -4,12 +4,9 @@ import { useState } from 'react'
 import { Library, Package, ExternalLink, Code2, Globe } from 'lucide-react'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
-import DonationModal from '@/components/DonationModal'
 import styles from './page.module.css'
 
 export default function LibrariesPage() {
-    const [isDonationOpen, setIsDonationOpen] = useState(false)
-
     const libraries = [
         {
             name: 'Next.js',
@@ -43,7 +40,7 @@ export default function LibrariesPage() {
 
     return (
         <>
-            <Navbar onDonateClick={() => setIsDonationOpen(true)} />
+            <Navbar />
 
             <main className="container">
                 <header className={styles.hero}>
@@ -72,8 +69,7 @@ export default function LibrariesPage() {
                 </div>
             </main>
 
-            <Footer onDonateClick={() => setIsDonationOpen(true)} />
-            <DonationModal isOpen={isDonationOpen} onClose={() => setIsDonationOpen(false)} />
+            <Footer />
         </>
     )
 }

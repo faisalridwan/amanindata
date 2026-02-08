@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { FileImage, PenTool, BookOpen, Info, HelpCircle, Shield, Library, Mail, Heart, FileText } from 'lucide-react'
 import styles from './Footer.module.css'
 
-export default function Footer({ onDonateClick }) {
+export default function Footer() {
     return (
         <footer className={styles.footer}>
             <div className={`container ${styles.footerContent}`}>
@@ -65,9 +65,9 @@ export default function Footer({ onDonateClick }) {
                                 <Link href="/contact"><Mail size={14} /> Hubungi Kami</Link>
                             </li>
                             <li>
-                                <button onClick={onDonateClick} className={styles.donateLink}>
+                                <Link href="/donate" className={styles.donateLink}>
                                     <Heart size={14} /> Donasi
-                                </button>
+                                </Link>
                             </li>
                         </ul>
                     </div>

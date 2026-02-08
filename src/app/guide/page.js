@@ -4,12 +4,9 @@ import { useState } from 'react'
 import { BookOpen, AlertTriangle, Lightbulb, MousePointer, Info, Shield, CheckCircle } from 'lucide-react'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
-import DonationModal from '@/components/DonationModal'
 import styles from './page.module.css'
 
 export default function GuidePage() {
-    const [isDonationOpen, setIsDonationOpen] = useState(false)
-
     // Using an array of objects for steps to ensure control over rendering
     const watermarkSteps = [
         {
@@ -79,7 +76,7 @@ export default function GuidePage() {
 
     return (
         <>
-            <Navbar onDonateClick={() => setIsDonationOpen(true)} />
+            <Navbar />
 
             <main className="container">
                 <header className={styles.hero}>
@@ -225,8 +222,7 @@ export default function GuidePage() {
                 </section>
             </main>
 
-            <Footer onDonateClick={() => setIsDonationOpen(true)} />
-            <DonationModal isOpen={isDonationOpen} onClose={() => setIsDonationOpen(false)} />
+            <Footer />
         </>
     )
 }

@@ -4,11 +4,9 @@ import { useState } from 'react'
 import { Mail, MessageSquare, Send, MapPin, Globe } from 'lucide-react'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
-import DonationModal from '@/components/DonationModal'
 import styles from './page.module.css'
 
 export default function ContactPage() {
-    const [isDonationOpen, setIsDonationOpen] = useState(false)
     const [formData, setFormData] = useState({ name: '', email: '', message: '' })
 
     const handleSubmit = (e) => {
@@ -18,7 +16,7 @@ export default function ContactPage() {
 
     return (
         <>
-            <Navbar onDonateClick={() => setIsDonationOpen(true)} />
+            <Navbar />
 
             <main className="container">
                 <header className={styles.hero}>
@@ -100,8 +98,7 @@ export default function ContactPage() {
                 </div>
             </main>
 
-            <Footer onDonateClick={() => setIsDonationOpen(true)} />
-            <DonationModal isOpen={isDonationOpen} onClose={() => setIsDonationOpen(false)} />
+            <Footer />
         </>
     )
 }

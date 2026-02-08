@@ -4,12 +4,9 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import { PenTool, Upload, Trash2, Download, Plus, Move, Lock, X, RotateCcw, FileText, Image as ImageIcon, ChevronDown, ZoomIn, ZoomOut, Check } from 'lucide-react'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
-import DonationModal from '@/components/DonationModal'
 import styles from './page.module.css'
 
 export default function SignaturePage() {
-    const [isDonationOpen, setIsDonationOpen] = useState(false)
-
     // Signature Canvas States
     const [isDrawing, setIsDrawing] = useState(false)
     const [lastPos, setLastPos] = useState({ x: 0, y: 0 })
@@ -672,7 +669,7 @@ export default function SignaturePage() {
 
     return (
         <>
-            <Navbar onDonateClick={() => setIsDonationOpen(true)} />
+            <Navbar />
 
             <main className="container">
                 <div className={styles.pageHeader}>
@@ -1011,8 +1008,7 @@ export default function SignaturePage() {
                 </section>
             </main >
 
-            <Footer onDonateClick={() => setIsDonationOpen(true)} />
-            <DonationModal isOpen={isDonationOpen} onClose={() => setIsDonationOpen(false)} />
+            <Footer />
         </>
     )
 }

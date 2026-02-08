@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation'
 import { FileImage, PenTool, BookOpen, Shield, Info, Heart, Menu, X } from 'lucide-react'
 import styles from './Navbar.module.css'
 
-export default function Navbar({ onDonateClick }) {
+export default function Navbar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false)
     const pathname = usePathname()
 
@@ -54,16 +54,14 @@ export default function Navbar({ onDonateClick }) {
                         </li>
                     ))}
                     <li>
-                        <button
+                        <Link
+                            href="/donate"
                             className={`${styles.navItem} ${styles.navCta}`}
-                            onClick={() => {
-                                setIsMenuOpen(false)
-                                onDonateClick?.()
-                            }}
+                            onClick={() => setIsMenuOpen(false)}
                         >
                             <Heart size={16} />
                             <span>Donasi</span>
-                        </button>
+                        </Link>
                     </li>
                 </ul>
             </div>

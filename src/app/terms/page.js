@@ -4,15 +4,12 @@ import { useState } from 'react'
 import { FileText, CheckCircle, AlertTriangle, Scale, Users, Shield, Mail, Globe, Gavel, UserX, RefreshCw, Link2, MessageSquare } from 'lucide-react'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
-import DonationModal from '@/components/DonationModal'
 import styles from './page.module.css'
 
 export default function TermsPage() {
-    const [isDonationOpen, setIsDonationOpen] = useState(false)
-
     return (
         <>
-            <Navbar onDonateClick={() => setIsDonationOpen(true)} />
+            <Navbar />
 
             <main className="container">
                 <header className={styles.hero}>
@@ -159,8 +156,7 @@ export default function TermsPage() {
                 </section>
             </main>
 
-            <Footer onDonateClick={() => setIsDonationOpen(true)} />
-            <DonationModal isOpen={isDonationOpen} onClose={() => setIsDonationOpen(false)} />
+            <Footer />
         </>
     )
 }

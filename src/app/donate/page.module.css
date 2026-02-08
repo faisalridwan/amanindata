@@ -1,0 +1,130 @@
+.donationPage {
+    padding: 80px 0;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.hero {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.heroTitle {
+    font-size: 42px;
+    font-weight: 700;
+    color: #1E293B;
+    margin-bottom: 16px;
+}
+
+.heroTitle span {
+    color: #4CAF50;
+}
+
+.heroSubtitle {
+    font-size: 18px;
+    color: #64748B;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+.card {
+    background: #F1F5F9;
+    padding: 40px;
+    border-radius: 32px;
+    box-shadow: 20px 20px 60px #d1d5db, -20px -20px 60px #ffffff;
+    margin-bottom: 40px;
+}
+
+.summary {
+    font-size: 16px;
+    line-height: 1.8;
+    color: #334155;
+    margin-bottom: 30px;
+}
+
+.faqSection {
+    margin-top: 60px;
+}
+
+.faqTitle {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1E293B;
+    margin-bottom: 32px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.faqList {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.faqItem {
+    padding: 24px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+.faqItem h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1E293B;
+    margin-bottom: 12px;
+    line-height: 1.4;
+}
+
+.faqItem p {
+    font-size: 15px;
+    color: #475569;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.donateAction {
+    margin-top: 40px;
+    text-align: center;
+}
+
+.donateBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 32px;
+    background: #E91E63;
+    color: white;
+    font-weight: 700;
+    font-size: 18px;
+    border-radius: 16px;
+    text-decoration: none;
+    box-shadow: 0 10px 20px rgba(233, 30, 99, 0.3);
+    transition: all 0.3s;
+}
+
+.donateBtn:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 15px 30px rgba(233, 30, 99, 0.4);
+    filter: brightness(1.1);
+}
+
+@media (max-width: 640px) {
+    .donationPage {
+        padding: 40px 20px;
+    }
+
+    .heroTitle {
+        font-size: 32px;
+    }
+
+    .card {
+        padding: 24px;
+    }
+
+    .faqItem {
+        padding: 20px;
+    }
+}

@@ -5,12 +5,9 @@ import Link from 'next/link'
 import { FileImage, Shield, CreditCard, Users, FileText, Building, File, Upload, Crop, Type, Palette, Download, Move, RotateCcw, PenTool, Eraser, Lock, Server, Zap, Trash2, Heart, Code } from 'lucide-react'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
-import DonationModal from '@/components/DonationModal'
 import styles from './page.module.css'
 
 export default function AboutPage() {
-    const [isDonationOpen, setIsDonationOpen] = useState(false)
-
     const documentTypes = [
         { icon: CreditCard, label: 'KTP', desc: 'Kartu Tanda Penduduk' },
         { icon: CreditCard, label: 'SIM', desc: 'Surat Izin Mengemudi' },
@@ -53,7 +50,7 @@ export default function AboutPage() {
 
     return (
         <>
-            <Navbar onDonateClick={() => setIsDonationOpen(true)} />
+            <Navbar />
 
             <main className="container">
                 {/* Hero */}
@@ -193,8 +190,7 @@ export default function AboutPage() {
                 </section>
             </main>
 
-            <Footer onDonateClick={() => setIsDonationOpen(true)} />
-            <DonationModal isOpen={isDonationOpen} onClose={() => setIsDonationOpen(false)} />
+            <Footer />
         </>
     )
 }

@@ -4,15 +4,12 @@ import { useState } from 'react'
 import { Shield, Database, Cookie, Globe, Lock, Users, RefreshCw, Mail, Eye, Server, FileText, AlertTriangle, ExternalLink } from 'lucide-react'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
-import DonationModal from '@/components/DonationModal'
 import styles from './page.module.css'
 
 export default function PrivacyPolicyPage() {
-    const [isDonationOpen, setIsDonationOpen] = useState(false)
-
     return (
         <>
-            <Navbar onDonateClick={() => setIsDonationOpen(true)} />
+            <Navbar />
 
             <main className="container">
                 <header className={styles.hero}>
@@ -217,8 +214,7 @@ export default function PrivacyPolicyPage() {
                 </section>
             </main>
 
-            <Footer onDonateClick={() => setIsDonationOpen(true)} />
-            <DonationModal isOpen={isDonationOpen} onClose={() => setIsDonationOpen(false)} />
+            <Footer />
         </>
     )
 }

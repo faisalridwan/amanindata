@@ -16,7 +16,7 @@ Unlike traditional cloud-based tools, **AmaninKTP processes all images locally**
 ## 📖 Usage
 
 To learn how to use AmaninKTP effectively, please visit our guide:
-[**Cara Pakai - AmaninKTP**](https://amaninktp.com/guide)
+[**Cara Pakai - AmaninKTP**](https://amaninktp.qreatip.com/guide)
 
 ## 🛠️ Technical Stack & Dependencies
 
@@ -101,7 +101,7 @@ This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) f
 
 If you find AmaninKTP useful and would like to support its development and maintenance, you can show your appreciation by making a donation. Every contribution helps us keep the tool free and secure for everyone.
 
-[**Support via Donation**](https://amaninktp.qreatip.com/#donate)
+[**Support via Donation**](https://amaninktp.qreatip.com/donate)
 
 ---
 

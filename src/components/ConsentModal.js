@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { ShieldCheck, ChevronDown, ChevronUp, Heart } from 'lucide-react'
+import Link from 'next/link'
 import styles from './ConsentModal.module.css'
 
 export default function ConsentModal() {
@@ -34,9 +35,9 @@ export default function ConsentModal() {
                         </p>
                     </div>
                     <div className={styles.actions}>
-                        <a href="https://amaninktp.qreatip.com/#donate" className={styles.donateBtn}>
+                        <Link href="/donate" className={styles.donateBtn}>
                             <Heart size={16} /> Donasi
-                        </a>
+                        </Link>
                         <button className={styles.acceptBtn} onClick={handleAccept}>
                             Saya Mengerti
                         </button>
