@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { FileImage, PenTool, BookOpen, Shield, Info, Heart, Menu, X } from 'lucide-react'
+import { FileImage, PenTool, BookOpen, Shield, Info, Heart, Menu, X, Minimize2, EyeOff } from 'lucide-react'
 import styles from './Navbar.module.css'
 import ThemeToggle from './ThemeToggle'
 
@@ -12,11 +12,11 @@ export default function Navbar() {
     const pathname = usePathname()
 
     const navItems = [
-        { href: '/', label: 'Watermark Dokumen', icon: FileImage },
+        { href: '/', label: 'Watermark', icon: FileImage },
         { href: '/signature', label: 'Tanda Tangan', icon: PenTool },
+        { href: '/compress', label: 'Kompres Foto', icon: Minimize2 },
+        { href: '/redact', label: 'Sensor Data', icon: EyeOff },
         { href: '/guide', label: 'Cara Pakai', icon: BookOpen },
-        { href: '/privacy', label: 'Privacy', icon: Shield },
-        { href: '/about', label: 'About', icon: Info },
     ]
 
     const isActive = (href) => {

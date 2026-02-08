@@ -1,0 +1,269 @@
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+    min-height: 80vh;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.backLink {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    margin-bottom: 16px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.header h1 {
+    font-size: 32px;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.header p {
+    color: var(--text-secondary);
+}
+
+/* Upload Area (Reuse standard style) */
+.uploadArea {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 60px 20px;
+    background: var(--bg-secondary);
+    border: 2px dashed rgba(168, 197, 240, 0.6);
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: center;
+}
+
+.uploadArea:hover {
+    border-color: var(--primary-dark);
+    background: rgba(168, 197, 240, 0.1);
+}
+
+.iconCircle {
+    width: 80px;
+    height: 80px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    box-shadow: 4px 4px 12px rgba(174, 186, 202, 0.3), -4px -4px 12px rgba(255, 255, 255, 0.8);
+    color: var(--primary-dark);
+}
+
+.uploadContent h3 {
+    font-size: 18px;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.uploadContent p {
+    color: var(--text-muted);
+    font-size: 14px;
+}
+
+/* Workspace */
+.workspace {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+}
+
+/* Toolbar */
+.toolbar {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 12px 20px;
+    background: var(--bg-primary);
+    border-radius: 16px;
+    box-shadow: 4px 4px 12px rgba(174, 186, 202, 0.3), -4px -4px 12px rgba(255, 255, 255, 0.8);
+}
+
+.toolGroup {
+    display: flex;
+    gap: 12px;
+}
+
+.toolBtn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-secondary);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.toolBtn:hover {
+    color: var(--text-primary);
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.toolBtn.active {
+    background: var(--primary-light);
+    color: var(--primary-dark);
+    box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.actionGroup {
+    display: flex;
+    gap: 12px;
+}
+
+.iconBtn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.iconBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.iconBtn:not(:disabled):hover {
+    background: rgba(0, 0, 0, 0.05);
+    color: var(--text-primary);
+}
+
+.downloadBtn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 20px;
+    background: linear-gradient(135deg, #2D4A7C, #5B8DEF);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 2px 2px 6px rgba(45, 74, 124, 0.2);
+    transition: all 0.2s;
+}
+
+.downloadBtn:hover {
+    transform: translateY(-2px);
+    box-shadow: 4px 4px 10px rgba(45, 74, 124, 0.3);
+}
+
+/* Canvas Wrapper */
+.canvasWrapper {
+    position: relative;
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 4px 4px 12px rgba(174, 186, 202, 0.3), -4px -4px 12px rgba(255, 255, 255, 0.8);
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.canvas {
+    max-width: 100%;
+    cursor: crosshair;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+.overlayHint {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    pointer-events: none;
+    animation: fadeOut 3s forwards;
+    z-index: 10;
+}
+
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+    }
+
+    70% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+        visibility: hidden;
+    }
+}
+
+.resetLink {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+/* Dark Mode Overrides */
+:global([data-theme="dark"]) .canvasWrapper {
+    background: rgba(30, 41, 59, 0.6);
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.3), inset -2px -2px 5px rgba(51, 65, 85, 0.15);
+}
+
+:global([data-theme="dark"]) .toolbar {
+    background: var(--bg-secondary);
+    box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.4), -4px -4px 12px rgba(51, 65, 85, 0.2);
+}
+
+:global([data-theme="dark"]) .iconBtn {
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+:global([data-theme="dark"]) .iconCircle {
+    background: var(--bg-secondary);
+    box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.4), -4px -4px 12px rgba(51, 65, 85, 0.2);
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+    .toolbar {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .actionGroup {
+        justify-content: space-between;
+    }
+
+    .downloadBtn,
+    .iconBtn {
+        flex: 1;
+        justify-content: center;
+    }
+}

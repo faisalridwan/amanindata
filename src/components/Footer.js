@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { FileImage, PenTool, BookOpen, Info, HelpCircle, Shield, Library, Mail, Heart, FileText, Github, GitBranch } from 'lucide-react'
+import { FileImage, PenTool, BookOpen, Info, HelpCircle, Shield, Library, Mail, Heart, FileText, Github, GitBranch, Minimize2, EyeOff } from 'lucide-react'
 import styles from './Footer.module.css'
 
 export default function Footer() {
@@ -19,7 +19,7 @@ export default function Footer() {
                             <Heart size={16} /> Donasi
                         </Link>
                         <Link href="/" className={styles.btnCtaSecondary}>
-                            <FileImage size={16} /> Watermark Dokumen
+                            <FileImage size={16} /> Watermark
                         </Link>
                         <Link href="/signature" className={styles.btnCtaSecondary}>
                             <PenTool size={16} /> Tanda Tangan
@@ -48,6 +48,12 @@ export default function Footer() {
                             </li>
                             <li>
                                 <Link href="/signature"><PenTool size={14} /> Tanda Tangan</Link>
+                            </li>
+                            <li>
+                                <Link href="/compress"><Minimize2 size={14} /> Kompres Foto</Link>
+                            </li>
+                            <li>
+                                <Link href="/redact"><EyeOff size={14} /> Sensor Data</Link>
                             </li>
                         </ul>
                     </div>
