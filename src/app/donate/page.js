@@ -1,30 +1,65 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { Heart, HelpCircle, Shield, Globe, Zap, Coffee, CreditCard, Banknote, Sparkles, Copy, Check, Info } from 'lucide-react'
+import Image from 'next/image'
+import { Heart, HelpCircle, Globe, Zap, Coffee, Banknote, Sparkles, Copy, Check, Info, Download } from 'lucide-react'
 import { QRCodeSVG } from 'qrcode.react'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import styles from './page.module.css'
 
-// Standard CRC16-CCITT for QRIS
-function calculateCRC16(data) {
+// CRC16-CCITT (Poly: 0x1021, Init: 0xFFFF) implementation as provided by user
+function crc16ccitt(str) {
     let crc = 0xFFFF;
-    for (let i = 0; i < data.length; i++) {
-        crc ^= data.charCodeAt(i) << 8;
+    for (let i = 0; i < str.length; i++) {
+        let c = str.charCodeAt(i);
+        crc ^= (c << 8) & 0xFFFF;
         for (let j = 0; j < 8; j++) {
             if (crc & 0x8000) {
-                crc = ((crc << 1) ^ 0x1021) & 0xFFFF;
+                crc = (crc << 1) ^ 0x1021;
             } else {
-                crc = (crc << 1) & 0xFFFF;
+                crc = crc << 1;
             }
+            crc = crc & 0xFFFF; // Ensure 16-bit
         }
     }
-    return (crc & 0xFFFF).toString(16).toUpperCase().padStart(4, '0');
+    return crc.toString(16).toUpperCase().padStart(4, '0');
 }
 
+// QRIS Generation logic as provided by user
+function generateQRIS(baseString, amount) {
+    if (!amount || amount <= 0) return baseString;
+
+    let cleanBase = baseString;
+    const crcIndex = baseString.lastIndexOf("6304");
+    if (crcIndex !== -1) {
+        cleanBase = baseString.substring(0, crcIndex);
+    }
+
+    const amountStr = amount.toString();
+    const amountLen = amountStr.length.toString().padStart(2, '0');
+    const amountTag = `54${amountLen}${amountStr}`;
+
+    let injectedString = cleanBase;
+
+    // Use standard insertion points for QRIS (after tag 53 or before tag 58)
+    if (cleanBase.includes("5303360")) {
+        injectedString = cleanBase.replace("5303360", "5303360" + amountTag);
+    } else if (cleanBase.includes("5802ID")) {
+        injectedString = cleanBase.replace("5802ID", amountTag + "5802ID");
+    } else {
+        injectedString = cleanBase + amountTag;
+    }
+
+    const stringToSign = injectedString + "6304";
+    const crc = crc16ccitt(stringToSign);
+    return stringToSign + crc;
+}
+
+const BASE_QRIS = "00020101021126610014COM.GO-JEK.WWW01189360091435688656990210G5688656990303UMI51440014ID.CO.QRIS.WWW0215ID10243341199880303UMI5204581253033605802ID5914qreatip studio6013JAKARTA TIMUR61051311062070703A01630460A8";
+
 export default function DonatePage() {
-    const [amount, setAmount] = useState('50000')
+    const [amount, setAmount] = useState('10000')
     const [activeTab, setActiveTab] = useState('qris')
     const [copied, setCopied] = useState(false)
 
@@ -48,14 +83,6 @@ export default function DonatePage() {
         {
             q: "Selain materi, apa lagi yang bisa saya berikan untuk membantu?",
             a: "Dukungan tidak selalu harus berupa uang. Anda bisa membantu kami dengan melaporkan bug, memberikan saran fitur baru, atau menyebarkan informasi tentang AmaninKTP agar lebih banyak orang menyadari pentingnya melindungi privasi dokumen."
-        },
-        {
-            q: "Apakah donatur akan mendapatkan fitur eksklusif atau akun premium?",
-            a: "Tidak, kami tidak menerapkan sistem 'Fitur Berbayar'. Seluruh fitur AmaninKTP tersedia secara penuh untuk setiap pengguna. Donasi yang Anda berikan adalah kontribusi murni (support) untuk mendukung keberlangsungan layanan agar tetap tersedia bagi publik secara cuma-cuma."
-        },
-        {
-            q: "Berapa nominal minimal untuk berdonasi?",
-            a: "Kami tidak menetapkan batas minimal. Kami percaya bahwa kebaikan tidak diukur dari angkanya, melainkan dari niat untuk membantu. Sekecil apa pun kontribusi Anda, hal tersebut sangat berharga dalam memperpanjang usia operasional AmaninKTP."
         }
     ]
 
@@ -69,16 +96,7 @@ export default function DonatePage() {
     }
 
     const qrisValue = useMemo(() => {
-        // Base QRIS Payload (Point of Initiation Method: 12 for Dynamic)
-        const base = `00020101021226670014ID.CO.QRIS.WWW01189360052300000000000215ID10200523123450303ID5144`
-        const mid = `0014ID.CO.QRIS.WWW0215ID1020052312345520400005303360`
-        const amtStr = amount.toString()
-        const tagAmount = `54${amtStr.length.toString().padStart(2, '0')}${amtStr}`
-        const suffix = `5802ID5910AmaninKTP6007Jakarta6304`
-
-        const fullPayloadWithoutCRC = base + mid + tagAmount + suffix
-        const crc = calculateCRC16(fullPayloadWithoutCRC)
-        return fullPayloadWithoutCRC + crc
+        return generateQRIS(BASE_QRIS, amount)
     }, [amount])
 
     const handleCopy = (text) => {
@@ -86,6 +104,39 @@ export default function DonatePage() {
         setCopied(true)
         setTimeout(() => setCopied(false), 2000)
     }
+
+    const handleDownload = () => {
+        const svg = document.getElementById('donation-qr');
+        if (!svg) return;
+
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const img = new Image();
+
+        const serializer = new XMLSerializer();
+        const svgStr = serializer.serializeToString(svg);
+        const svgBlob = new Blob([svgStr], { type: 'image/svg+xml;charset=utf-8' });
+        const url = URL.createObjectURL(svgBlob);
+
+        img.onload = () => {
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, 0, 0);
+
+            const pngUrl = canvas.toDataURL('image/png');
+            const downloadLink = document.createElement('a');
+            downloadLink.href = pngUrl;
+            downloadLink.download = `amaninktp-qris-${amount}.png`;
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+            URL.revokeObjectURL(url);
+        };
+
+        img.src = url;
+    };
 
     return (
         <>
@@ -112,19 +163,28 @@ export default function DonatePage() {
                                 className={`${styles.tabBtn} ${activeTab === 'qris' ? styles.activeTab : ''}`}
                                 onClick={() => setActiveTab('qris')}
                             >
-                                <Zap size={18} /> QRIS
+                                <div className={styles.logoIcon}>
+                                    <Image src="/images/logos/qris.svg" alt="QRIS" fill />
+                                </div>
+                                QRIS
                             </button>
                             <button
                                 className={`${styles.tabBtn} ${activeTab === 'bank' ? styles.activeTab : ''}`}
                                 onClick={() => setActiveTab('bank')}
                             >
-                                <Banknote size={18} /> Transfer Bank
+                                <div className={styles.logoIcon}>
+                                    <Image src="/images/logos/jago.svg" alt="Bank Jago" fill />
+                                </div>
+                                Bank Jago
                             </button>
                             <button
                                 className={`${styles.tabBtn} ${activeTab === 'intl' ? styles.activeTab : ''}`}
                                 onClick={() => setActiveTab('intl')}
                             >
-                                <Globe size={18} /> Internasional
+                                <div className={styles.logoIcon}>
+                                    <Image src="/images/logos/paypal.svg" alt="PayPal" fill />
+                                </div>
+                                PayPal
                             </button>
                         </div>
 
@@ -133,9 +193,12 @@ export default function DonatePage() {
                                 {activeTab === 'qris' && (
                                     <div className={styles.paymentCard}>
                                         <div className={styles.qrisSection}>
-                                            <h3 className={styles.methodTitle}><Zap size={24} color="#E91E63" /> QRIS Interaktif</h3>
+                                            <div style={{ position: 'relative', width: '80px', height: '30px', marginBottom: '10px' }}>
+                                                <Image src="/images/logos/qris.svg" alt="QRIS Logo" fill style={{ objectFit: 'contain' }} />
+                                            </div>
+                                            <h3 className={styles.methodTitle}>QRIS Interaktif</h3>
                                             <p style={{ fontSize: '15px', color: '#64748B', margin: '15px 0' }}>
-                                                Donasi instan via Dana, GoPay, OVO, ShopeePay, atau m-Banking.
+                                                Scan menggunakan aplikasi pembayaran pilihan Anda.
                                             </p>
 
                                             <div className={styles.amountInputWrapper}>
@@ -144,31 +207,48 @@ export default function DonatePage() {
                                                     className={styles.amountInput}
                                                     value={formatCurrency(amount)}
                                                     onChange={(e) => setAmount(e.target.value.replace(/\D/g, ''))}
-                                                    placeholder="Contoh: 50.000"
+                                                    placeholder="Minimal Rp 1.000"
                                                 />
                                             </div>
 
-                                            {amount && parseInt(amount) > 0 && (
+                                            {amount && parseInt(amount) >= 1000 && (
                                                 <div className={styles.qrisContainer}>
                                                     <QRCodeSVG
+                                                        id="donation-qr"
                                                         value={qrisValue}
                                                         size={220}
-                                                        level="H"
+                                                        level="M"
                                                         includeMargin={false}
                                                     />
                                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '10px' }}>
                                                         <Sparkles size={14} color="#E91E63" />
-                                                        <p style={{ fontSize: '12px', fontWeight: 'bold', color: '#E91E63', letterSpacing: '2px', margin: 0 }}>QRIS DINAMIS</p>
+                                                        <p style={{ fontSize: '12px', fontWeight: 'bold', color: '#E91E63', letterSpacing: '2px', margin: 0 }}>QRIS AKTIF</p>
                                                     </div>
                                                 </div>
                                             )}
+
+                                            {parseInt(amount) < 1000 && (
+                                                <p style={{ color: '#E91E63', fontSize: '12px', marginTop: '10px' }}>Minimal donasi Rp 1.000</p>
+                                            )}
+
+                                            <button
+                                                onClick={handleDownload}
+                                                disabled={!amount || parseInt(amount) < 1000}
+                                                className={styles.copyBtn}
+                                                style={{ marginTop: '20px', width: '100%', maxWidth: '220px' }}
+                                            >
+                                                <Download size={18} /> Simpan Gambar QR
+                                            </button>
                                         </div>
                                     </div>
                                 )}
 
                                 {activeTab === 'bank' && (
                                     <div className={styles.paymentCard}>
-                                        <h3 className={styles.methodTitle}><Banknote size={24} color="#FFD200" /> Transfer Bank Jago</h3>
+                                        <div style={{ position: 'relative', width: '100px', height: '40px', marginBottom: '10px' }}>
+                                            <Image src="/images/logos/jago.svg" alt="Bank Jago Logo" fill style={{ objectFit: 'contain' }} />
+                                        </div>
+                                        <h3 className={styles.methodTitle}>Transfer Bank Jago</h3>
                                         <div className={styles.bankDetails}>
                                             <div className={styles.bankIcon}>Jago</div>
                                             <p style={{ fontSize: '16px', fontWeight: '700', marginBottom: '8px' }}>PT Bank Jago Tbk</p>
@@ -182,28 +262,24 @@ export default function DonatePage() {
                                                 {copied ? <><Check size={16} color="#4CAF50" /> Tersalin!</> : <><Copy size={16} /> Salin Nomor Rekening</>}
                                             </button>
                                         </div>
-                                        <p style={{ fontSize: '14px', color: '#64748B', fontStyle: 'italic' }}>
-                                            Mohon tambahkan pesan "Donasi AmaninKTP" jika memungkinkan.
-                                        </p>
                                     </div>
                                 )}
 
                                 {activeTab === 'intl' && (
                                     <div className={styles.paymentCard}>
-                                        <h3 className={styles.methodTitle}><Globe size={24} color="#0070BA" /> Donasi Internasional</h3>
-                                        <div style={{ margin: '40px 0', padding: '20px', background: 'rgba(0,112,186,0.05)', borderRadius: '24px' }}>
-                                            <Coffee size={60} color="#0070BA" strokeWidth={1} />
-                                            <p style={{ marginTop: '20px', fontSize: '15px', color: '#475569', lineHeight: '1.6' }}>
-                                                Mendukung donasi dari luar negeri melalui platform PayPal yang aman dan terpercaya.
+                                        <div style={{ position: 'relative', width: '120px', height: '40px', marginBottom: '10px' }}>
+                                            <Image src="/images/logos/paypal.svg" alt="PayPal Logo" fill style={{ objectFit: 'contain' }} />
+                                        </div>
+                                        <h3 className={styles.methodTitle}>Donasi Internasional</h3>
+                                        <div style={{ margin: '30px 0', padding: '20px', background: 'rgba(0,112,186,0.05)', borderRadius: '24px' }}>
+                                            <Coffee size={50} color="#0070BA" strokeWidth={1} />
+                                            <p style={{ marginTop: '15px', fontSize: '15px', color: '#475569', lineHeight: '1.6' }}>
+                                                Mendukung donasi via PayPal yang aman dan terpercaya.
                                             </p>
                                         </div>
                                         <a href="https://paypal.me/faisalridwan" target="_blank" rel="noopener noreferrer" className={styles.paypalBtn}>
                                             <Heart size={20} /> Dukung via PayPal
                                         </a>
-                                        <p style={{ marginTop: '20px', fontSize: '13px', color: '#64748B' }}>
-                                            <Info size={14} style={{ verticalAlign: 'middle', marginRight: '4px' }} />
-                                            Konversi mata uang akan dilakukan otomatis oleh PayPal.
-                                        </p>
                                     </div>
                                 )}
                             </div>
@@ -229,7 +305,7 @@ export default function DonatePage() {
 
                     <section className={styles.faqSection}>
                         <h2 className={styles.faqTitle}>
-                            <HelpCircle size={24} /> Pertanyaan Yang Sering Diajukan
+                            <HelpCircle size={24} /> FAQ
                         </h2>
 
                         <div className={styles.faqList}>
