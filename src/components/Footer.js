@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { FileImage, PenTool, BookOpen, Info, HelpCircle, Shield, Library, Newspaper, Mail, Heart } from 'lucide-react'
+import { FileImage, PenTool, BookOpen, Info, HelpCircle, Shield, Library, Mail, Heart } from 'lucide-react'
 import styles from './Footer.module.css'
 
 export default function Footer({ onDonateClick }) {
@@ -59,9 +59,6 @@ export default function Footer({ onDonateClick }) {
                             <li>
                                 <Link href="/libraries"><Library size={14} /> Perpustakaan</Link>
                             </li>
-                            <li>
-                                <Link href="/press"><Newspaper size={14} /> Pers</Link>
-                            </li>
                         </ul>
                     </div>
 
@@ -85,8 +82,9 @@ export default function Footer({ onDonateClick }) {
             {/* Bottom Bar */}
             <div className={styles.bottomBar}>
                 <div className="container">
-                    <p>© {currentYear} AmaninKTP. Karya lokal Indonesia 🇮🇩</p>
-                    <p className={styles.securityNote}>🔒 Aplikasi berjalan 100% di browser. Data Anda aman.</p>
+                    <div className={styles.copyright}>
+                        Dibuat dengan ❤️ oleh <a href="https://qreatip.com" target="_blank" rel="noopener noreferrer">qreatip.com</a> - <a href="https://instagram.com/faisalridwan" target="_blank" rel="noopener noreferrer">Faisal Ridwan</a>
+                    </div>
                 </div>
             </div>
         </footer>

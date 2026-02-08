@@ -9,6 +9,12 @@ import styles from './page.module.css'
 
 export default function ContactPage() {
     const [isDonationOpen, setIsDonationOpen] = useState(false)
+    const [formData, setFormData] = useState({ name: '', email: '', message: '' })
+
+    const handleSubmit = (e) => {
+        e.preventDefault()
+        window.location.href = `mailto:hello@qreatip.com?subject=Contact from ${formData.name}&body=${formData.message}`
+    }
 
     return (
         <>
@@ -16,63 +22,82 @@ export default function ContactPage() {
 
             <main className="container">
                 <header className={styles.hero}>
-                    <h1><Mail size={32} /> Hubungi Kami</h1>
-                    <p>Ada pertanyaan atau saran? Kami senang mendengar dari Anda!</p>
+                    <h1 className={styles.heroTitle}><Mail size={32} /> Hubungi Kami</h1>
+                    <p className={styles.heroSubtitle}>Saran, masukan, atau kolaborasi? Kami siap mendengar.</p>
                 </header>
 
-                <div className={styles.grid}>
-                    <div className={`neu-card no-hover ${styles.card}`}>
-                        <MessageSquare size={28} />
-                        <h3>Email</h3>
-                        <p>Untuk pertanyaan umum dan dukungan</p>
-                        <a href="mailto:hello@qreatip.com" className={styles.link}>
-                            hello@qreatip.com
-                        </a>
+                <div className={styles.contentGrid}>
+                    {/* Contact Info */}
+                    <div className={`neu-card no-hover ${styles.infoCard}`}>
+                        <h2>Informasi Kontak</h2>
+                        <div className={styles.contactList}>
+                            <div className={styles.contactItem}>
+                                <Mail className={styles.icon} size={20} />
+                                <div>
+                                    <h3>Email</h3>
+                                    <a href="mailto:hello@qreatip.com">hello@qreatip.com</a>
+                                </div>
+                            </div>
+                            <div className={styles.contactItem}>
+                                <Globe className={styles.icon} size={20} />
+                                <div>
+                                    <h3>Website</h3>
+                                    <a href="https://qreatip.com" target="_blank" rel="noopener noreferrer">qreatip.com</a>
+                                </div>
+                            </div>
+                            <div className={styles.contactItem}>
+                                <MapPin className={styles.icon} size={20} />
+                                <div>
+                                    <h3>Lokasi</h3>
+                                    <p>Jakarta, Indonesia</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    <div className={`neu-card no-hover ${styles.card}`}>
-                        <Globe size={28} />
-                        <h3>Website</h3>
-                        <p>Kunjungi website utama kami</p>
-                        <a href="https://qreatip.com" target="_blank" rel="noopener noreferrer" className={styles.link}>
-                            qreatip.com
-                        </a>
-                    </div>
-
-                    <div className={`neu-card no-hover ${styles.card}`}>
-                        <MapPin size={28} />
-                        <h3>Lokasi</h3>
-                        <p>Karya lokal dari Indonesia</p>
-                        <span className={styles.info}>Indonesia 🇮🇩</span>
+                    {/* Contact Form */}
+                    <div className={`neu-card no-hover ${styles.formCard}`}>
+                        <h2>Kirim Pesan</h2>
+                        <form onSubmit={handleSubmit} className={styles.form}>
+                            <div className={styles.formGroup}>
+                                <label>Nama</label>
+                                <input
+                                    type="text"
+                                    placeholder="Nama Anda"
+                                    required
+                                    className={styles.input}
+                                    value={formData.name}
+                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                />
+                            </div>
+                            <div className={styles.formGroup}>
+                                <label>Email</label>
+                                <input
+                                    type="email"
+                                    placeholder="email@contoh.com"
+                                    required
+                                    className={styles.input}
+                                    value={formData.email}
+                                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                />
+                            </div>
+                            <div className={styles.formGroup}>
+                                <label>Pesan</label>
+                                <textarea
+                                    placeholder="Tulis pesan Anda disini..."
+                                    required
+                                    rows={5}
+                                    className={styles.textarea}
+                                    value={formData.message}
+                                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                                />
+                            </div>
+                            <button type="submit" className={styles.submitBtn}>
+                                <Send size={16} /> Kirim Pesan
+                            </button>
+                        </form>
                     </div>
                 </div>
-
-                <section className={`neu-card no-hover ${styles.formSection}`}>
-                    <h2><Send size={24} /> Kirim Pesan</h2>
-                    <form className={styles.form} onSubmit={(e) => { e.preventDefault(); alert('Terima kasih! Pesan Anda akan kami balas segera.') }}>
-                        <div className={styles.formRow}>
-                            <div className={styles.field}>
-                                <label>Nama</label>
-                                <input type="text" placeholder="Nama Anda" required />
-                            </div>
-                            <div className={styles.field}>
-                                <label>Email</label>
-                                <input type="email" placeholder="email@contoh.com" required />
-                            </div>
-                        </div>
-                        <div className={styles.field}>
-                            <label>Subjek</label>
-                            <input type="text" placeholder="Subjek pesan" required />
-                        </div>
-                        <div className={styles.field}>
-                            <label>Pesan</label>
-                            <textarea placeholder="Tulis pesan Anda..." rows={5} required />
-                        </div>
-                        <button type="submit" className={styles.submitBtn}>
-                            <Send size={16} /> Kirim Pesan
-                        </button>
-                    </form>
-                </section>
             </main>
 
             <Footer onDonateClick={() => setIsDonationOpen(true)} />

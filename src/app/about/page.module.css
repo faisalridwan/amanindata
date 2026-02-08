@@ -1,14 +1,15 @@
 /* Hero */
 .hero {
     text-align: center;
-    padding: 32px 0;
+    padding: 48px 0 32px;
+    /* Increased padding */
 }
 
 .heroTitle {
-    font-size: 32px;
+    font-size: 36px;
     font-weight: 700;
     color: var(--text-primary);
-    margin: 0 0 12px;
+    margin: 0 0 16px;
 }
 
 .heroTitle span {
@@ -16,11 +17,17 @@
 }
 
 .heroSubtitle {
-    font-size: 15px;
+    font-size: 16px;
     color: var(--text-secondary);
-    max-width: 500px;
-    margin: 0 auto 24px;
+    max-width: 600px;
+    margin: 0 auto 32px;
     line-height: 1.6;
+}
+
+.heroActions {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
 }
 
 .ctaBtn,
@@ -60,17 +67,19 @@
 
 /* Document Types */
 .docSection {
-    margin-bottom: 48px;
+    margin-bottom: 80px;
+    /* Increased margin */
 }
 
 .sectionTitle {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
-    font-size: 22px;
+    gap: 12px;
+    font-size: 26px;
+    /* Larger font */
     color: var(--text-primary);
-    margin: 0 0 12px;
+    margin: 0 0 16px;
     text-align: center;
 }
 
@@ -81,59 +90,63 @@
 .sectionDesc {
     text-align: center;
     color: var(--text-secondary);
-    max-width: 600px;
-    margin: 0 auto 24px;
-    font-size: 14px;
-    line-height: 1.6;
+    max-width: 700px;
+    margin: 0 auto 40px;
+    font-size: 15px;
+    line-height: 1.7;
 }
 
 .docGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 24px;
+    /* Increased gap */
 }
 
 .docCard {
     text-align: center;
-    padding: 24px 16px;
+    padding: 32px 20px;
+    /* Increased padding */
 }
 
 .docCard svg {
     color: var(--primary-dark);
-    margin-bottom: 12px;
+    margin-bottom: 16px;
 }
 
 .docCard h3 {
-    font-size: 15px;
+    font-size: 16px;
     color: var(--text-primary);
-    margin: 0 0 6px;
+    margin: 0 0 8px;
 }
 
 .docCard p {
-    font-size: 12px;
+    font-size: 13px;
     color: var(--text-muted);
     margin: 0;
 }
 
 /* Features */
 .featureSection {
-    margin-bottom: 48px;
+    margin-bottom: 80px;
+    /* Increased margin */
 }
 
 .featureGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 12px;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
 }
 
 .featureCard {
     display: flex;
     align-items: flex-start;
-    gap: 12px;
-    padding: 16px;
+    gap: 16px;
+    padding: 24px;
+    /* Increased padding */
     background: var(--bg-primary);
-    border-radius: 12px;
-    box-shadow: 3px 3px 8px rgba(174, 186, 202, 0.25), -3px -3px 8px rgba(255, 255, 255, 0.8);
+    border-radius: 16px;
+    box-shadow: 3px 3px 10px rgba(174, 186, 202, 0.2), -3px -3px 10px rgba(255, 255, 255, 0.8);
 }
 
 .featureCard svg {
@@ -143,13 +156,106 @@
 }
 
 .featureCard h4 {
-    font-size: 14px;
+    font-size: 16px;
     color: var(--text-primary);
-    margin: 0 0 4px;
+    margin: 0 0 6px;
 }
 
 .featureCard p {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin: 0;
+    line-height: 1.6;
+}
+
+/* Press Section */
+.pressGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 24px;
+    margin-bottom: 40px;
+}
+
+.pressCard {
+    padding: 24px;
+}
+
+.pressCard h3 {
+    font-size: 16px;
+    margin: 0 0 12px;
+    color: var(--text-primary);
+}
+
+.pressCard p {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin: 0 0 12px;
+}
+
+.pressStats {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.textLink {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--primary-dark);
+    text-decoration: none;
+}
+
+.textLink:hover {
+    text-decoration: underline;
+}
+
+.timeline {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.timelineItem {
+    position: relative;
+    padding-left: 32px;
+    padding-bottom: 32px;
+    border-left: 2px solid var(--primary-light);
+}
+
+.timelineItem::before {
+    content: '';
+    position: absolute;
+    left: -6px;
+    top: 0;
+    width: 10px;
+    height: 10px;
+    background: var(--primary-dark);
+    border-radius: 50%;
+}
+
+.timelineItem:last-child {
+    padding-bottom: 0;
+    border-left: 2px solid transparent;
+}
+
+.date {
     font-size: 12px;
+    font-weight: 700;
+    color: var(--primary-dark);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.timelineItem h4 {
+    font-size: 16px;
+    color: var(--text-primary);
+    margin: 4px 0 6px;
+}
+
+.timelineItem p {
+    font-size: 14px;
     color: var(--text-secondary);
     margin: 0;
     line-height: 1.5;
@@ -158,30 +264,34 @@
 /* CTA Section */
 .ctaSection {
     text-align: center;
-    padding: 32px 0 48px;
+    padding: 60px 0;
+    background: var(--bg-secondary);
+    border-radius: 24px;
+    margin-top: 40px;
 }
 
 .ctaSection h2 {
-    font-size: 24px;
+    font-size: 28px;
     color: var(--text-primary);
-    margin: 0 0 8px;
+    margin: 0 0 12px;
 }
 
 .ctaSection p {
     color: var(--text-secondary);
-    margin: 0 0 24px;
+    margin: 0 0 32px;
+    font-size: 16px;
 }
 
 .ctaButtons {
     display: flex;
-    gap: 16px;
+    gap: 24px;
     justify-content: center;
     flex-wrap: wrap;
 }
 
 @media (max-width: 600px) {
     .heroTitle {
-        font-size: 26px;
+        font-size: 28px;
     }
 
     .docGrid {
@@ -195,6 +305,7 @@
     .ctaButtons {
         flex-direction: column;
         align-items: center;
+        gap: 16px;
     }
 
     .ctaBtn,
@@ -202,5 +313,18 @@
         width: 100%;
         max-width: 280px;
         justify-content: center;
+    }
+
+    .pressGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .hero {
+        padding: 32px 0 24px;
+    }
+
+    .docSection,
+    .featureSection {
+        margin-bottom: 48px;
     }
 }

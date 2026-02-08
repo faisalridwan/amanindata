@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { FileImage, Shield, CreditCard, Users, FileText, Building, File, Upload, Crop, Type, Palette, Download, Move, RotateCcw, PenTool, Eraser, Lock, Server, Zap, Trash2 } from 'lucide-react'
+import { FileImage, Shield, CreditCard, Users, FileText, Building, File, Upload, Crop, Type, Palette, Download, Move, RotateCcw, PenTool, Eraser, Lock, Server, Zap, Trash2, Newspaper, Mail, Calendar } from 'lucide-react'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import DonationModal from '@/components/DonationModal'
@@ -56,9 +56,11 @@ export default function AboutPage() {
                     <p className={styles.heroSubtitle}>
                         Aplikasi gratis untuk melindungi dokumen identitas dengan watermark. 100% aman, 100% privat.
                     </p>
-                    <Link href="/" className={styles.ctaBtn}>
-                        <Shield size={18} /> Mulai Watermark
-                    </Link>
+                    <div className={styles.heroActions}>
+                        <Link href="/" className={styles.ctaBtn}>
+                            <Shield size={18} /> Mulai Watermark
+                        </Link>
+                    </div>
                 </header>
 
                 {/* Document Types Section */}
@@ -131,6 +133,55 @@ export default function AboutPage() {
                                 </div>
                             </div>
                         ))}
+                    </div>
+                </section>
+
+                {/* Press / Media Section (Merged) */}
+                <section className={`${styles.featureSection} ${styles.pressSection}`}>
+                    <h2 className={styles.sectionTitle}>
+                        <Newspaper size={24} /> Pers & Media
+                    </h2>
+                    <p className={styles.sectionDesc}>Informasi untuk jurnalis dan partner media.</p>
+
+                    <div className={styles.pressGrid}>
+                        <div className={`neu-card no-hover ${styles.pressCard}`}>
+                            <h3>Tentang Kami</h3>
+                            <p>AmaninKTP adalah aplikasi web gratis buatan Indonesia yang berjalan 100% di browser pengguna tanpa upload ke server, menjamin privasi data.</p>
+                        </div>
+
+                        <div className={`neu-card no-hover ${styles.pressCard}`}>
+                            <h3>Statistik</h3>
+                            <div className={styles.pressStats}>
+                                <span><strong>100%</strong> Client-Side</span>
+                                <span><strong>0</strong> Data Disimpan</span>
+                                <span><strong>Gratis</strong> Selamanya</span>
+                            </div>
+                        </div>
+
+                        <div className={`neu-card no-hover ${styles.pressCard}`}>
+                            <h3>Media Kit</h3>
+                            <p>Download logo dan aset media.</p>
+                            <a href="#" className={styles.textLink} onClick={(e) => e.preventDefault()}>Download Media Kit →</a>
+                        </div>
+
+                        <div className={`neu-card no-hover ${styles.pressCard}`}>
+                            <h3>Kontak Media</h3>
+                            <p>Untuk wawancara & pertanyaan:</p>
+                            <a href="mailto:press@qreatip.com" className={styles.textLink}>press@qreatip.com →</a>
+                        </div>
+                    </div>
+
+                    <div className={styles.timeline}>
+                        <div className={styles.timelineItem}>
+                            <span className={styles.date}>Februari 2026</span>
+                            <h4>Peluncuran AmaninKTP v2.0</h4>
+                            <p>Fitur baru: crop, drag & drop, export PDF, desain baru.</p>
+                        </div>
+                        <div className={styles.timelineItem}>
+                            <span className={styles.date}>Januari 2026</span>
+                            <h4>Peluncuran AmaninKTP v1.0</h4>
+                            <p>Rilis perdana watermark & tanda tangan.</p>
+                        </div>
                     </div>
                 </section>
 

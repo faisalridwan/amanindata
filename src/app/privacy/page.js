@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
+import { Shield, Lock, Eye, Server, RefreshCw } from 'lucide-react'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import DonationModal from '@/components/DonationModal'
@@ -10,79 +10,81 @@ import styles from './page.module.css'
 export default function PrivacyPage() {
     const [isDonationOpen, setIsDonationOpen] = useState(false)
 
-    const privacySections = [
-        {
-            icon: '🔒',
-            title: 'Pemrosesan Lokal (Client-Side)',
-            content: [
-                'AmaninKTP didesain dengan prinsip <strong>Privacy First</strong>. Seluruh proses pengeditan gambar (watermark) dan pembuatan tanda tangan dilakukan secara lokal di dalam browser perangkat Anda (Handphone/Laptop).',
-                '<strong>Tidak ada gambar</strong> yang diunggah ke server kami. Server hanya berfungsi untuk mengirimkan halaman website ini kepada Anda.'
-            ]
-        },
-        {
-            icon: '🚫',
-            title: 'Tanpa Penyimpanan Data',
-            content: [
-                'Kami tidak memiliki database untuk menyimpan gambar KTP atau tanda tangan Anda.',
-                'Setelah Anda menutup tab browser, semua data sementara di memori browser akan <strong>hilang secara permanen</strong>.'
-            ]
-        },
-        {
-            icon: '⚡',
-            title: 'Tanpa Login & Tracking',
-            content: [
-                'Anda <strong>tidak perlu mendaftar atau login</strong> untuk menggunakan layanan ini.',
-                'Kami tidak menggunakan cookies pelacak atau alat analytics yang invasif.',
-                'Tidak ada data pribadi yang dikumpulkan.'
-            ]
-        },
-        {
-            icon: '🛡️',
-            title: 'Keamanan Terjamin',
-            content: [
-                'Kode sumber website dapat diperiksa melalui Developer Tools browser Anda.',
-                'Semua proses berjalan 100% di sisi klien (client-side).',
-                'Anda memiliki <strong>kontrol penuh</strong> atas data Anda.'
-            ]
-        }
-    ]
-
     return (
         <>
             <Navbar onDonateClick={() => setIsDonationOpen(true)} />
 
             <main className="container">
-                <div className={styles.pageHeader}>
-                    <h1>🔐 Privasi & Keamanan Data</h1>
-                    <p>Komitmen kami terhadap perlindungan privasi dan keamanan data Anda.</p>
-                </div>
+                <header className={styles.hero}>
+                    <h1><Shield size={32} /> Kebijakan Privasi</h1>
+                    <p>Terakhir diperbarui: 08 Februari 2026</p>
+                </header>
 
-                <div className={`neu-card no-hover ${styles.contentCard}`}>
-                    {privacySections.map((section, index) => (
-                        <div key={index} className={styles.privacySection}>
-                            <h3>
-                                <span className={styles.sectionIcon}>{section.icon}</span>
-                                {section.title}
-                            </h3>
-                            {section.content.map((paragraph, pIndex) => (
-                                <p key={pIndex} dangerouslySetInnerHTML={{ __html: paragraph }} />
-                            ))}
+                <section className={`neu-card no-hover ${styles.content}`}>
+                    <div className={styles.intro}>
+                        <p>
+                            Di AmaninKTP, privasi Anda adalah prioritas utama kami. Kami memahami bahwa dokumen identitas
+                            (seperti KTP, SIM, Paspor) adalah data yang sangat sensitif. Oleh karena itu, kami merancang
+                            sistem yang <strong>100% Client-Side</strong>, artinya semua pemrosesan terjadi di perangkat Anda sendiri.
+                        </p>
+                    </div>
+
+                    <div className={styles.grid}>
+                        <div className={styles.highlightCard}>
+                            <Server size={32} />
+                            <h3>Tanpa Server</h3>
+                            <p>Gambar yang Anda upload tidak pernah dikirim atau disimpan di server kami.</p>
                         </div>
-                    ))}
-
-                    <div className={styles.highlight}>
-                        <p>✅ <strong>Kesimpulan:</strong> Data Anda aman karena tidak pernah meninggalkan perangkat Anda.</p>
+                        <div className={styles.highlightCard}>
+                            <Lock size={32} />
+                            <h3>Enkripsi Lokal</h3>
+                            <p>Semua proses watermark dan tanda tangan dilakukan oleh browser Anda.</p>
+                        </div>
+                        <div className={styles.highlightCard}>
+                            <Eye size={32} />
+                            <h3>Tanpa Pelacakan</h3>
+                            <p>Kami tidak melacak isi dokumen atau menyimpan data pribadi Anda.</p>
+                        </div>
                     </div>
 
-                    <div className={styles.actionButtons}>
-                        <Link href="/" className="neu-btn primary">
-                            🏠 Kembali ke Beranda
-                        </Link>
-                        <Link href="/watermark" className="neu-btn secondary">
-                            🛡️ Coba Watermark
-                        </Link>
-                    </div>
-                </div>
+                    <article className={styles.policyText}>
+                        <h3>1. Pengumpulan Data</h3>
+                        <p>
+                            Kami <strong>TIDAK</strong> mengumpulkan, menyimpan, atau mentransmisikan gambar dokumen yang Anda proses menggunakan layanan AmaninKTP.
+                            Semua gambar diproses secara lokal di memori browser (RAM) perangkat Anda dan akan hilang seketika saat Anda menutup tab atau merefresh halaman.
+                        </p>
+
+                        <h3>2. Penggunaan Cookie</h3>
+                        <p>
+                            Kami menggunakan cookie standar hanya untuk fungsionalitas dasar website (seperti mengingat preferensi dark mode jika ada)
+                            dan analitik anonim (seperti Google Analytics) untuk memantau performa website. Analitik ini tidak dapat mengidentifikasi Anda secara personal
+                            atau melihat dokumen Anda.
+                        </p>
+
+                        <h3>3. Tautan Pihak Ketiga</h3>
+                        <p>
+                            Website kami mungkin berisi tautan ke situs web lain (misalnya qreatip.com). Jika Anda mengklik tautan pihak ketiga,
+                            Anda akan diarahkan ke situs tersebut. Kami sangat menyarankan Anda untuk meninjau Kebijakan Privasi setiap situs yang Anda kunjungi.
+                        </p>
+
+                        <h3>4. Keamanan Keuangan</h3>
+                        <p>
+                            Untuk fitur donasi, kami menggunakan payment gateway pihak ketiga yang aman. Kami tidak menyimpan informasi kartu kredit
+                            atau detail pembayaran Anda di server kami.
+                        </p>
+
+                        <h3>5. Perubahan Kebijakan</h3>
+                        <p>
+                            Kami dapat memperbarui Kebijakan Privasi kami dari waktu ke waktu. Kami menyarankan Anda untuk meninjau halaman ini
+                            secara berkala untuk setiap perubahan. Perubahan efektif segera setelah diposting di halaman ini.
+                        </p>
+
+                        <h3>6. Hubungi Kami</h3>
+                        <p>
+                            Jika Anda memiliki pertanyaan tentang Kebijakan Privasi ini, silakan hubungi kami melalui halaman <a href="/contact">Kontak</a> atau email ke privacy@qreatip.com.
+                        </p>
+                    </article>
+                </section>
             </main>
 
             <Footer onDonateClick={() => setIsDonationOpen(true)} />

@@ -1,131 +1,105 @@
 .hero {
     text-align: center;
-    padding: 32px 0 24px;
+    padding: 48px 0 40px;
 }
 
-.hero h1 {
+.heroTitle {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 12px;
-    font-size: 28px;
+    font-size: 32px;
     color: var(--text-primary);
-    margin: 0 0 8px;
+    margin: 0 0 12px;
 }
 
-.hero h1 svg {
+.heroTitle svg {
     color: var(--primary-dark);
 }
 
-.hero p {
+.heroSubtitle {
     color: var(--text-secondary);
-    font-size: 14px;
-    margin: 0;
+    font-size: 16px;
 }
 
 .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 16px;
-    margin-bottom: 32px;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+    margin-bottom: 60px;
 }
 
 .card {
+    padding: 24px;
     display: flex;
     flex-direction: column;
-    padding: 20px;
-    text-decoration: none;
-    transition: transform 0.2s;
-}
-
-.card:hover {
-    transform: translateY(-4px);
+    height: 100%;
 }
 
 .cardHeader {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    margin-bottom: 12px;
+    gap: 16px;
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(168, 197, 240, 0.4);
 }
 
-.cardHeader svg {
+.icon {
     color: var(--primary-dark);
 }
 
-.category {
-    font-size: 10px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: var(--text-muted);
-    background: var(--bg-secondary);
-    padding: 4px 8px;
-    border-radius: 4px;
-}
-
-.card h3 {
+.cardHeader h2 {
     font-size: 18px;
     color: var(--text-primary);
-    margin: 0 0 4px;
+    margin: 0;
 }
 
 .version {
-    font-size: 11px;
-    color: var(--primary-dark);
-    font-weight: 500;
-    margin-bottom: 8px;
+    font-size: 12px;
+    padding: 2px 8px;
+    background: var(--bg-primary);
+    border-radius: 12px;
+    color: var(--text-secondary);
+    font-weight: 600;
+    box-shadow: inset 1px 1px 2px rgba(174, 186, 202, 0.3), inset -1px -1px 2px rgba(255, 255, 255, 0.8);
 }
 
-.card p {
-    font-size: 13px;
+.desc {
+    font-size: 14px;
     color: var(--text-secondary);
-    line-height: 1.5;
-    margin: 0 0 12px;
+    line-height: 1.6;
+    margin: 0 0 24px;
     flex: 1;
 }
 
 .link {
     display: flex;
     align-items: center;
-    gap: 6px;
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--primary-dark);
-}
-
-.note {
-    display: flex;
-    align-items: flex-start;
-    gap: 16px;
-    padding: 20px;
-    margin-bottom: 32px;
-}
-
-.note svg {
-    flex-shrink: 0;
-    color: var(--primary-dark);
-}
-
-.note h4 {
-    font-size: 15px;
-    color: var(--text-primary);
-    margin: 0 0 4px;
-}
-
-.note p {
+    justify-content: center;
+    gap: 8px;
+    padding: 10px;
+    background: var(--bg-primary);
+    border-radius: 8px;
     font-size: 13px;
-    color: var(--text-secondary);
-    margin: 0;
-    line-height: 1.5;
+    font-weight: 600;
+    color: var(--text-primary);
+    text-decoration: none;
+    box-shadow: 2px 2px 5px rgba(174, 186, 202, 0.3), -2px -2px 5px rgba(255, 255, 255, 0.8);
+    transition: all 0.2s;
+}
+
+.link:hover {
+    color: var(--primary-dark);
+    transform: translateY(-2px);
 }
 
 @media (max-width: 600px) {
-    .hero h1 {
-        font-size: 24px;
-    }
-
     .grid {
         grid-template-columns: 1fr;
+    }
+
+    .heroTitle {
+        font-size: 26px;
     }
 }
