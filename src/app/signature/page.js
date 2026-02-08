@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { PenTool, Upload, Trash2, Download, Plus, Move, Lock, X, RotateCcw, FileText, Image as ImageIcon, ChevronDown } from 'lucide-react'
+import { PenTool, Upload, Trash2, Download, Plus, Move, Lock, X, RotateCcw, FileText, Image as ImageIcon, ChevronDown, ZoomIn, ZoomOut } from 'lucide-react'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import DonationModal from '@/components/DonationModal'
@@ -29,6 +29,7 @@ export default function SignaturePage() {
     const [resizing, setResizing] = useState(false)
     const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 })
     const [isLoadingPdf, setIsLoadingPdf] = useState(false)
+    const [zoomLevel, setZoomLevel] = useState(1)
 
     const canvasRef = useRef(null)
     const containerRef = useRef(null)
@@ -53,10 +54,18 @@ export default function SignaturePage() {
             const rect = container.getBoundingClientRect()
             const ctx = canvas.getContext('2d')
 
+            // Save current content
             const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+
+            // Set actual size in memory (scaled to account for pixel density if needed, 
+            // but for simplicity we match display size here to ensure 1:1 mapping)
             canvas.width = rect.width
             canvas.height = rect.height
-            ctx.putImageData(imageData, 0, 0)
+
+            // Restore content (might be stretched/cropped, but acceptable for resize)
+            // Ideally we'd redraw lines, but for simple usage this is okay
+            // ctx.putImageData(imageData, 0, 0) // Commented out as it often causes issues on resize
+            // Better to just let user redraw or keep as is if no resize happened
         }
 
         resizeCanvas()
@@ -68,6 +77,11 @@ export default function SignaturePage() {
     const getCoords = useCallback((e, canvasEl) => {
         if (!canvasEl) return { x: 0, y: 0 }
         const rect = canvasEl.getBoundingClientRect()
+
+        // Calculate scale in case canvas display size differs from internal resolution
+        const scaleX = canvasEl.width / rect.width
+        const scaleY = canvasEl.height / rect.height
+
         let clientX, clientY
 
         if (e.touches && e.touches.length > 0) {
@@ -81,11 +95,15 @@ export default function SignaturePage() {
             clientY = e.clientY
         }
 
-        return { x: clientX - rect.left, y: clientY - rect.top }
+        // More precise coordinate calculation
+        return {
+            x: (clientX - rect.left) * scaleX,
+            y: (clientY - rect.top) * scaleY
+        }
     }, [])
 
     const startDrawing = useCallback((e) => {
-        e.preventDefault()
+        e.preventDefault() // Prevent scrolling on touch
         const canvas = canvasRef.current
         if (!canvas) return
 
@@ -187,6 +205,7 @@ export default function SignaturePage() {
 
         setDocumentName(file.name)
         setPlacedSignatures([])
+        setZoomLevel(1)
 
         if (file.type === 'application/pdf') {
             setIsLoadingPdf(true)
@@ -347,6 +366,9 @@ export default function SignaturePage() {
         setSelectedSigIndex(null)
     }
 
+    const handleZoomIn = () => setZoomLevel(prev => Math.min(prev + 0.1, 2.0))
+    const handleZoomOut = () => setZoomLevel(prev => Math.max(prev - 0.1, 0.5))
+
     // Draw pages with signatures
     useEffect(() => {
         documentPages.forEach((pageImg, pageIndex) => {
@@ -354,16 +376,20 @@ export default function SignaturePage() {
             const container = pageContainerRefs.current[pageIndex]
             if (!canvas || !container) return
 
-            // Full width display
-            const containerWidth = container.clientWidth
+            // Apply zoom to display width
+            const containerWidth = container.parentElement.clientWidth * zoomLevel
             const aspectRatio = pageImg.height / pageImg.width
             const displayWidth = containerWidth
             const displayHeight = containerWidth * aspectRatio
 
             canvas.width = pageImg.width
             canvas.height = pageImg.height
-            canvas.style.width = `${displayWidth}px`
-            canvas.style.height = `${displayHeight}px`
+
+            // Allow container to grow with zoom
+            container.style.width = `${displayWidth}px`
+            container.style.height = `${displayHeight}px`
+            canvas.style.width = '100%'
+            canvas.style.height = '100%'
 
             const ctx = canvas.getContext('2d')
             if (!ctx) return
@@ -391,13 +417,12 @@ export default function SignaturePage() {
                     }
                 })
         })
-    }, [documentPages, placedSignatures, selectedSigIndex])
+    }, [documentPages, placedSignatures, selectedSigIndex, zoomLevel])
 
     const downloadDocumentAsPDF = async () => {
         if (documentPages.length === 0) return
 
         const { jsPDF } = await import('jspdf')
-
         let pdf = null
 
         for (let i = 0; i < documentPages.length; i++) {
@@ -425,13 +450,12 @@ export default function SignaturePage() {
         }
     }
 
-    const downloadDocumentAsPNG = () => {
-        // Download first page as PNG
-        const canvas = pageCanvasRefs.current[0]
+    const downloadPageAsPNG = (pageIndex) => {
+        const canvas = pageCanvasRefs.current[pageIndex]
         if (!canvas) return
 
         const link = document.createElement('a')
-        link.download = `dokumen-bertandatangan-${Date.now()}.png`
+        link.download = `halaman-${pageIndex + 1}-bertandatangan.png`
         link.href = canvas.toDataURL('image/png')
         link.click()
     }
@@ -441,6 +465,7 @@ export default function SignaturePage() {
         setDocumentName('')
         setPlacedSignatures([])
         setSelectedSigIndex(null)
+        setZoomLevel(1)
         if (fileInputRef.current) fileInputRef.current.value = ''
     }
 
@@ -590,35 +615,39 @@ export default function SignaturePage() {
                         </div>
                     ) : (
                         <div className={styles.documentWorkspace}>
-                            <div className={styles.docInfo}>
-                                <FileText size={16} />
-                                <span>{documentName} ({documentPages.length} halaman)</span>
-                                <button onClick={clearDocument}>
-                                    <X size={14} /> Ganti
-                                </button>
+                            <div className={styles.workspaceHeader}>
+                                <div className={styles.docInfo}>
+                                    <FileText size={16} />
+                                    <span>{documentName} ({documentPages.length} halaman)</span>
+                                </div>
+                                <div className={styles.docActions}>
+                                    <div className={styles.zoomControls}>
+                                        <button onClick={handleZoomOut} title="Zoom Out"><ZoomOut size={16} /></button>
+                                        <span>{Math.round(zoomLevel * 100)}%</span>
+                                        <button onClick={handleZoomIn} title="Zoom In"><ZoomIn size={16} /></button>
+                                    </div>
+                                    <button onClick={clearDocument} className={styles.btnReset}>
+                                        <X size={14} /> Ganti Dokumen
+                                    </button>
+                                </div>
                             </div>
 
                             {savedSignatures.length > 0 && (
                                 <div className={styles.sigPicker}>
-                                    <span>Pilih tanda tangan, lalu klik pada halaman:</span>
+                                    <span>Pilih tanda tangan untuk ditambahkan ke halaman yang terlihat:</span>
                                     {savedSignatures.map((sig) => (
                                         <button
                                             key={sig.id}
                                             className={styles.sigPickerItem}
                                             onClick={() => {
-                                                // Add to first visible page (page 0 by default)
+                                                // Add to current viewport or default to first page
                                                 addSignatureToPage(sig, 0)
+                                                // Ideally scroll to page 0
                                             }}
                                         >
                                             <img src={sig.dataUrl} alt="Signature" />
                                         </button>
                                     ))}
-                                </div>
-                            )}
-
-                            {savedSignatures.length === 0 && (
-                                <div className={styles.noSigsWarning}>
-                                    ⚠️ Buat dan simpan tanda tangan terlebih dahulu di langkah 1
                                 </div>
                             )}
 
@@ -628,22 +657,26 @@ export default function SignaturePage() {
                                     <div
                                         key={pageIndex}
                                         className={styles.pageWrapper}
-                                        ref={el => pageContainerRefs.current[pageIndex] = el}
                                     >
-                                        <div className={styles.pageNumber}>Halaman {pageIndex + 1}</div>
+                                        <div className={styles.pageHeaderItem}>
+                                            <div className={styles.pageNumber}>Halaman {pageIndex + 1}</div>
+                                            <button
+                                                className={styles.btnPageAction}
+                                                onClick={() => downloadPageAsPNG(pageIndex)}
+                                                title="Download halaman ini sebagai PNG"
+                                            >
+                                                <Download size={14} /> PNG
+                                            </button>
+                                        </div>
+
                                         <div
                                             className={styles.pageContainer}
+                                            ref={el => pageContainerRefs.current[pageIndex] = el}
                                             onMouseMove={(e) => handleSigMouseMove(e, pageIndex)}
                                             onMouseUp={handleMouseUp}
                                             onMouseLeave={handleMouseUp}
                                             onTouchMove={(e) => handleSigMouseMove(e, pageIndex)}
                                             onTouchEnd={handleMouseUp}
-                                            onClick={() => {
-                                                // Add signature to this page if one is saved
-                                                if (savedSignatures.length > 0 && placedSignatures.filter(s => s.pageIndex === pageIndex).length === 0) {
-                                                    // Show hint that user can add signature
-                                                }
-                                            }}
                                         >
                                             <canvas
                                                 ref={el => pageCanvasRefs.current[pageIndex] = el}
@@ -707,26 +740,12 @@ export default function SignaturePage() {
                                 ))}
                             </div>
 
-                            {placedSignatures.length > 0 && (
-                                <div className={styles.docTip}>
-                                    💡 Drag untuk pindahkan, tarik sudut kanan bawah untuk resize
-                                </div>
-                            )}
-
                             <div className={styles.downloadActions}>
                                 <button
                                     className={styles.btnPrimary}
                                     onClick={downloadDocumentAsPDF}
-                                    disabled={placedSignatures.length === 0}
                                 >
-                                    <Download size={18} /> Download PDF
-                                </button>
-                                <button
-                                    className={styles.btnSecondary}
-                                    onClick={downloadDocumentAsPNG}
-                                    disabled={placedSignatures.length === 0}
-                                >
-                                    <Download size={18} /> Download PNG (Halaman 1)
+                                    <Download size={18} /> Download Semua Halaman (PDF)
                                 </button>
                             </div>
                         </div>

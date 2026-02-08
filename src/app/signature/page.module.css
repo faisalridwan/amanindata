@@ -78,7 +78,8 @@
 .signatureCanvas {
     position: relative;
     width: 100%;
-    height: 280px;
+    height: 350px;
+    /* Increased height */
     background: #FFFFFF;
     border-radius: 12px;
     box-shadow: inset 2px 2px 6px rgba(174, 186, 202, 0.25), inset -2px -2px 6px rgba(255, 255, 255, 0.9);
@@ -412,44 +413,94 @@
     gap: 16px;
 }
 
+.workspaceHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--bg-secondary);
+    border-radius: 12px;
+}
+
 .docInfo {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 12px 16px;
-    background: var(--bg-secondary);
-    border-radius: 10px;
     font-size: 13px;
     color: var(--text-secondary);
+    flex: 1;
+    min-width: 200px;
 }
 
-.docInfo svg:first-child {
+.docInfo svg {
     color: var(--primary-dark);
 }
 
 .docInfo span {
-    flex: 1;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
-.docInfo button {
+.docActions {
     display: flex;
     align-items: center;
-    gap: 4px;
-    padding: 6px 12px;
-    background: white;
-    border: none;
-    border-radius: 6px;
-    font-size: 12px;
-    color: var(--text-secondary);
-    cursor: pointer;
-    transition: all 0.2s;
+    gap: 12px;
 }
 
-.docInfo button:hover {
+.zoomControls {
+    display: flex;
+    align-items: center;
+    background: white;
+    border-radius: 8px;
+    padding: 2px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.zoomControls button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: var(--text-secondary);
+    border-radius: 6px;
+}
+
+.zoomControls button:hover {
+    background: var(--bg-secondary);
+    color: var(--primary-dark);
+}
+
+.zoomControls span {
+    font-size: 12px;
+    font-weight: 500;
+    min-width: 40px;
+    text-align: center;
+}
+
+.btnReset {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    background: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 12px;
     color: #ef4444;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.btnReset:hover {
+    background: #fef2f2;
 }
 
 /* Signature Picker */
@@ -504,18 +555,33 @@
 .docScroll {
     max-height: 70vh;
     overflow-y: auto;
+    overflow-x: auto;
+    /* Enable horizontal scroll for zoom */
     border-radius: 12px;
     background: #f5f5f5;
-    padding: 16px;
+    padding: 24px;
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 32px;
+    align-items: center;
+    /* Center pages */
 }
 
 .pageWrapper {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 12px;
+    width: max-content;
+    /* Allow width to grow with zoom */
+    max-width: 100%;
+    /* But don't overflow if not zoomed */
+}
+
+.pageHeaderItem {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
 }
 
 .pageNumber {
@@ -525,7 +591,26 @@
     padding: 4px 12px;
     background: white;
     border-radius: 6px;
-    align-self: flex-start;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.btnPageAction {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 11px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.btnPageAction:hover {
+    color: var(--primary-dark);
 }
 
 .pageContainer {
@@ -533,13 +618,12 @@
     background: white;
     border-radius: 8px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    overflow: visible;
+    /* Dimensions set by inline styles based on zoom */
 }
 
 .pageCanvas {
     display: block;
-    width: 100%;
-    height: auto;
+    /* Dimensions set by inline styles */
     border-radius: 8px;
 }
 
@@ -644,8 +728,8 @@
 /* Download Actions */
 .downloadActions {
     display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 16px;
 }
 
 .btnPrimary {
@@ -662,8 +746,7 @@
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
-    flex: 1;
-    min-width: 160px;
+    min-width: 240px;
 }
 
 .btnPrimary:hover:not(:disabled) {
@@ -672,32 +755,6 @@
 }
 
 .btnPrimary:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.btnSecondary {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 14px 24px;
-    background: var(--bg-secondary);
-    color: var(--text-secondary);
-    border: none;
-    border-radius: 12px;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.btnSecondary:hover:not(:disabled) {
-    background: var(--bg-primary);
-    color: var(--text-primary);
-}
-
-.btnSecondary:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
@@ -724,7 +781,8 @@
     }
 
     .signatureCanvas {
-        height: 200px;
+        height: 250px;
+        /* Slightly smaller on mobile but still larger than before */
     }
 
     .signatureControls {
@@ -743,14 +801,20 @@
     .docScroll {
         max-height: 60vh;
         padding: 12px;
+        align-items: flex-start;
+        /* Left align on mobile for better scrolling */
     }
 
-    .downloadActions {
+    .workspaceHeader {
         flex-direction: column;
+        align-items: stretch;
     }
 
-    .btnPrimary,
-    .btnSecondary {
+    .docActions {
+        justify-content: space-between;
+    }
+
+    .btnPrimary {
         width: 100%;
     }
 }
