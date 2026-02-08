@@ -10,8 +10,9 @@ export default function Navbar({ onDonateClick }) {
     const pathname = usePathname()
 
     const navItems = [
-        { href: '/watermark', label: 'Watermark KTP' },
+        { href: '/', label: 'Watermark KTP' },
         { href: '/signature', label: 'TTD Online' },
+        { href: '/about', label: 'About' },
         { href: '/guide', label: 'Cara Pakai' },
         { href: '/privacy', label: 'Privacy' },
     ]

@@ -16,39 +16,44 @@ export default function Home() {
 
     // Crop states
     const [isCropping, setIsCropping] = useState(false)
-    const [cropStart, setCropStart] = useState({ x: 0, y: 0 })
-    const [cropEnd, setCropEnd] = useState({ x: 0, y: 0 })
+    const [cropStart, setCropStart] = useState(null)
+    const [cropEnd, setCropEnd] = useState(null)
+    const [isCropDragging, setIsCropDragging] = useState(false)
     const [croppedImage, setCroppedImage] = useState(null)
 
     // Watermark states
-    const [watermarkType, setWatermarkType] = useState('tiled') // 'single' or 'tiled'
+    const [watermarkType, setWatermarkType] = useState('tiled')
     const [watermarkText, setWatermarkText] = useState('')
-    const [useAutoWatermark, setUseAutoWatermark] = useState(true)
     const [fontSize, setFontSize] = useState(30)
     const [fontFamily, setFontFamily] = useState('Arial')
-    const [rotation, setRotation] = useState(-30)
+    const [rotation, setRotation] = useState(-15)
     const [opacity, setOpacity] = useState(0.3)
     const [color, setColor] = useState('#080808')
 
-    // Position for single text mode
+    // Single text manipulation states
     const [textPosition, setTextPosition] = useState({ x: 0, y: 0 })
+    const [textScale, setTextScale] = useState(1)
     const [isDragging, setIsDragging] = useState(false)
+    const [isResizing, setIsResizing] = useState(false)
+    const [isRotating, setIsRotating] = useState(false)
     const [dragStart, setDragStart] = useState({ x: 0, y: 0 })
+    const [showTextBorder, setShowTextBorder] = useState(false)
 
     const canvasRef = useRef(null)
-    const previewCanvasRef = useRef(null)
     const cropCanvasRef = useRef(null)
     const fileInputRef = useRef(null)
+    const containerRef = useRef(null)
 
     const fonts = [
         { value: 'Arial', label: 'Arial' },
         { value: 'Times New Roman', label: 'Times New Roman' },
         { value: 'PT Sans', label: 'PT Sans' },
         { value: 'Poppins', label: 'Poppins' },
+        { value: 'Georgia', label: 'Georgia' },
     ]
 
-    // Generate auto watermark text
-    const getAutoWatermarkText = useCallback(() => {
+    // Generate default watermark text with date
+    const getDefaultWatermarkText = useCallback(() => {
         const today = new Date()
         const day = today.getDate().toString().padStart(2, '0')
         const month = (today.getMonth() + 1).toString().padStart(2, '0')
@@ -56,13 +61,12 @@ export default function Home() {
         return `Verifikasi ${day}/${month}/${year}`
     }, [])
 
-    // Get current watermark text
-    const getCurrentWatermarkText = useCallback(() => {
-        if (useAutoWatermark) {
-            return watermarkText ? `${watermarkText}\n${getAutoWatermarkText()}` : getAutoWatermarkText()
+    // Initialize watermark text with auto date
+    useEffect(() => {
+        if (!watermarkText) {
+            setWatermarkText(getDefaultWatermarkText())
         }
-        return watermarkText || 'WATERMARK'
-    }, [watermarkText, useAutoWatermark, getAutoWatermarkText])
+    }, [getDefaultWatermarkText, watermarkText])
 
     // Main draw function
     const draw = useCallback(() => {
@@ -77,20 +81,21 @@ export default function Home() {
         ctx.clearRect(0, 0, canvas.width, canvas.height)
         ctx.drawImage(sourceImage, 0, 0, canvas.width, canvas.height)
 
+        const text = watermarkText || 'WATERMARK'
+        const lines = text.split('\n')
+        const lineHeight = fontSize * textScale * 1.3
+        const actualFontSize = fontSize * textScale
+
         // Draw watermark
         ctx.save()
         ctx.globalAlpha = opacity
-        ctx.font = `bold ${fontSize}px "${fontFamily}", sans-serif`
+        ctx.font = `bold ${actualFontSize}px "${fontFamily}", sans-serif`
         ctx.fillStyle = color
         ctx.textBaseline = 'middle'
         ctx.textAlign = 'center'
 
-        const text = getCurrentWatermarkText()
-        const lines = text.split('\n')
-        const lineHeight = fontSize * 1.3
-
         if (watermarkType === 'tiled') {
-            const spacing = fontSize * 4
+            const spacing = actualFontSize * 4
             const diagonal = Math.sqrt(canvas.width ** 2 + canvas.height ** 2)
 
             for (let x = -diagonal; x < diagonal * 2; x += spacing) {
@@ -107,16 +112,54 @@ export default function Home() {
             }
         } else {
             // Single text mode
-            ctx.translate(textPosition.x || canvas.width / 2, textPosition.y || canvas.height / 2)
+            const posX = textPosition.x || canvas.width / 2
+            const posY = textPosition.y || canvas.height / 2
+
+            ctx.translate(posX, posY)
             ctx.rotate((rotation * Math.PI) / 180)
+
             lines.forEach((line, index) => {
                 const yOffset = index * lineHeight - ((lines.length - 1) * lineHeight) / 2
                 ctx.fillText(line, 0, yOffset)
             })
+
+            // Draw selection border when hovering/dragging
+            if (showTextBorder && watermarkType === 'single') {
+                ctx.globalAlpha = 1
+                ctx.strokeStyle = '#A8C5F0'
+                ctx.lineWidth = 2
+                ctx.setLineDash([5, 5])
+
+                const maxWidth = Math.max(...lines.map(line => ctx.measureText(line).width))
+                const totalHeight = lines.length * lineHeight
+
+                ctx.strokeRect(-maxWidth / 2 - 10, -totalHeight / 2 - 10, maxWidth + 20, totalHeight + 20)
+
+                // Draw resize handles
+                const handleSize = 10
+                ctx.fillStyle = '#A8C5F0'
+                ctx.setLineDash([])
+
+                // Corner handles
+                ctx.fillRect(-maxWidth / 2 - 10 - handleSize / 2, -totalHeight / 2 - 10 - handleSize / 2, handleSize, handleSize)
+                ctx.fillRect(maxWidth / 2 + 10 - handleSize / 2, -totalHeight / 2 - 10 - handleSize / 2, handleSize, handleSize)
+                ctx.fillRect(-maxWidth / 2 - 10 - handleSize / 2, totalHeight / 2 + 10 - handleSize / 2, handleSize, handleSize)
+                ctx.fillRect(maxWidth / 2 + 10 - handleSize / 2, totalHeight / 2 + 10 - handleSize / 2, handleSize, handleSize)
+
+                // Rotation handle
+                ctx.beginPath()
+                ctx.arc(0, -totalHeight / 2 - 30, 8, 0, Math.PI * 2)
+                ctx.fill()
+                ctx.moveTo(0, -totalHeight / 2 - 10)
+                ctx.lineTo(0, -totalHeight / 2 - 22)
+                ctx.strokeStyle = '#A8C5F0'
+                ctx.lineWidth = 2
+                ctx.stroke()
+            }
         }
 
         ctx.restore()
-    }, [uploadedImage, croppedImage, watermarkType, watermarkText, fontSize, fontFamily, rotation, opacity, color, textPosition, getCurrentWatermarkText])
+    }, [uploadedImage, croppedImage, watermarkType, watermarkText, fontSize, fontFamily, rotation, opacity, color, textPosition, textScale, showTextBorder])
 
     useEffect(() => {
         if (imageLoaded) {
@@ -132,50 +175,70 @@ export default function Home() {
         }
     }, [uploadedImage, croppedImage, watermarkType])
 
+    const loadImage = (file) => {
+        const fileName = file.name.replace(/\.[^/.]+$/, '')
+        setOriginalFileName(fileName)
+
+        const reader = new FileReader()
+        reader.onload = (event) => {
+            const img = new Image()
+            img.onload = () => {
+                setUploadedImage(img)
+                setCroppedImage(null)
+                setImageLoaded(true)
+                setTextPosition({ x: img.width / 2, y: img.height / 2 })
+                setTextScale(1)
+            }
+            img.src = event.target?.result
+        }
+        reader.readAsDataURL(file)
+    }
+
     const handleImageUpload = (e) => {
         const file = e.target.files?.[0]
-        if (file) {
-            const fileName = file.name.replace(/\.[^/.]+$/, '')
-            setOriginalFileName(fileName)
+        if (file) loadImage(file)
+    }
 
-            const reader = new FileReader()
-            reader.onload = (event) => {
-                const img = new Image()
-                img.onload = () => {
-                    setUploadedImage(img)
-                    setCroppedImage(null)
-                    setImageLoaded(true)
-                    setTextPosition({ x: img.width / 2, y: img.height / 2 })
-                }
-                img.src = event.target?.result
-            }
-            reader.readAsDataURL(file)
+    // Drag & Drop handlers
+    const handleDragOver = (e) => {
+        e.preventDefault()
+        e.stopPropagation()
+    }
+
+    const handleDrop = (e) => {
+        e.preventDefault()
+        e.stopPropagation()
+
+        const file = e.dataTransfer?.files?.[0]
+        if (file && file.type.startsWith('image/')) {
+            loadImage(file)
         }
     }
+
+    // Paste handler
+    useEffect(() => {
+        const handlePaste = (e) => {
+            const items = e.clipboardData?.items
+            if (!items) return
+
+            for (let item of items) {
+                if (item.type.startsWith('image/')) {
+                    const file = item.getAsFile()
+                    if (file) loadImage(file)
+                    break
+                }
+            }
+        }
+
+        document.addEventListener('paste', handlePaste)
+        return () => document.removeEventListener('paste', handlePaste)
+    }, [])
 
     // Crop functions
     const startCrop = () => {
         setIsCropping(true)
-        setCropStart({ x: 0, y: 0 })
-        setCropEnd({ x: 0, y: 0 })
-    }
-
-    const handleCropMouseDown = (e) => {
-        if (!isCropping) return
-        const coords = getCropCoords(e)
-        setCropStart(coords)
-        setCropEnd(coords)
-    }
-
-    const handleCropMouseMove = (e) => {
-        if (!isCropping || !cropStart.x) return
-        const coords = getCropCoords(e)
-        setCropEnd(coords)
-    }
-
-    const handleCropMouseUp = () => {
-        if (!isCropping) return
-        // Crop will be applied when user clicks "Apply Crop"
+        setCropStart(null)
+        setCropEnd(null)
     }
 
     const getCropCoords = (e) => {
@@ -190,22 +253,40 @@ export default function Home() {
         const clientY = e.touches ? e.touches[0].clientY : e.clientY
 
         return {
-            x: (clientX - rect.left) * scaleX,
-            y: (clientY - rect.top) * scaleY
+            x: Math.max(0, Math.min(canvas.width, (clientX - rect.left) * scaleX)),
+            y: Math.max(0, Math.min(canvas.height, (clientY - rect.top) * scaleY))
         }
+    }
+
+    const handleCropMouseDown = (e) => {
+        if (!isCropping) return
+        const coords = getCropCoords(e)
+        setCropStart(coords)
+        setCropEnd(coords)
+        setIsCropDragging(true)
+    }
+
+    const handleCropMouseMove = (e) => {
+        if (!isCropping || !isCropDragging) return
+        const coords = getCropCoords(e)
+        setCropEnd(coords)
+    }
+
+    const handleCropMouseUp = () => {
+        setIsCropDragging(false)
     }
 
     const applyCrop = () => {
         const sourceImage = uploadedImage
-        if (!sourceImage) return
+        if (!sourceImage || !cropStart || !cropEnd) return
 
         const x = Math.min(cropStart.x, cropEnd.x)
         const y = Math.min(cropStart.y, cropEnd.y)
         const width = Math.abs(cropEnd.x - cropStart.x)
         const height = Math.abs(cropEnd.y - cropStart.y)
 
-        if (width < 10 || height < 10) {
-            setIsCropping(false)
+        if (width < 20 || height < 20) {
+            alert('Area crop terlalu kecil. Pilih area yang lebih besar.')
             return
         }
 
@@ -220,17 +301,19 @@ export default function Home() {
             setCroppedImage(croppedImg)
             setTextPosition({ x: croppedImg.width / 2, y: croppedImg.height / 2 })
             setIsCropping(false)
+            setCropStart(null)
+            setCropEnd(null)
         }
         croppedImg.src = cropCanvas.toDataURL()
     }
 
     const cancelCrop = () => {
         setIsCropping(false)
-        setCropStart({ x: 0, y: 0 })
-        setCropEnd({ x: 0, y: 0 })
+        setCropStart(null)
+        setCropEnd(null)
     }
 
-    // Drag functions for single text
+    // Canvas coordinate helpers
     const getCanvasCoords = (e) => {
         const canvas = canvasRef.current
         if (!canvas) return { x: 0, y: 0 }
@@ -248,27 +331,78 @@ export default function Home() {
         }
     }
 
-    const handleMouseDown = (e) => {
+    // Text manipulation handlers
+    const handleCanvasMouseDown = (e) => {
         if (!imageLoaded || watermarkType !== 'single' || isCropping) return
         e.preventDefault()
+
         const coords = getCanvasCoords(e)
-        setIsDragging(true)
-        setDragStart(coords)
+        const distance = Math.sqrt(
+            Math.pow(coords.x - textPosition.x, 2) +
+            Math.pow(coords.y - textPosition.y, 2)
+        )
+
+        // Check if clicking rotation handle (above text)
+        if (distance > fontSize * textScale * 1.5 && coords.y < textPosition.y - fontSize * textScale) {
+            setIsRotating(true)
+            setDragStart(coords)
+        }
+        // Check if clicking corner (resize)
+        else if (distance > fontSize * textScale * 0.8) {
+            setIsResizing(true)
+            setDragStart({ ...coords, initialScale: textScale, initialDistance: distance })
+        }
+        // Otherwise drag
+        else {
+            setIsDragging(true)
+            setDragStart(coords)
+        }
+
+        setShowTextBorder(true)
     }
 
-    const handleMouseMove = (e) => {
-        if (!isDragging || watermarkType !== 'single') return
-        e.preventDefault()
+    const handleCanvasMouseMove = (e) => {
+        if (watermarkType !== 'single') return
+
         const coords = getCanvasCoords(e)
-        setTextPosition(prev => ({
-            x: prev.x + (coords.x - dragStart.x),
-            y: prev.y + (coords.y - dragStart.y)
-        }))
-        setDragStart(coords)
+
+        if (isDragging) {
+            e.preventDefault()
+            setTextPosition(prev => ({
+                x: prev.x + (coords.x - dragStart.x),
+                y: prev.y + (coords.y - dragStart.y)
+            }))
+            setDragStart(coords)
+        } else if (isResizing && dragStart.initialDistance) {
+            e.preventDefault()
+            const currentDistance = Math.sqrt(
+                Math.pow(coords.x - textPosition.x, 2) +
+                Math.pow(coords.y - textPosition.y, 2)
+            )
+            const scale = (currentDistance / dragStart.initialDistance) * dragStart.initialScale
+            setTextScale(Math.max(0.3, Math.min(3, scale)))
+        } else if (isRotating) {
+            e.preventDefault()
+            const angle = Math.atan2(coords.y - textPosition.y, coords.x - textPosition.x) * 180 / Math.PI + 90
+            setRotation(Math.round(angle))
+        }
     }
 
-    const handleMouseUp = () => {
+    const handleCanvasMouseUp = () => {
         setIsDragging(false)
+        setIsResizing(false)
+        setIsRotating(false)
+    }
+
+    const handleCanvasMouseEnter = () => {
+        if (watermarkType === 'single' && imageLoaded) {
+            setShowTextBorder(true)
+        }
+    }
+
+    const handleCanvasMouseLeave = () => {
+        setShowTextBorder(false)
+        handleCanvasMouseUp()
     }
 
     // Download functions
@@ -281,34 +415,44 @@ export default function Home() {
         const canvas = canvasRef.current
         if (!canvas || !imageLoaded) return
 
-        const link = document.createElement('a')
-        link.download = getDownloadFileName('png')
-        link.href = canvas.toDataURL('image/png')
-        link.click()
+        // Temporarily hide border
+        const prevShowBorder = showTextBorder
+        setShowTextBorder(false)
+
+        setTimeout(() => {
+            const link = document.createElement('a')
+            link.download = getDownloadFileName('png')
+            link.href = canvas.toDataURL('image/png')
+            link.click()
+            setShowTextBorder(prevShowBorder)
+        }, 50)
     }
 
     const handleDownloadPDF = async () => {
         const canvas = canvasRef.current
         if (!canvas || !imageLoaded) return
 
-        const { jsPDF } = await import('jspdf')
+        setShowTextBorder(false)
 
-        const imgData = canvas.toDataURL('image/png')
-        const imgWidth = canvas.width
-        const imgHeight = canvas.height
+        setTimeout(async () => {
+            const { jsPDF } = await import('jspdf')
 
-        // Create PDF with image dimensions (in mm, assuming 72 DPI)
-        const pdfWidth = imgWidth * 0.264583
-        const pdfHeight = imgHeight * 0.264583
+            const imgData = canvas.toDataURL('image/png')
+            const imgWidth = canvas.width
+            const imgHeight = canvas.height
 
-        const pdf = new jsPDF({
-            orientation: imgWidth > imgHeight ? 'landscape' : 'portrait',
-            unit: 'mm',
-            format: [pdfWidth, pdfHeight]
-        })
+            const pdfWidth = imgWidth * 0.264583
+            const pdfHeight = imgHeight * 0.264583
 
-        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight)
-        pdf.save(getDownloadFileName('pdf'))
+            const pdf = new jsPDF({
+                orientation: imgWidth > imgHeight ? 'landscape' : 'portrait',
+                unit: 'mm',
+                format: [pdfWidth, pdfHeight]
+            })
+
+            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight)
+            pdf.save(getDownloadFileName('pdf'))
+        }, 50)
     }
 
     const handleReset = () => {
@@ -316,18 +460,29 @@ export default function Home() {
         setCroppedImage(null)
         setOriginalFileName('')
         setImageLoaded(false)
-        setWatermarkText('')
-        setUseAutoWatermark(true)
+        setWatermarkText(getDefaultWatermarkText())
         setFontSize(30)
         setFontFamily('Arial')
-        setRotation(-30)
+        setRotation(-15)
         setOpacity(0.3)
         setColor('#080808')
         setWatermarkType('tiled')
+        setTextScale(1)
         setIsCropping(false)
         if (fileInputRef.current) {
             fileInputRef.current.value = ''
         }
+    }
+
+    // Add current date to watermark text
+    const handleAddDate = () => {
+        const today = new Date()
+        const day = today.getDate().toString().padStart(2, '0')
+        const month = (today.getMonth() + 1).toString().padStart(2, '0')
+        const year = today.getFullYear()
+        const dateStr = `${day}/${month}/${year}`
+
+        setWatermarkText(prev => prev ? `${prev}\n${dateStr}` : dateStr)
     }
 
     // Draw crop overlay
@@ -341,27 +496,63 @@ export default function Home() {
         canvas.width = uploadedImage.width
         canvas.height = uploadedImage.height
 
+        // Draw original image
         ctx.clearRect(0, 0, canvas.width, canvas.height)
         ctx.drawImage(uploadedImage, 0, 0)
 
         // Draw dark overlay
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)'
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.6)'
         ctx.fillRect(0, 0, canvas.width, canvas.height)
 
-        // Clear crop area
-        if (cropStart.x && cropEnd.x) {
+        // Clear and highlight crop area
+        if (cropStart && cropEnd) {
             const x = Math.min(cropStart.x, cropEnd.x)
             const y = Math.min(cropStart.y, cropEnd.y)
             const width = Math.abs(cropEnd.x - cropStart.x)
             const height = Math.abs(cropEnd.y - cropStart.y)
 
+            // Restore original image in crop area
             ctx.clearRect(x, y, width, height)
             ctx.drawImage(uploadedImage, x, y, width, height, x, y, width, height)
 
-            // Draw border
+            // Draw border around crop area
             ctx.strokeStyle = '#A8C5F0'
             ctx.lineWidth = 3
+            ctx.setLineDash([])
             ctx.strokeRect(x, y, width, height)
+
+            // Draw corner handles
+            const handleSize = 12
+            ctx.fillStyle = '#A8C5F0'
+
+            // Top-left
+            ctx.fillRect(x - handleSize / 2, y - handleSize / 2, handleSize, handleSize)
+            // Top-right
+            ctx.fillRect(x + width - handleSize / 2, y - handleSize / 2, handleSize, handleSize)
+            // Bottom-left
+            ctx.fillRect(x - handleSize / 2, y + height - handleSize / 2, handleSize, handleSize)
+            // Bottom-right
+            ctx.fillRect(x + width - handleSize / 2, y + height - handleSize / 2, handleSize, handleSize)
+
+            // Draw grid lines
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)'
+            ctx.lineWidth = 1
+            ctx.beginPath()
+            ctx.moveTo(x + width / 3, y)
+            ctx.lineTo(x + width / 3, y + height)
+            ctx.moveTo(x + 2 * width / 3, y)
+            ctx.lineTo(x + 2 * width / 3, y + height)
+            ctx.moveTo(x, y + height / 3)
+            ctx.lineTo(x + width, y + height / 3)
+            ctx.moveTo(x, y + 2 * height / 3)
+            ctx.lineTo(x + width, y + 2 * height / 3)
+            ctx.stroke()
+
+            // Draw size indicator
+            ctx.fillStyle = 'rgba(168, 197, 240, 0.9)'
+            ctx.font = '14px Arial'
+            ctx.textAlign = 'center'
+            ctx.fillText(`${Math.round(width)} × ${Math.round(height)}`, x + width / 2, y + height + 20)
         }
     }, [isCropping, uploadedImage, cropStart, cropEnd])
 
@@ -376,7 +567,7 @@ export default function Home() {
                         🛡️ Watermark KTP <span>Online</span>
                     </h1>
                     <p className={styles.heroSubtitle}>
-                        Lindungi foto KTP Anda dengan watermark. Semua proses di browser, data aman.
+                        Lindungi foto KTP dengan watermark. 100% di browser, data aman.
                     </p>
                 </header>
 
@@ -393,7 +584,7 @@ export default function Home() {
                             >
                                 <span className={styles.fileIcon}>{imageLoaded ? '✅' : '📷'}</span>
                                 <span className={styles.fileText}>
-                                    {imageLoaded ? originalFileName : 'Pilih file gambar KTP'}
+                                    {imageLoaded ? originalFileName : 'Pilih / Drag / Paste gambar'}
                                 </span>
                                 <input
                                     ref={fileInputRef}
@@ -405,7 +596,7 @@ export default function Home() {
                             </div>
 
                             {imageLoaded && !isCropping && (
-                                <button className={`neu-btn neu-btn-sm ${styles.cropBtn}`} onClick={startCrop}>
+                                <button className={`${styles.actionBtn} ${styles.cropActionBtn}`} onClick={startCrop}>
                                     ✂️ Crop Gambar
                                 </button>
                             )}
@@ -416,49 +607,43 @@ export default function Home() {
                             <h3 className={styles.sectionTitle}>📝 Jenis Watermark</h3>
                             <div className={styles.typeButtons}>
                                 <button
-                                    className={`neu-btn neu-btn-sm ${watermarkType === 'tiled' ? 'primary' : ''}`}
+                                    className={`${styles.typeBtn} ${watermarkType === 'tiled' ? styles.active : ''}`}
                                     onClick={() => setWatermarkType('tiled')}
                                 >
                                     🔲 Menyeluruh
                                 </button>
                                 <button
-                                    className={`neu-btn neu-btn-sm ${watermarkType === 'single' ? 'primary' : ''}`}
+                                    className={`${styles.typeBtn} ${watermarkType === 'single' ? styles.active : ''}`}
                                     onClick={() => setWatermarkType('single')}
                                 >
                                     📍 Satu Teks
                                 </button>
                             </div>
-                        </div>
-
-                        {/* Auto Watermark */}
-                        <div className={styles.section}>
-                            <label className={styles.checkboxLabel}>
-                                <input
-                                    type="checkbox"
-                                    checked={useAutoWatermark}
-                                    onChange={(e) => setUseAutoWatermark(e.target.checked)}
-                                />
-                                <span>Tambah "Verifikasi + Tanggal" otomatis</span>
-                            </label>
+                            {watermarkType === 'single' && imageLoaded && (
+                                <p className={styles.hint}>💡 Drag teks, tarik sudut untuk resize, tarik atas untuk rotate</p>
+                            )}
                         </div>
 
                         {/* Custom Text */}
                         <div className={styles.section}>
                             <h3 className={styles.sectionTitle}>✏️ Teks Watermark</h3>
                             <textarea
-                                className="neu-input"
+                                className={styles.textInput}
                                 value={watermarkText}
                                 onChange={(e) => setWatermarkText(e.target.value)}
                                 placeholder="Contoh: Hanya untuk verifikasi Shopee"
-                                rows={2}
+                                rows={3}
                             />
+                            <button className={styles.addDateBtn} onClick={handleAddDate}>
+                                📅 Tambah Tanggal
+                            </button>
                         </div>
 
                         {/* Font */}
                         <div className={styles.section}>
                             <h3 className={styles.sectionTitle}>🔤 Font</h3>
                             <select
-                                className="neu-input"
+                                className={styles.selectInput}
                                 value={fontFamily}
                                 onChange={(e) => setFontFamily(e.target.value)}
                             >
@@ -478,6 +663,7 @@ export default function Home() {
                                     max="100"
                                     value={fontSize}
                                     onChange={(e) => setFontSize(Number(e.target.value))}
+                                    className={styles.slider}
                                 />
                             </div>
 
@@ -489,6 +675,7 @@ export default function Home() {
                                     max="180"
                                     value={rotation}
                                     onChange={(e) => setRotation(Number(e.target.value))}
+                                    className={styles.slider}
                                 />
                             </div>
 
@@ -501,6 +688,7 @@ export default function Home() {
                                     step="0.05"
                                     value={opacity}
                                     onChange={(e) => setOpacity(Number(e.target.value))}
+                                    className={styles.slider}
                                 />
                             </div>
 
@@ -522,14 +710,14 @@ export default function Home() {
                             <h3 className={styles.sectionTitle}>💾 Download Hasil</h3>
                             <div className={styles.downloadButtons}>
                                 <button
-                                    className="neu-btn primary"
+                                    className={`${styles.downloadBtn} ${styles.pngBtn}`}
                                     onClick={handleDownloadPNG}
                                     disabled={!imageLoaded}
                                 >
                                     📷 PNG
                                 </button>
                                 <button
-                                    className="neu-btn accent"
+                                    className={`${styles.downloadBtn} ${styles.pdfBtn}`}
                                     onClick={handleDownloadPDF}
                                     disabled={!imageLoaded}
                                 >
@@ -537,32 +725,44 @@ export default function Home() {
                                 </button>
                             </div>
                             <button
-                                className={`neu-btn ${styles.resetBtn}`}
+                                className={styles.resetBtn}
                                 onClick={handleReset}
                             >
-                                🔄 Reset
+                                🔄 Reset Semua
                             </button>
                         </div>
                     </div>
 
                     {/* Right: Preview */}
-                    <div className={styles.preview}>
+                    <div
+                        className={styles.preview}
+                        onDragOver={handleDragOver}
+                        onDrop={handleDrop}
+                        ref={containerRef}
+                    >
                         <h3 className={styles.sectionTitle}>👁️ Preview Hasil</h3>
 
                         {isCropping && uploadedImage && (
                             <div className={styles.cropContainer}>
+                                <p className={styles.cropInstruction}>Drag untuk memilih area crop</p>
                                 <canvas
                                     ref={cropCanvasRef}
+                                    className={styles.cropCanvas}
                                     onMouseDown={handleCropMouseDown}
                                     onMouseMove={handleCropMouseMove}
                                     onMouseUp={handleCropMouseUp}
+                                    onMouseLeave={handleCropMouseUp}
                                     onTouchStart={handleCropMouseDown}
                                     onTouchMove={handleCropMouseMove}
                                     onTouchEnd={handleCropMouseUp}
                                 />
                                 <div className={styles.cropActions}>
-                                    <button className="neu-btn primary" onClick={applyCrop}>✅ Apply Crop</button>
-                                    <button className="neu-btn" onClick={cancelCrop}>❌ Cancel</button>
+                                    <button className={`${styles.downloadBtn} ${styles.pngBtn}`} onClick={applyCrop}>
+                                        ✅ Apply Crop
+                                    </button>
+                                    <button className={styles.resetBtn} onClick={cancelCrop}>
+                                        ❌ Cancel
+                                    </button>
                                 </div>
                             </div>
                         )}
@@ -570,29 +770,28 @@ export default function Home() {
                         {!isCropping && (
                             <div
                                 className={styles.canvasContainer}
-                                onMouseDown={handleMouseDown}
-                                onMouseMove={handleMouseMove}
-                                onMouseUp={handleMouseUp}
-                                onMouseLeave={handleMouseUp}
-                                onTouchStart={handleMouseDown}
-                                onTouchMove={handleMouseMove}
-                                onTouchEnd={handleMouseUp}
+                                onMouseDown={handleCanvasMouseDown}
+                                onMouseMove={handleCanvasMouseMove}
+                                onMouseUp={handleCanvasMouseUp}
+                                onMouseEnter={handleCanvasMouseEnter}
+                                onMouseLeave={handleCanvasMouseLeave}
+                                onTouchStart={handleCanvasMouseDown}
+                                onTouchMove={handleCanvasMouseMove}
+                                onTouchEnd={handleCanvasMouseUp}
                             >
                                 <canvas
                                     ref={canvasRef}
                                     style={{ display: imageLoaded ? 'block' : 'none' }}
+                                    className={styles.mainCanvas}
                                 />
                                 {!imageLoaded && (
                                     <div className={styles.placeholder}>
                                         <span className={styles.placeholderIcon}>🖼️</span>
-                                        <p>Upload gambar KTP untuk memulai</p>
+                                        <p>Drag & Drop gambar di sini</p>
+                                        <p className={styles.placeholderHint}>atau klik "Pilih" atau Ctrl+V untuk paste</p>
                                     </div>
                                 )}
                             </div>
-                        )}
-
-                        {watermarkType === 'single' && imageLoaded && !isCropping && (
-                            <p className={styles.dragHint}>💡 Drag teks untuk mengubah posisi</p>
                         )}
                     </div>
                 </div>
