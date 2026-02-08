@@ -86,10 +86,16 @@
 }
 
 .paymentMethods {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    display: flex;
+    flex-direction: column;
     gap: 30px;
     margin-top: 40px;
+}
+
+.methodGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
 }
 
 .paymentCard {
@@ -101,47 +107,104 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
+    gap: 15px;
+    transition: all 0.3s ease;
+}
+
+.paymentCard:hover {
+    background: rgba(255, 255, 255, 0.6);
+    transform: translateY(-5px);
 }
 
 .methodTitle {
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 700;
     color: #1E293B;
     margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.qrisSection {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.amountInputWrapper {
+    margin-top: 15px;
+    width: 100%;
+    max-width: 300px;
+}
+
+.amountInput {
+    width: 100%;
+    padding: 14px 20px;
+    border-radius: 16px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    background: white;
+    font-size: 18px;
+    font-weight: 600;
+    color: #1E293B;
+    text-align: center;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
+    outline: none;
+    transition: all 0.2s;
+}
+
+.amountInput:focus {
+    border-color: #E91E63;
+    box-shadow: 0 0 0 4px rgba(233, 30, 99, 0.1);
 }
 
 .qrisContainer {
     background: white;
-    padding: 16px;
-    border-radius: 20px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    width: 220px;
-    height: 220px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.qrisPlaceholder {
-    width: 100%;
-    height: 100%;
-    background: #f8fafc;
-    border: 2px dashed #cbd5e1;
-    border-radius: 12px;
+    padding: 20px;
+    border-radius: 24px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    margin: 20px auto;
+    width: fit-content;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    color: #94a3b8;
-    font-size: 14px;
-    gap: 8px;
+    gap: 10px;
+    animation: fadeIn 0.5s ease-out;
 }
 
-.qrisImage {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.bankIcon {
+    width: 48px;
+    height: 48px;
+    background: #FFD200;
+    color: #000;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 14px;
+}
+
+.accountNumber {
+    font-family: monospace;
+    font-size: 20px;
+    font-weight: 700;
+    color: #1E293B;
+    background: rgba(0, 0, 0, 0.03);
+    padding: 8px 16px;
+    border-radius: 10px;
+    letter-spacing: 1px;
 }
 
 .paypalBtn {
@@ -154,21 +217,20 @@
     background: #0070BA;
     color: white;
     font-weight: 600;
-    border-radius: 12px;
+    border-radius: 14px;
     text-decoration: none;
     transition: all 0.2s;
 }
 
 .paypalBtn:hover {
     background: #005ea6;
-    transform: translateY(-2px);
 }
 
 .comingSoon {
-    margin-top: 30px;
-    padding: 12px 20px;
+    margin-top: 40px;
+    padding: 12px 24px;
     background: rgba(255, 255, 255, 0.3);
-    border-radius: 12px;
+    border-radius: 50px;
     font-size: 14px;
     color: #64748B;
     font-style: italic;
@@ -177,8 +239,36 @@
     gap: 8px;
 }
 
+.thankYouSection {
+    margin-top: 80px;
+    text-align: center;
+    padding: 40px;
+    background: linear-gradient(135deg, rgba(233, 30, 99, 0.05) 0%, rgba(30, 144, 255, 0.05) 100%);
+    border-radius: 32px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.thankYouTitle {
+    font-size: 24px;
+    font-weight: 800;
+    color: #1E293B;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.thankYouDesc {
+    font-size: 16px;
+    color: #475569;
+    line-height: 1.6;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
 @media (max-width: 768px) {
-    .paymentMethods {
+    .methodGrid {
         grid-template-columns: 1fr;
     }
 }
