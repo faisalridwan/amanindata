@@ -58,6 +58,29 @@ export default function DonatePage() {
     const [activeTab, setActiveTab] = useState('qris')
     const [copied, setCopied] = useState(false)
 
+    const faqs = [
+        {
+            q: "Mengapa dukungan Anda sangat berarti bagi AmaninKTP?",
+            a: "AmaninKTP hadir sebagai solusi gratis dan terbuka untuk membantu masyarakat melindungi privasi dokumen mereka. Namun, operasional infrastruktur digital seperti perpanjangan nama domain (.com), biaya hosting, koneksi internet untuk development, serta pemeliharaan hardware tetap membutuhkan biaya rutin. Dukungan Anda adalah 'bahan bakar' yang memastikan alat ini berkala tetap hidup, stabil, dan bisa terus dikembangkan untuk manfaat yang lebih luas."
+        },
+        {
+            q: "Ke mana alokasi dana donasi disalurkan?",
+            a: "Setiap Rupiah yang Anda berikan dialokasikan secara transparan untuk kebutuhan teknis proyek. Ini mencakup biaya langganan server, pembaruan keamanan sistem, riset fitur baru (seperti peningkatan algoritma watermark), serta memastikan AmaninKTP tetap kompatibel dengan berbagai perangkat dan browser terbaru."
+        },
+        {
+            q: "Apakah AmaninKTP benar-benar akan tetap gratis selamanya?",
+            a: "Tentu saja. Komitmen utama kami adalah menyediakan alat privasi yang bisa diakses siapa pun tanpa hambatan biaya (paywall). Donasi dari para pendukung adalah kunci utama yang memungkinkan kami menjaga model 'Gratis untuk Semua' ini tanpa harus mengorbankan privasi pengguna lewat iklan yang intrusif atau penjualan data."
+        },
+        {
+            q: "Apakah proses donasi saya terjamin keamanannya?",
+            a: "Sangat terjamin. Kami tidak mengelola dana atau menyimpan informasi kartu/rekening Anda secara langsung. Semua transaksi diproses melalui platform donasi pihak ketiga yang terpercaya dan memiliki izin resmi. Keamanan transaksi Anda dilindungi dengan enkripsi standar industri."
+        },
+        {
+            q: "Selain materi, apa lagi yang bisa saya berikan untuk membantu?",
+            a: "Dukungan tidak selalu harus berupa uang. Anda bisa membantu kami dengan melaporkan bug, memberikan saran fitur baru, atau menyebarkan informasi tentang AmaninKTP agar lebih banyak orang menyadari pentingnya melindungi privasi dokumen."
+        }
+    ]
+
     const presets = [
         { label: 'Rp20.000', value: '20000' },
         { label: 'Rp30.000', value: '30000' },
@@ -292,8 +315,22 @@ export default function DonatePage() {
                             <Sparkles size={32} /> Terima Kasih
                         </h2>
                         <p className={styles.appreciationDesc}>
-                            Setiap bentuk dukungan membantu kami memastikan AmaninKTP tetap gratis, tanpa iklan, dan selalu aman untuk privasi masyarakat Indonesia.
+                            Setiap bentuk dukungan membantu kami memastikan AmaninKTP tetap gratis, dan selalu aman untuk privasi masyarakat Indonesia.
                         </p>
+                    </section>
+
+                    <section className={styles.faqSection}>
+                        <h2 className={styles.faqTitle}>
+                            <HelpCircle size={24} /> Kenapa harus donasi?
+                        </h2>
+                        <div className={styles.faqGrid}>
+                            {faqs.map((faq, i) => (
+                                <div key={i} className={styles.faqCard}>
+                                    <h4>{faq.q}</h4>
+                                    <p>{faq.a}</p>
+                                </div>
+                            ))}
+                        </div>
                     </section>
                 </div>
             </main>
