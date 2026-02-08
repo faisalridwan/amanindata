@@ -77,9 +77,9 @@ export default function Footer({ onDonateClick }) {
             {/* Legal Links */}
             <div className={styles.legalBar}>
                 <div className={`container ${styles.legalContent}`}>
-                    <Link href="/privacy"><Shield size={14} /> Kebijakan Privasi</Link>
+                    <Link href="/privacy-policy"><Shield size={14} /> Privacy Policy</Link>
                     <span className={styles.divider}>•</span>
-                    <Link href="/terms"><FileText size={14} /> Syarat & Ketentuan</Link>
+                    <Link href="/terms"><FileText size={14} /> Terms of Service</Link>
                 </div>
             </div>
 
