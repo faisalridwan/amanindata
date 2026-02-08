@@ -63,9 +63,9 @@
 }
 
 .navItem.active {
-    color: #2563eb;
-    background: rgba(37, 99, 235, 0.08);
-    font-weight: 600;
+    color: var(--primary-dark);
+    background: var(--bg-primary);
+    box-shadow: var(--shadow-inset-dark), var(--shadow-inset-light);
 }
 
 .navCta {

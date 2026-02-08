@@ -18,7 +18,12 @@ export default function Navbar({ onDonateClick }) {
         { href: '/about', label: 'About', icon: Info },
     ]
 
-    const isActive = (href) => pathname === href
+    const isActive = (href) => {
+        if (href === '/') {
+            return pathname === '/'
+        }
+        return pathname.startsWith(href)
+    }
 
     return (
         <nav className={styles.navbar}>
