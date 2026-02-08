@@ -168,6 +168,25 @@ export default function SignaturePage() {
         setSavedSignatures(prev => prev.filter(s => s.id !== id))
     }
 
+    // Load PDF.js from CDN
+    const loadPdfJs = () => {
+        return new Promise((resolve, reject) => {
+            if (window.pdfjsLib) {
+                resolve(window.pdfjsLib)
+                return
+            }
+
+            const script = document.createElement('script')
+            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js'
+            script.onload = () => {
+                window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'
+                resolve(window.pdfjsLib)
+            }
+            script.onerror = reject
+            document.head.appendChild(script)
+        })
+    }
+
     // DOCUMENT FUNCTIONS
     const handleDocUpload = async (e) => {
         const file = e.target.files?.[0]
@@ -176,10 +195,36 @@ export default function SignaturePage() {
         setDocumentName(file.name)
 
         if (file.type === 'application/pdf') {
-            // For PDF we'll show a message - full PDF support would require server-side processing
-            alert('PDF detected! Untuk hasil terbaik, silahkan convert PDF ke gambar (PNG/JPG) terlebih dahulu menggunakan tools online, lalu upload gambar tersebut.')
-            if (fileInputRef.current) fileInputRef.current.value = ''
-            setDocumentName('')
+            // Handle PDF using PDF.js from CDN
+            try {
+                const pdfjsLib = await loadPdfJs()
+
+                const arrayBuffer = await file.arrayBuffer()
+                const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise
+                const page = await pdf.getPage(1)
+
+                const scale = 2
+                const viewport = page.getViewport({ scale })
+
+                const canvas = document.createElement('canvas')
+                const ctx = canvas.getContext('2d')
+                canvas.width = viewport.width
+                canvas.height = viewport.height
+
+                await page.render({ canvasContext: ctx, viewport }).promise
+
+                const img = new Image()
+                img.onload = () => {
+                    setDocumentImg(img)
+                    setPlacedSignatures([])
+                }
+                img.src = canvas.toDataURL('image/png')
+            } catch (err) {
+                console.error('PDF error:', err)
+                alert('Gagal membaca PDF. Pastikan file tidak corrupt dan coba lagi.')
+                if (fileInputRef.current) fileInputRef.current.value = ''
+                setDocumentName('')
+            }
             return
         }
 
