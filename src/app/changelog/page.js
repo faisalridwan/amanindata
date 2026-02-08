@@ -9,7 +9,7 @@ export default function ChangelogPage() {
     const changelog = [
         {
             version: '1.0.0',
-            date: 'Februari 2026',
+            date: '8 Februari 2026',
             title: 'Initial Release (Public)',
             description: 'Peluncuran perdana AmaninKTP - Solusi terpadu untuk privasi dokumen identitas masyarakat Indonesia.',
             changes: [
