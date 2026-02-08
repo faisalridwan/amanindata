@@ -38,6 +38,18 @@ In today's digital age, identity theft and the misuse of personal data through s
 *   **Local Signature Library**: Save your favorite signatures in the browser (localStorage) for future use without redraws.
 *   **Drag-and-Drop Placement**: Pixel-perfect precision for positioning signatures on PDF files.
 
+### 📉 Image Compressor
+*   **Smart Compression**: Reduce file size significantly while maintaining quality using advanced algorithms.
+*   **Flexible Presets**: Choose from High, Medium, or Low quality presets, or use Advanced Mode for custom control.
+*   **PDF Support**: Compress PDF documents alongside images.
+*   **Privacy Focused**: All compression happens locally in your browser.
+
+### 🙈 Sensor Data (Redaction)
+*   **Secure Redaction**: Blocks out or blurs sensitive information (NIK, names, photos) permanently.
+*   **Multi-Page PDF**: Support for redacting multi-page PDF documents.
+*   **Customization**: Choose custom colors for redaction blocks to match document background.
+*   **Export Options**: Save redacted documents as PDF or PNG.
+
 ### 🔄 Efficient Workflow
 *   **Insta-Reset**: Revert all changes to default with a single click if a mistake occurs.
 *   **Real-Time Preview**: See every change you make instantly before saving the document.
