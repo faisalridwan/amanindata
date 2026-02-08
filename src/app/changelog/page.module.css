@@ -1,0 +1,145 @@
+.hero {
+    text-align: center;
+    padding: 60px 0 40px;
+}
+
+.heroTitle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+}
+
+.heroTitle svg {
+    color: var(--primary-dark);
+}
+
+.heroSubtitle {
+    font-size: 16px;
+    color: var(--text-secondary);
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.timeline {
+    max-width: 800px;
+    margin: 0 auto 100px;
+    position: relative;
+    padding-left: 40px;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 10px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--primary-light), transparent);
+    border-radius: 1px;
+}
+
+.entry {
+    position: relative;
+    margin-bottom: 60px;
+}
+
+.entry::after {
+    content: '';
+    position: absolute;
+    left: -36px;
+    top: 8px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: white;
+    border: 3px solid var(--primary-dark);
+    box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+}
+
+.versionBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    background: var(--bg-primary);
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--primary-dark);
+    box-shadow: inset 2px 2px 5px rgba(174, 186, 202, 0.3), inset -2px -2px 5px rgba(255, 255, 255, 0.8);
+    margin-bottom: 8px;
+}
+
+.date {
+    font-size: 14px;
+    color: var(--text-muted);
+    font-weight: 600;
+    margin-bottom: 16px;
+}
+
+.card {
+    padding: 32px;
+}
+
+.title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+}
+
+.description {
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 24px;
+}
+
+.changeList {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.changeList li {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+}
+
+.icon {
+    color: var(--primary-dark);
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.changeList span {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+@media (max-width: 640px) {
+    .heroTitle {
+        font-size: 28px;
+    }
+
+    .timeline {
+        padding-left: 30px;
+    }
+
+    .entry::after {
+        left: -26px;
+    }
+
+    .card {
+        padding: 24px;
+    }
+}

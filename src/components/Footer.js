@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { FileImage, PenTool, BookOpen, Info, HelpCircle, Shield, Library, Mail, Heart, FileText, Github } from 'lucide-react'
+import { FileImage, PenTool, BookOpen, Info, HelpCircle, Shield, Library, Mail, Heart, FileText, Github, GitBranch } from 'lucide-react'
 import styles from './Footer.module.css'
 
 export default function Footer() {
@@ -37,6 +37,9 @@ export default function Footer() {
                         <ul>
                             <li>
                                 <Link href="/guide"><BookOpen size={14} /> Cara Pakai</Link>
+                            </li>
+                            <li>
+                                <Link href="/changelog"><GitBranch size={14} /> Changelog</Link>
                             </li>
                         </ul>
                     </div>
