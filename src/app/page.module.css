@@ -269,6 +269,7 @@
     background: var(--bg-secondary);
     border-radius: 3px;
     -webkit-appearance: none;
+    appearance: none;
     box-shadow: inset 1px 1px 3px rgba(174, 186, 202, 0.3);
 }
 

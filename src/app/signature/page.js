@@ -736,6 +736,7 @@ export default function SignaturePage() {
                                         max="8"
                                         value={lineWidth}
                                         onChange={(e) => setLineWidth(Number(e.target.value))}
+                                        className={styles.slider}
                                     />
                                 </div>
                             </div>
