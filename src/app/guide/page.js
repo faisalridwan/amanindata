@@ -12,66 +12,76 @@ export default function GuidePage() {
     const watermarkSteps = [
         {
             title: 'Buka Aplikasi & Siapkan Dokumen',
-            desc: 'Akses halaman utama AmaninKTP. Anda tidak perlu mendaftar atau login. Siapkan file KTP atau dokumen penting lainnya (format JPG, PNG) yang ingin Anda beri watermark.'
+            desc: <>Akses halaman utama <strong>AmaninKTP</strong>. Anda tidak perlu mendaftar atau login. Siapkan file <em>KTP</em> atau dokumen penting lainnya (format <em>JPG, PNG</em>) yang ingin Anda beri watermark.</>
+
         },
         {
             title: 'Upload Dokumen',
-            desc: 'Klik area upload di tengah layar, atau tarik dan lepas (drag & drop) file gambar Anda ke area tersebut. Sistem akan langsung menampilkan preview dokumen Anda dengan aman (diproses di browser, tidak diupload ke server).'
+            desc: <>Klik <strong>area upload</strong> di tengah layar, atau tarik dan lepas (<em>drag & drop</em>) file gambar Anda ke area tersebut. Sistem akan memproses dokumen di browser Anda (aman, tidak diupload ke server).</>,
+            image: '/images/guide/watermark-2.png'
         },
         {
             title: 'Crop & Potong (Opsional)',
-            desc: 'Jika foto dokumen Anda terlalu lebar atau ada background yang mengganggu, aktifkan mode Crop. Tarik sudut-sudut grid untuk memotong bagian yang tidak diinginkan, lalu klik "Selesai Crop" untuk memfokuskan tampilan pada dokumen saja.'
+            desc: <>Jika foto dokumen terlalu lebar, aktifkan mode <strong>Crop</strong>. Tarik sudut-sudut grid untuk memotong bagian yang tidak perlu, lalu klik <strong>Selesai Crop</strong>.</>,
+            image: '/images/guide/watermark-3.png'
         },
         {
             title: 'Pilih Mode Watermark',
-            desc: 'Tentukan jenis perlindungan yang Anda inginkan:\n• **Mode Menyeluruh (Tiled)**: Watermark akan memenuhi seluruh halaman dengan pola berulang. Ini memberikan perlindungan maksimal karena sulit dihapus.\n• **Mode Satu Teks**: Menempatkan satu watermark di posisi spesifik yang Anda tentukan.'
+            desc: <>Pilih <strong>"Full Gambar"</strong> untuk watermark memenuhi seluruh halaman (lebih aman), atau <strong>"Satu Teks"</strong> untuk menempatkan satu tulisan saja di posisi tertentu.</>,
+            image: '/images/guide/watermark-4.png'
         },
         {
             title: 'Isi Teks & Tujuan',
-            desc: 'Ketik teks watermark Anda, misalnya "VERIFIKASI PINJOL 2024" atau "UNTUK LAMARAN KERJA". Gunakan tombol bantuan "+ Tanggal Hari Ini" untuk otomatis menambahkan tanggal saat ini agar dokumen tidak bisa disalahgunakan di masa depan.'
+            desc: <>Ketik teks watermark, misalnya <em>"VERIFIKASI PINJOL"</em> atau <em>"LAMARAN KERJA"</em>. Klik tombol <strong>+ Tambah Verifikasi & Tanggal</strong> untuk otomatis menambahkan tanggal hari ini agar dokumen valid.</>,
+            image: '/images/guide/watermark-5.png'
         },
         {
             title: 'Kustomisasi Tampilan',
-            desc: 'Sesuaikan agar watermark terbaca jelas namun tidak menutupi informasi vital:\n• **Rotasi**: Miringkan teks agar menutupi area penting.\n• **Warna & Opasitas**: Pilih warna (Hitam/Putih/Merah) dan atur transparansi.\n• **Ukuran Font**: Sesuaikan besar kecilnya teks.\n• **Style**: Pilih font yang tegas dan mudah dibaca.'
+            desc: <>Atur <strong>Ukuran</strong> (besar kecil teks), <strong>Rotasi</strong> (kemiringan), dan <strong>Transparansi</strong> (agar dokumen asli tetap terbaca). Gunakan slider <strong>Jarak Horizontal/Vertikal</strong> untuk mengatur kerapatan watermark.</>,
+            image: '/images/guide/watermark-6.png'
         },
         {
             title: 'Download & Simpan',
-            desc: 'Periksa kembali hasil watermark di preview. Jika sudah sesuai, klik tombol **Download Gambar** untuk menyimpan hasilnya ke perangkat Anda.'
+            desc: <>Cek hasil preview. Jika sudah pas, klik tombol <strong>Download PNG</strong> (gambar) atau <strong>Download PDF</strong> untuk menyimpan hasilnya ke perangkat Anda.</>,
+            image: '/images/guide/watermark-7.png'
         }
     ]
 
     const signatureSteps = [
         {
             title: 'Masuk ke Menu Tanda Tangan',
-            desc: 'Klik menu **Tanda Tangan** di navigasi atas. Halaman ini didesain khusus untuk membuat tanda tangan digital dan menempelkannya ke dokumen PDF atau Gambar.'
+            desc: <>Klik menu <strong>Tanda Tangan</strong> di navigasi atas. Halaman ini untuk membuat tanda tangan digital dan menempelkannya ke dokumen <em>PDF</em> atau <em>Gambar</em>.</>,
+            image: '/images/guide/signature-1.png'
         },
         {
-            title: 'Langkah 1: Buat Tanda Tangan',
-            desc: 'Di area "Buat Tanda Tangan Baru", goreskan tanda tangan Anda pada kanvas putih menggunakan mouse, trackpad, atau layar sentuh (stylus/jari). Anda bisa mengatur:\n• **Warna Pena**: Hitam, Biru, atau Merah.\n• **Ketebalan**: Geser slider untuk mengatur ketebalan garis.'
+            title: 'Buat Tanda Tangan Baru',
+            desc: <>Di area kanvas putih, goreskan tanda tangan Anda menggunakan <em>mouse</em> atau <em>layar sentuh</em>. Anda bisa ganti <strong>Warna</strong> (Hitam/Biru/Merah) dan <strong>Ketebalan</strong> garis.</>,
+            image: '/images/guide/signature-2.png'
         },
         {
             title: 'Simpan Tanda Tangan',
-            desc: 'Jika hasil goresan sudah sesuai, beri nama (opsional) lalu klik **Simpan Tanda Tangan**. Tanda tangan Anda akan tersimpan di daftar "Tanda Tangan Tersimpan" di bawah kanvas untuk dipakai berulang kali.'
+            desc: <>Setelah menggambar, klik tombol <strong>"Simpan ke Dokumen"</strong>. Tanda tangan akan disimpan sementara di daftar bawah kanvas untuk dipakai.</>,
+            image: '/images/guide/signature-3.png'
         },
         {
-            title: 'Langkah 2: Upload Dokumen',
-            desc: 'Gulir ke bawah ke bagian "Tambahkan ke Dokumen". Upload file yang ingin ditandatangani (mendukung file Gambar JPG/PNG dan dokumen PDF multi-halaman). Dokumen akan muncul di area kerja.'
+            title: 'Upload Dokumen',
+            desc: <>Scroll ke bawah ke bagian <strong>"Tambahkan ke Dokumen"</strong>. Upload file <em>PDF</em> atau <em>Gambar</em> yang ingin ditandatangani.</>,
+            image: '/images/guide/signature-4.png'
         },
         {
-            title: 'Pilih Tanda Tangan Aktif',
-            desc: 'Pilih salah satu tanda tangan dari daftar "Pilih Tanda Tangan" yang sudah Anda buat sebelumnya. Tanda tangan yang aktif akan ditandai dengan centang hijau.'
+            title: 'Pilih & Tempel Tanda Tangan',
+            desc: <>Pilih tanda tangan dari daftar. Lalu di area dokumen, <strong>KLIK DAN TAHAN (Drag)</strong> mouse Anda membentuk kotak untuk menempelkan tanda tangan di posisi yang pas.</>,
+            image: '/images/guide/signature-5.png'
         },
         {
-            title: 'Tempel Tanda Tangan (Drag-to-Select)',
-            desc: 'Untuk menempelkan tanda tangan dengan presisi:\n1. Arahkan mouse ke area dokumen yang diinginkan.\n2. **Klik dan Tahan (Drag)** mouse Anda membentuk kotak seleksi.\n3. Lepaskan mouse, dan tanda tangan akan otomatis muncul pas di dalam kotak yang Anda buat.\n\nAlternatif: Klik tombol **Tambah Tanda Tangan** untuk memunculkan tanda tangan di posisi default.'
+            title: 'Sesuaikan Posisi',
+            desc: <>Jika posisi kurang pas, klik tanda tangan di dokumen lalu <strong>geser-geser</strong>. Tarik ujung kanan-bawah tanda tangan untuk <strong>memperbesar atau memperkecil</strong>.</>,
+            image: '/images/guide/signature-6.png'
         },
         {
-            title: 'Sesuaikan Posisi & Ukuran',
-            desc: 'Setelah tanda tangan muncul di dokumen:\n• **Pindahkan**: Klik dan geser tanda tangan ke posisi yang tepat.\n• **Ubah Ukuran**: Tarik ujung kanan bawah tanda tangan untuk membesarkan atau mengecilkan.\n• **Hapus**: Klik tanda "X" merah jika ingin membatalkan.'
-        },
-        {
-            title: 'Download Hasil',
-            desc: 'Setelah semua tanda tangan terpasang dengan benar, klik tombol **Download PDF** (untuk file PDF) atau **Download PNG** (per halaman) untuk menyimpan dokumen yang sudah ditandatangani ke perangkat Anda.'
+            title: 'Download Dokumen',
+            desc: <>Setelah selesai, klik <strong>"Download Semua Halaman (PDF)"</strong> untuk menyimpan dokumen yang sudah resmi ditandatangani.</>,
+            image: '/images/guide/signature-7.png'
         }
     ]
 
@@ -125,6 +135,12 @@ export default function GuidePage() {
                                             <div className={styles.stepContent}>
                                                 <h3>{step.title}</h3>
                                                 <p>{step.desc}</p>
+                                                {step.image && (
+                                                    <div className={styles.stepImageWrapper}>
+                                                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                                                        <img src={step.image} alt={step.title} className={styles.stepImage} />
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                     ))}
@@ -147,6 +163,12 @@ export default function GuidePage() {
                                             <div className={styles.stepContent}>
                                                 <h3>{step.title}</h3>
                                                 <p>{step.desc}</p>
+                                                {step.image && (
+                                                    <div className={styles.stepImageWrapper}>
+                                                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                                                        <img src={step.image} alt={step.title} className={styles.stepImage} />
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                     ))}

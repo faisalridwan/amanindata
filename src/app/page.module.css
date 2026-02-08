@@ -643,3 +643,40 @@
         /* Equal width buttons */
     }
 }
+/* Checkbox */
+.checkboxLabel {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+    cursor: pointer;
+    user-select: none;
+}
+
+.checkboxLabel input {
+    display: none;
+}
+
+.checkboxCustom {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #CBD5E1;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    background: white;
+}
+
+.checkboxLabel:hover .checkboxCustom {
+    border-color: #5B8DEF;
+}
+
+.checkboxLabel input:checked + .checkboxCustom {
+    background: #4CAF50;
+    border-color: #4CAF50;
+    color: white;
+}

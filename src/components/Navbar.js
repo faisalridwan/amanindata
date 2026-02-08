@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { FileImage, PenTool, BookOpen, Shield, Info, Heart, Menu, X } from 'lucide-react'
 import styles from './Navbar.module.css'
+import ThemeToggle from './ThemeToggle'
 
 export default function Navbar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -32,13 +33,16 @@ export default function Navbar() {
                     📄 AmaninKTP
                 </Link>
 
-                <button
-                    className={styles.menuToggle}
-                    onClick={() => setIsMenuOpen(!isMenuOpen)}
-                    aria-label="Toggle menu"
-                >
-                    {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-                </button>
+                <div className={styles.rightSection}>
+                    <ThemeToggle />
+                    <button
+                        className={styles.menuToggle}
+                        onClick={() => setIsMenuOpen(!isMenuOpen)}
+                        aria-label="Toggle menu"
+                    >
+                        {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                    </button>
+                </div>
 
                 <ul className={`${styles.navLinks} ${isMenuOpen ? styles.show : ''}`}>
                     {navItems.map((item) => (

@@ -31,7 +31,7 @@ export default function Footer() {
             <div className={`container ${styles.footerContent}`}>
                 {/* Brand */}
                 <div className={styles.brand}>
-                    <Link href="/" className={styles.logo}>AmaninKTP</Link>
+                    <Link href="/" className={styles.logo}>📄 AmaninKTP</Link>
                     <p className={styles.tagline}>
                         Lindungi dokumen identitas Anda dengan watermark. 100% aman, tanpa upload ke server.
                     </p>

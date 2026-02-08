@@ -1,6 +1,12 @@
+@media (max-width: 600px) {
+    .hero {
+        padding: 24px 0 20px;
+    }
+}
+
 .hero {
     text-align: center;
-    padding: 60px 0 40px;
+    padding: 40px 0 40px;
 }
 
 .heroTitle {
@@ -12,6 +18,9 @@
     font-weight: 800;
     color: var(--text-primary);
     margin-bottom: 12px;
+    flex-wrap: wrap;
+    /* Allow wrapping on small screens */
+    text-align: center;
 }
 
 .heroTitle svg {
@@ -128,18 +137,54 @@
 
 @media (max-width: 640px) {
     .heroTitle {
-        font-size: 28px;
+        font-size: 24px;
+        /* Smaller font for mobile */
+        gap: 8px;
+    }
+
+    .heroSubtitle {
+        padding: 0 20px;
+        font-size: 14px;
     }
 
     .timeline {
-        padding-left: 30px;
+        padding-left: 20px;
+        /* Reduced padding */
+        margin-right: 0;
+        padding-right: 0;
+    }
+
+    .timeline::before {
+        left: 6px;
+        /* Adjust line position */
     }
 
     .entry::after {
-        left: -26px;
+        left: -21px;
+        /* Adjust dot position (6px left - 7px radius + border adjustments) */
+        width: 12px;
+        height: 12px;
+        border-width: 2px;
     }
 
     .card {
-        padding: 24px;
+        padding: 20px;
+        border-radius: 16px;
+    }
+
+    .versionBadge {
+        margin-left: -5px;
+        /* Pull badge slightly left to align visuals */
+    }
+
+    .changeList li {
+        flex-direction: column;
+        /* Stack icon and text if needed, or just let text wrap */
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .icon {
+        margin-top: 0;
     }
 }

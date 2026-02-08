@@ -1,7 +1,12 @@
-/* Page Header */
+@media (max-width: 600px) {
+    .pageHeader {
+        padding: 24px 0 16px;
+    }
+}
+
 .pageHeader {
     text-align: center;
-    padding: 24px 0 16px;
+    padding: 40px 0 16px;
 }
 
 .pageHeader h1 {
@@ -181,6 +186,7 @@
     background: var(--primary-dark);
     border-radius: 50%;
     cursor: pointer;
+    margin-top: -5px;
 }
 
 .controlsRight {
@@ -192,13 +198,17 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
+    width: auto;
+    padding: 0 12px;
+    gap: 6px;
     height: 40px;
     background: var(--bg-secondary);
     border: none;
     border-radius: 10px;
     color: var(--text-secondary);
     cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
     transition: all 0.2s;
 }
 
@@ -236,13 +246,17 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
+    width: auto;
+    padding: 0 12px;
+    gap: 6px;
     height: 40px;
     background: var(--primary-dark);
     color: white;
     border: none;
     border-radius: 10px;
     cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
     transition: all 0.2s;
 }
 

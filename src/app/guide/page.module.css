@@ -1,7 +1,12 @@
-/* Hero */
+@media (max-width: 600px) {
+    .hero {
+        padding: 24px 0 12px;
+    }
+}
+
 .hero {
     text-align: center;
-    padding: 48px 0 40px;
+    padding: 40px 0 24px;
 }
 
 .heroTitle {
@@ -172,6 +177,20 @@
     margin: 0;
 }
 
+.stepImageWrapper {
+    margin-top: 16px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(168, 197, 240, 0.4);
+}
+
+.stepImage {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
 .cardFooter {
     margin-top: 32px;
     padding-top: 24px;
@@ -211,6 +230,8 @@
 /* Tips */
 .tipsSection {
     margin-bottom: 60px;
+    scroll-margin-top: 140px;
+    /* Adjusted to clear header */
 }
 
 .sectionTitle {
@@ -271,6 +292,7 @@
 /* FAQ */
 .faqSection {
     margin-bottom: 60px;
+    scroll-margin-top: 120px;
 }
 
 .faqGrid {

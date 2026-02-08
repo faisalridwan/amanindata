@@ -1,5 +1,5 @@
 .donationPage {
-    padding: 80px 0;
+    padding: 40px 0 80px;
     max-width: 800px;
     margin: 0 auto;
 }
@@ -524,7 +524,7 @@
 
 @media (max-width: 640px) {
     .donationPage {
-        padding: 40px 16px;
+        padding: 24px 16px 40px;
         /* Slightly reduced side padding for more space */
         max-width: 100%;
     }
@@ -551,7 +551,6 @@
         flex-wrap: nowrap;
         overflow-x: auto;
         justify-content: flex-start;
-        /* Ensure start alignment for scrolling */
         width: 100%;
         max-width: 100%;
         margin: 0 0 24px 0;
@@ -622,9 +621,11 @@
         /* Keep square */
     }
 
-    .qrisContainer svg {
-        width: 100% !important;
-        height: auto !important;
+    .qrisBranding {
+        flex-direction: row;
+        width: 100%;
+        justify-content: center;
+        white-space: nowrap;
     }
 
     .accountNumberText {

@@ -1,6 +1,15 @@
+import { Poppins } from 'next/font/google'
 import '@/styles/globals.css'
 import GoogleAnalytics from '@/components/GoogleAnalytics'
 import ConsentModal from '@/components/ConsentModal'
+import JsonLd from '@/components/JsonLd'
+import { ThemeProvider } from '@/context/ThemeContext'
+
+const poppins = Poppins({
+    subsets: ['latin'],
+    weight: ['400', '500', '600', '700'],
+    variable: '--font-poppins',
+})
 
 export const metadata = {
     title: 'Watermark KTP Online & TTD Digital – Aman & Lokal | AmaninKTP',
@@ -20,6 +29,14 @@ export const metadata = {
         url: 'https://amaninktp.qreatip.com',
         siteName: 'AmaninKTP',
         locale: 'id_ID',
+        images: [
+            {
+                url: '/images/og-image.jpg',
+                width: 1200,
+                height: 630,
+                alt: 'AmaninKTP Preview',
+            },
+        ],
     },
     robots: {
         index: true,
@@ -35,23 +52,21 @@ export const metadata = {
     icons: {
         icon: 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📄</text></svg>',
     },
+    verification: {
+        google: 'google-site-verification-code',
+    },
 }
 
 export default function RootLayout({ children }) {
     return (
-        <html lang="id">
-            <head>
-                <link rel="preconnect" href="https://fonts.googleapis.com" />
-                <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-                <link
-                    href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
-                    rel="stylesheet"
-                />
-            </head>
-            <body>
-                <GoogleAnalytics />
-                <ConsentModal />
-                {children}
+        <html lang="id" suppressHydrationWarning>
+            <body className={poppins.className}>
+                <ThemeProvider>
+                    <JsonLd />
+                    <GoogleAnalytics />
+                    <ConsentModal />
+                    {children}
+                </ThemeProvider>
             </body>
         </html>
     )

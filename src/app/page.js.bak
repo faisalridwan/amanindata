@@ -29,8 +29,6 @@ export default function Home() {
     const [rotation, setRotation] = useState(-15)
     const [opacity, setOpacity] = useState(0.3)
     const [color, setColor] = useState('#080808')
-    const [gapX, setGapX] = useState(4)
-    const [gapY, setGapY] = useState(4)
 
     // Single text states
     const [textPosition, setTextPosition] = useState({ x: 0, y: 0 })
@@ -110,12 +108,11 @@ export default function Home() {
         ctx.textAlign = 'center'
 
         if (watermarkType === 'tiled') {
-            const spacingX = actualFontSize * gapX
-            const spacingY = actualFontSize * gapY
+            const spacing = actualFontSize * 4
             const diagonal = Math.sqrt(canvas.width ** 2 + canvas.height ** 2)
 
-            for (let x = -diagonal; x < diagonal * 2; x += spacingX) {
-                for (let y = -diagonal; y < diagonal * 2; y += spacingY) {
+            for (let x = -diagonal; x < diagonal * 2; x += spacing) {
+                for (let y = -diagonal; y < diagonal * 2; y += spacing) {
                     ctx.save()
                     ctx.translate(x, y)
                     ctx.rotate((rotation * Math.PI) / 180)
@@ -142,8 +139,7 @@ export default function Home() {
         }
 
         ctx.restore()
-        ctx.restore()
-    }, [uploadedImage, croppedImage, watermarkType, fontSize, fontFamily, rotation, opacity, color, gapX, gapY, textPosition, textScale, getFinalWatermarkText])
+    }, [uploadedImage, croppedImage, watermarkType, fontSize, fontFamily, rotation, opacity, color, textPosition, textScale, getFinalWatermarkText])
 
     useEffect(() => {
         if (imageLoaded && !isCropping) draw()
@@ -473,7 +469,7 @@ export default function Home() {
     const handleReset = () => {
         setUploadedImage(null); setCroppedImage(null); setOriginalFileName(''); setImageLoaded(false)
         setWatermarkText(''); setFontSize(30); setFontFamily('Arial')
-        setRotation(-15); setOpacity(0.3); setColor('#080808'); setWatermarkType('tiled'); setTextScale(1); setGap(4)
+        setRotation(-15); setOpacity(0.3); setColor('#080808'); setWatermarkType('tiled'); setTextScale(1)
         if (fileInputRef.current) fileInputRef.current.value = ''
     }
 
@@ -562,7 +558,7 @@ export default function Home() {
             <main className="container">
                 {/* Hero */}
                 <header className={styles.hero}>
-                    <h1 className={styles.heroTitle}>📄 Watermark Dokumen <span>Online</span></h1>
+                    <h1 className={styles.heroTitle}>📄 Watermark KTP <span>Online</span></h1>
                     <p className={styles.heroSubtitle}>Lindungi dokumen identitas dengan watermark. 100% di browser.</p>
                 </header>
 
@@ -618,7 +614,7 @@ export default function Home() {
                                 className={styles.autoBtn}
                                 onClick={() => handleAutoTextToggle(true)}
                             >
-                                <Plus size={14} /> Tambah Verifikasi & Tanggal
+                                <Check size={14} /> Tambah Verifikasi & Tanggal
                             </button>
                             <textarea
                                 className={styles.textarea}
@@ -653,20 +649,6 @@ export default function Home() {
                                 <span>Transparansi</span><span className={styles.val}>{Math.round(opacity * 100)}%</span>
                             </div>
                             <input type="range" min="0.05" max="1" step="0.05" value={opacity} onChange={(e) => setOpacity(+e.target.value)} className={styles.slider} />
-
-                            {watermarkType === 'tiled' && (
-                                <>
-                                    <div className={styles.sliderRow}>
-                                        <span>Jarak Horizontal</span><span className={styles.val}>{gapX}x</span>
-                                    </div>
-                                    <input type="range" min="2" max="20" step="0.5" value={gapX} onChange={(e) => setGapX(+e.target.value)} className={styles.slider} />
-
-                                    <div className={styles.sliderRow}>
-                                        <span>Jarak Vertikal</span><span className={styles.val}>{gapY}x</span>
-                                    </div>
-                                    <input type="range" min="2" max="10" step="0.5" value={gapY} onChange={(e) => setGapY(+e.target.value)} className={styles.slider} />
-                                </>
-                            )}
 
                             {watermarkType === 'single' && (uploadedImage || croppedImage) && (
                                 <>
@@ -751,7 +733,7 @@ export default function Home() {
                                 </div>
 
                                 {!imageLoaded && (
-                                    <div className={styles.placeholder} onClick={() => fileInputRef.current?.click()} style={{ cursor: 'pointer' }}>
+                                    <div className={styles.placeholder}>
                                         <FileImage size={48} strokeWidth={1} />
                                         <p>Drag & Drop gambar di sini</p>
                                         <span>atau klik Upload / Ctrl+V</span>

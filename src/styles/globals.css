@@ -9,11 +9,13 @@
     --bg-primary: #F4F6F8;
     --bg-secondary: #EAECEF;
     --bg-card: #F4F6F8;
+    --bg-white: #FFFFFF;
 
     /* Text Colors */
     --text-primary: #3D4852;
     --text-secondary: #6B7C8F;
     --text-muted: #95A5B8;
+    --text-on-color: #FFFFFF;
 
     /* Brand Colors - Pastel Palette */
     --primary-color: #A8C5F0;
@@ -77,6 +79,54 @@
     --transition-fast: 0.15s ease;
     --transition-normal: 0.25s ease;
     --transition-slow: 0.4s ease;
+}
+
+/* ===== Dark Theme ===== */
+[data-theme="dark"] {
+    /* Backgrounds - Deep Slate */
+    --bg-primary: #0F172A;
+    --bg-secondary: #1E293B;
+    --bg-card: #1E293B;
+    --bg-white: #334155;
+
+    /* Text - High Contrast */
+    --text-primary: #F1F5F9;
+    --text-secondary: #94A3B8;
+    --text-muted: #64748B;
+
+    /* Brand Colors - Vibrant for Dark */
+    --primary-color: #60A5FA;
+    --primary-dark: #3B82F6;
+    --primary-light: #1E3A5F;
+
+    --secondary-color: #34D399;
+    --secondary-dark: #10B981;
+    --secondary-light: #064E3B;
+
+    --accent-color: #FB923C;
+    --accent-dark: #F97316;
+    --accent-light: #431407;
+
+    --lavender: #A78BFA;
+    --lavender-light: #4C1D95;
+
+    /* Status Colors */
+    --success-color: #22C55E;
+    --warning-color: #FBBF24;
+    --error-color: #EF4444;
+
+    /* Neumorphism Shadows - Glow Effect */
+    --shadow-light: -4px -4px 12px rgba(30, 41, 59, 0.6);
+    --shadow-dark: 4px 4px 12px rgba(0, 0, 0, 0.5);
+    --shadow-light-sm: -2px -2px 6px rgba(30, 41, 59, 0.5);
+    --shadow-dark-sm: 2px 2px 6px rgba(0, 0, 0, 0.4);
+    --shadow-inset-light: inset -2px -2px 6px rgba(30, 41, 59, 0.5);
+    --shadow-inset-dark: inset 2px 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+/* Smooth theme transition */
+html {
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* ===== Reset & Base ===== */

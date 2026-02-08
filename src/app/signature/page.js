@@ -13,6 +13,7 @@ export default function SignaturePage() {
     const [penColor, setPenColor] = useState('#000000')
     const [lineWidth, setLineWidth] = useState(3)
     const [hasDrawn, setHasDrawn] = useState(false)
+    const [canvasHeight, setCanvasHeight] = useState(350)
 
     // Saved Signatures
     const [savedSignatures, setSavedSignatures] = useState([])
@@ -145,6 +146,41 @@ export default function SignaturePage() {
         if (!ctx) return
         ctx.clearRect(0, 0, canvas.width, canvas.height)
         setHasDrawn(false)
+    }
+
+    // Handle Height Change - Preserving Content
+    const handleHeightChange = (e) => {
+        const newHeight = Number(e.target.value)
+        const canvas = canvasRef.current
+        const ctx = canvas?.getContext('2d', { willReadFrequently: true })
+
+        if (!canvas || !ctx) {
+            setCanvasHeight(newHeight)
+            return
+        }
+
+        // Save current content
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+
+        setCanvasHeight(newHeight)
+
+        // Restore content after resize (React will update height prop, but we need to redraw)
+        // We use setTimeout to ensure React render cycle has updated the canvas DOM element size
+        setTimeout(() => {
+            const container = containerRef.current
+            const rect = container.getBoundingClientRect()
+
+            // Explicitly update canvas attributes to match new container size
+            // This prevents CSS stretching
+            canvas.width = rect.width
+            canvas.height = rect.height // This clears the canvas
+
+            const newCtx = canvas.getContext('2d', { willReadFrequently: true })
+
+            // Put original image back at 0,0 (top-left)
+            // Existing signature stays at top, new space is added at bottom
+            newCtx.putImageData(imageData, 0, 0)
+        }, 0)
     }
 
     const saveSignature = () => {
@@ -740,7 +776,7 @@ export default function SignaturePage() {
 
             <main className="container">
                 <div className={styles.pageHeader}>
-                    <h1>✍️ Tanda Tangan Digital</h1>
+                    <h1>✍️ Tanda Tangan <span>Digital</span></h1>
                     <p>Buat tanda tangan dan tambahkan langsung ke dokumen Anda</p>
                     <div className={styles.securityBadge}>
                         <Lock size={14} />
@@ -769,6 +805,7 @@ export default function SignaturePage() {
                             onTouchStart={startDrawing}
                             onTouchMove={draw}
                             onTouchEnd={stopDrawing}
+                            style={{ height: `${canvasHeight}px`, cursor: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23000000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z'/%3E%3Cpath d='m15 5 4 4'/%3E%3C/svg%3E") 0 24, auto` }}
                         >
                             <canvas ref={canvasRef} />
                             {!hasDrawn && (
@@ -805,14 +842,27 @@ export default function SignaturePage() {
                                 </div>
                             </div>
                             <div className={styles.controlsRight}>
-                                <button className={styles.btnIcon} onClick={clearCanvas} title="Hapus">
-                                    <RotateCcw size={18} />
+                                <div className={styles.widthControl} style={{ marginRight: 8, borderRight: '1px solid #eee', paddingRight: 8 }}>
+                                    <span>Tinggi: {canvasHeight}</span>
+                                    <input
+                                        type="range"
+                                        min="150"
+                                        max="600"
+                                        step="50"
+                                        value={canvasHeight}
+                                        onChange={handleHeightChange}
+                                        className={styles.slider}
+                                        style={{ width: 60 }}
+                                    />
+                                </div>
+                                <button className={styles.btnIcon} onClick={clearCanvas}>
+                                    <RotateCcw size={18} /> Reset
                                 </button>
                                 <button className={styles.btnSave} onClick={saveSignature} disabled={!hasDrawn}>
-                                    <Plus size={16} /> Simpan
+                                    <Plus size={16} /> Simpan ke Dokumen
                                 </button>
                                 <button className={styles.btnDownload} onClick={downloadSignature} disabled={!hasDrawn}>
-                                    <Download size={16} />
+                                    <Download size={16} /> Download
                                 </button>
                             </div>
                         </div>
@@ -1002,19 +1052,18 @@ export default function SignaturePage() {
                                                     const canvas = pageCanvasRefs.current[pageIndex]
                                                     if (!canvas) return null
 
-                                                    const rect = canvas.getBoundingClientRect?.() || { width: canvas.offsetWidth, height: canvas.offsetHeight }
-                                                    const scaleX = rect.width / canvas.width
-                                                    const scaleY = rect.height / canvas.height
+                                                    // Scale is 1.0 because we are using percentages relative to the container
+                                                    // which matches the displayed size of the canvas
 
                                                     return (
                                                         <div
                                                             key={sig.id}
                                                             className={`${styles.sigOverlay} ${selectedSigIndex === globalIndex ? styles.selected : ''}`}
                                                             style={{
-                                                                left: sig.x * scaleX,
-                                                                top: sig.y * scaleY,
-                                                                width: sig.width * scaleX,
-                                                                height: sig.height * scaleY
+                                                                left: `${(sig.x / canvas.width) * 100}%`,
+                                                                top: `${(sig.y / canvas.height) * 100}%`,
+                                                                width: `${(sig.width / canvas.width) * 100}%`,
+                                                                height: `${(sig.height / canvas.height) * 100}%`
                                                             }}
                                                             onMouseDown={(e) => handleSigMouseDown(e, globalIndex, pageIndex)}
                                                             onTouchStart={(e) => handleSigMouseDown(e, globalIndex, pageIndex)}
