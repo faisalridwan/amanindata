@@ -1,117 +1,285 @@
 'use client';
-import { useState, useRef, useEffect } from 'react';
+
+import { useState, useRef, useEffect, useCallback } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
-import { Download, Upload, ArrowRight, Eraser, MousePointer2, Square, EyeOff, RotateCcw, Image as ImageIcon } from 'lucide-react';
+import {
+    Download,
+    Upload,
+    ArrowRight,
+    Eraser,
+    MousePointer2,
+    Square,
+    EyeOff,
+    RotateCcw,
+    Image as ImageIcon,
+    FileText,
+    ZoomIn,
+    ZoomOut,
+    X,
+    Type,
+    Maximize,
+    Layout
+} from 'lucide-react';
 import styles from './page.module.css';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
 export default function RedactionTool() {
     const [file, setFile] = useState(null);
-    const [image, setImage] = useState(null);
-    const [mode, setMode] = useState('block'); // 'block' | 'blur' (future) | 'select'
-    const [history, setHistory] = useState([]); // Array of {x, y, w, h, type}
+    const [documentPages, setDocumentPages] = useState([]); // Array of Image objects
+    const [documentName, setDocumentName] = useState('');
+    const [mode, setMode] = useState('block'); // 'block' | 'blur'
+    const [redactions, setRedactions] = useState([]); // {pageIndex, x, y, w, h, type}
     const [isDrawing, setIsDrawing] = useState(false);
     const [startPos, setStartPos] = useState({ x: 0, y: 0 });
     const [currentRect, setCurrentRect] = useState(null);
+    const [activePageIndex, setActivePageIndex] = useState(0);
+    const [zoomLevel, setZoomLevel] = useState(1);
+    const [isLoading, setIsLoading] = useState(false);
 
-    const canvasRef = useRef(null);
-    const containerRef = useRef(null);
     const fileInputRef = useRef(null);
+    const pageCanvasRefs = useRef([]);
+    const docScrollRef = useRef(null);
+    const containerRef = useRef(null);
 
-    // Load image onto canvas
-    useEffect(() => {
-        if (file && canvasRef.current && containerRef.current) {
-            const img = new Image();
-            img.src = URL.createObjectURL(file);
-            img.onload = () => {
-                setImage(img);
-                const canvas = canvasRef.current;
-                const ctx = canvas.getContext('2d');
-
-                // Calculate aspect ratio fit
-                const containerWidth = containerRef.current.clientWidth;
-                const scale = Math.min(containerWidth / img.width, 1);
-
-                canvas.width = img.width * scale;
-                canvas.height = img.height * scale;
-
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                setHistory([]); // Reset history
+    // Load PDF.js from CDN (same as signature)
+    const loadPdfJs = () => {
+        return new Promise((resolve, reject) => {
+            if (window.pdfjsLib) {
+                resolve(window.pdfjsLib);
+                return;
+            }
+            const script = document.createElement('script');
+            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+            script.onload = () => {
+                window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+                resolve(window.pdfjsLib);
             };
-        }
-    }, [file]);
-
-    // Redraw canvas with history
-    const redraw = () => {
-        if (!canvasRef.current || !image) return;
-        const canvas = canvasRef.current;
-        const ctx = canvas.getContext('2d');
-
-        // Clear and draw text
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-
-        // Draw history
-        [...history, currentRect].forEach(rect => {
-            if (!rect) return;
-            ctx.fillStyle = 'black';
-            ctx.fillRect(rect.x, rect.y, rect.w, rect.h);
+            script.onerror = reject;
+            document.head.appendChild(script);
         });
     };
 
-    useEffect(() => {
-        redraw();
-    }, [history, currentRect]);
+    const handleFileUpload = async (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
 
-    const getPos = (e) => {
-        const canvas = canvasRef.current;
+        setFile(file);
+        setDocumentName(file.name);
+        setRedactions([]);
+        setZoomLevel(1);
+        setIsLoading(true);
+
+        if (file.type === 'application/pdf') {
+            try {
+                const pdfjsLib = await loadPdfJs();
+                const arrayBuffer = await file.arrayBuffer();
+                const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+
+                const pages = [];
+                const scale = 2; // High quality render
+
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const viewport = page.getViewport({ scale });
+
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = viewport.width;
+                    canvas.height = viewport.height;
+
+                    await page.render({ canvasContext: ctx, viewport }).promise;
+
+                    const img = new Image();
+                    await new Promise((resolve) => {
+                        img.onload = resolve;
+                        img.src = canvas.toDataURL('image/png');
+                    });
+                    pages.push(img);
+                }
+                setDocumentPages(pages);
+            } catch (err) {
+                console.error('PDF error:', err);
+                alert('Gagal membaca PDF. Pastikan file tidak corrupt.');
+            } finally {
+                setIsLoading(false);
+            }
+        } else {
+            // Handle Image
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const img = new Image();
+                img.onload = () => {
+                    setDocumentPages([img]);
+                    setIsLoading(false);
+                };
+                img.src = ev.target?.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    // Rendering Logic
+    useEffect(() => {
+        if (documentPages.length === 0) return;
+
+        let baseWidth = 800;
+        if (docScrollRef.current) {
+            baseWidth = docScrollRef.current.clientWidth - 40;
+        }
+
+        documentPages.forEach((pageImg, pageIndex) => {
+            const canvas = pageCanvasRefs.current[pageIndex];
+            if (!canvas) return;
+
+            const containerWidth = baseWidth * zoomLevel;
+            const aspectRatio = pageImg.height / pageImg.width;
+            const displayWidth = containerWidth;
+            const displayHeight = containerWidth * aspectRatio;
+
+            // Sync internal resolution with image resolution if needed
+            // But we already rendered PDF at scale 2, let's keep it clean
+            if (canvas.width !== pageImg.width || canvas.height !== pageImg.height) {
+                canvas.width = pageImg.width;
+                canvas.height = pageImg.height;
+            }
+
+            const ctx = canvas.getContext('2d');
+            if (!ctx) return;
+
+            // 1. Draw base image
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(pageImg, 0, 0);
+
+            // 2. Draw historical redactions
+            const pageRedactions = redactions.filter(r => r.pageIndex === pageIndex);
+
+            // Current drawing rect (preview)
+            const allToDraw = isDrawing && currentRect && currentRect.pageIndex === pageIndex
+                ? [...pageRedactions, currentRect]
+                : pageRedactions;
+
+            allToDraw.forEach(rect => {
+                if (rect.type === 'block') {
+                    ctx.fillStyle = 'black';
+                    ctx.fillRect(rect.x, rect.y, rect.w, rect.h);
+                } else if (rect.type === 'blur') {
+                    // Optimized Blur: Use filter
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.rect(rect.x, rect.y, rect.w, rect.h);
+                    ctx.clip();
+                    ctx.filter = 'blur(15px)';
+                    ctx.drawImage(pageImg, 0, 0);
+                    ctx.restore();
+                    ctx.filter = 'none'; // reset
+                }
+            });
+
+            // Update style display
+            canvas.style.width = `${displayWidth}px`;
+            canvas.style.height = `${displayHeight}px`;
+        });
+    }, [documentPages, zoomLevel, redactions, isDrawing, currentRect]);
+
+    const getPos = (e, pageIndex) => {
+        const canvas = pageCanvasRefs.current[pageIndex];
+        if (!canvas) return { x: 0, y: 0 };
         const rect = canvas.getBoundingClientRect();
+
+        // Map client coordinates to canvas internal resolution
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+
         return {
-            x: (e.clientX - rect.left),
-            y: (e.clientY - rect.top)
+            x: (e.clientX - rect.left) * scaleX,
+            y: (e.clientY - rect.top) * scaleY
         };
     };
 
-    const handleMouseDown = (e) => {
-        if (!image) return;
+    const handleMouseDown = (e, pageIndex) => {
         setIsDrawing(true);
-        setStartPos(getPos(e));
+        setActivePageIndex(pageIndex);
+        const pos = getPos(e, pageIndex);
+        setStartPos(pos);
     };
 
-    const handleMouseMove = (e) => {
-        if (!isDrawing || !image) return;
-        const currentPos = getPos(e);
+    const handleMouseMove = (e, pageIndex) => {
+        if (!isDrawing) return;
+        const currentPos = getPos(e, pageIndex);
 
         setCurrentRect({
+            pageIndex,
             x: Math.min(startPos.x, currentPos.x),
             y: Math.min(startPos.y, currentPos.y),
             w: Math.abs(currentPos.x - startPos.x),
             h: Math.abs(currentPos.y - startPos.y),
-            type: 'block'
+            type: mode
         });
     };
 
     const handleMouseUp = () => {
-        if (!isDrawing || !image) return;
-        setIsDrawing(false);
-        if (currentRect) {
-            setHistory([...history, currentRect]);
+        if (isDrawing && currentRect) {
+            setRedactions([...redactions, currentRect]);
             setCurrentRect(null);
         }
+        setIsDrawing(false);
     };
 
     const handleUndo = () => {
-        setHistory(history.slice(0, -1));
+        setRedactions(redactions.slice(0, -1));
     };
 
-    const handleDownload = () => {
-        if (!canvasRef.current) return;
-        const link = document.createElement('a');
-        link.download = `protected-${file.name}`;
-        link.href = canvasRef.current.toDataURL();
-        link.click();
+    const handleZoomIn = () => setZoomLevel(prev => Math.min(prev + 0.1, 2));
+    const handleZoomOut = () => setZoomLevel(prev => Math.max(prev - 0.1, 0.5));
+
+    const handleDownload = async () => {
+        if (documentPages.length === 0) return;
+        setIsLoading(true);
+
+        try {
+            if (file.type === 'application/pdf') {
+                const { jsPDF } = await import('jspdf');
+                let pdf = null;
+
+                for (let i = 0; i < documentPages.length; i++) {
+                    const canvas = pageCanvasRefs.current[i];
+                    const imgData = canvas.toDataURL('image/png', 0.95);
+                    const orientation = canvas.width > canvas.height ? 'landscape' : 'portrait';
+
+                    if (i === 0) {
+                        pdf = new jsPDF({
+                            orientation,
+                            unit: 'px',
+                            format: [canvas.width, canvas.height]
+                        });
+                    } else {
+                        pdf.addPage([canvas.width, canvas.height], orientation);
+                    }
+                    pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+                }
+                pdf.save(`sensor-${documentName}.pdf`);
+            } else {
+                const canvas = pageCanvasRefs.current[0];
+                const link = document.createElement('a');
+                link.download = `sensor-${documentName}`;
+                link.href = canvas.toDataURL('image/png', 0.95);
+                link.click();
+            }
+        } catch (err) {
+            console.error('Download error:', err);
+            alert('Gagal mengunduh file.');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleReset = () => {
+        setFile(null);
+        setDocumentPages([]);
+        setRedactions([]);
+        setDocumentName('');
     };
 
     return (
@@ -120,12 +288,12 @@ export default function RedactionTool() {
             <div className={styles.container}>
                 <Head>
                     <title>Sensor Data Dokumen - AmaninKTP</title>
-                    <meta name="description" content="Tutup data sensitif pada dokumen KTP/SIM dengan mudah dan aman." />
+                    <meta name="description" content="Tutup data sensitif pada dokumen KTP/SIM dengan mudah dan aman secara offline." />
                 </Head>
 
                 <div className={styles.header}>
-                    <h1>Sensor Data</h1>
-                    <p>Tutupi data sensitif (NIK, Nama Ibu, dll) sebelum dibagikan.</p>
+                    <h1>🙈 Sensor <span>Data</span></h1>
+                    <p>Tutupi data sensitif (NIK, Nama, Foto) dengan Black-out atau Blur.</p>
                 </div>
 
                 {!file ? (
@@ -136,8 +304,8 @@ export default function RedactionTool() {
                         <input
                             type="file"
                             ref={fileInputRef}
-                            onChange={(e) => setFile(e.target.files[0])}
-                            accept="image/*"
+                            onChange={handleFileUpload}
+                            accept="image/*,application/pdf"
                             hidden
                         />
                         <div className={styles.uploadContent}>
@@ -145,54 +313,89 @@ export default function RedactionTool() {
                                 <EyeOff size={32} />
                             </div>
                             <h3>Upload Dokumen</h3>
-                            <p>Klik untuk memilih foto (JPG, PNG)</p>
+                            <p>Mendukung Gambar (JPG, PNG) & PDF</p>
+                            <span className={styles.safeTag}>🔒 100% Client-Side</span>
                         </div>
                     </div>
                 ) : (
                     <div className={styles.workspace}>
-                        {/* Toolbar */}
-                        <div className={styles.toolbar}>
+                        {/* Control Panel */}
+                        <div className={styles.controlPanel}>
                             <div className={styles.toolGroup}>
                                 <button
                                     className={`${styles.toolBtn} ${mode === 'block' ? styles.active : ''}`}
                                     onClick={() => setMode('block')}
+                                    title="Block Hitam"
                                 >
-                                    <Square size={20} /> Block Hitam
+                                    <Square size={20} />
+                                    <span>Block</span>
                                 </button>
-                                {/* Future: Blur Tool */}
+                                <button
+                                    className={`${styles.toolBtn} ${mode === 'blur' ? styles.active : ''}`}
+                                    onClick={() => setMode('blur')}
+                                    title="Blur"
+                                >
+                                    <Maximize size={20} className={styles.blurIcon} />
+                                    <span>Blur</span>
+                                </button>
                             </div>
 
-                            <div className={styles.actionGroup}>
-                                <button className={styles.iconBtn} onClick={handleUndo} disabled={history.length === 0}>
-                                    <RotateCcw size={20} /> Undo
+                            <div className={styles.divider} />
+
+                            <div className={styles.zoomGroup}>
+                                <button onClick={handleZoomOut} className={styles.iconBtn} title="Zoom Out">
+                                    <ZoomOut size={20} />
                                 </button>
-                                <button className={styles.downloadBtn} onClick={handleDownload}>
-                                    <Download size={20} /> Download
+                                <span className={styles.zoomValue}>{Math.round(zoomLevel * 100)}%</span>
+                                <button onClick={handleZoomIn} className={styles.iconBtn} title="Zoom In">
+                                    <ZoomIn size={20} />
+                                </button>
+                            </div>
+
+                            <div className={styles.divider} />
+
+                            <div className={styles.actionGroup}>
+                                <button
+                                    className={styles.iconBtn}
+                                    onClick={handleUndo}
+                                    disabled={redactions.length === 0}
+                                    title="Undo"
+                                >
+                                    <RotateCcw size={20} />
+                                </button>
+                                <button className={styles.downloadBtn} onClick={handleDownload} disabled={isLoading}>
+                                    {isLoading ? '...' : <><Download size={20} /> Download</>}
+                                </button>
+                                <button className={styles.resetBtn} onClick={handleReset} title="Mulai Ulang">
+                                    <X size={20} />
                                 </button>
                             </div>
                         </div>
 
-                        {/* Canvas Area */}
-                        <div className={styles.canvasWrapper} ref={containerRef}>
-                            <canvas
-                                ref={canvasRef}
-                                onMouseDown={handleMouseDown}
-                                onMouseMove={handleMouseMove}
-                                onMouseUp={handleMouseUp}
-                                onMouseLeave={handleMouseUp}
-                                className={styles.canvas}
-                            />
-                            {history.length === 0 && !isDrawing && (
-                                <div className={styles.overlayHint}>
-                                    <MousePointer2 size={24} />
-                                    <p>Drag untuk membuat kotak sensor</p>
+                        {/* Document Viewer */}
+                        <div className={styles.viewerContainer} ref={docScrollRef}>
+                            {isLoading && documentPages.length === 0 ? (
+                                <div className={styles.loadingOverlay}>Memproses Dokumen...</div>
+                            ) : (
+                                <div className={styles.pagesList}>
+                                    {documentPages.map((page, index) => (
+                                        <div key={index} className={styles.pageWrapper}>
+                                            <div className={styles.pageLabel}>Halaman {index + 1}</div>
+                                            <div className={styles.canvasContainer}>
+                                                <canvas
+                                                    ref={el => pageCanvasRefs.current[index] = el}
+                                                    onMouseDown={(e) => handleMouseDown(e, index)}
+                                                    onMouseMove={(e) => handleMouseMove(e, index)}
+                                                    onMouseUp={handleMouseUp}
+                                                    onMouseLeave={handleMouseUp}
+                                                    className={styles.pageCanvas}
+                                                />
+                                            </div>
+                                        </div>
+                                    ))}
                                 </div>
                             )}
                         </div>
-
-                        <button className={styles.resetLink} onClick={() => setFile(null)}>
-                            Ganti Gambar
-                        </button>
                     </div>
                 )}
 
@@ -200,7 +403,6 @@ export default function RedactionTool() {
                 <section className={styles.trust}>
                     <div className={styles.trustItem}>🔒 100% Client-Side</div>
                     <div className={styles.trustItem}>🚫 Tanpa Upload Server</div>
-                    <div className={styles.trustItem}>⚡ Tanpa Login</div>
                     <div className={styles.trustItem}>🇮🇩 Karya Lokal</div>
                 </section>
             </div>

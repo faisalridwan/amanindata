@@ -1,5 +1,5 @@
 .container {
-    max-width: 1000px;
+    max-width: 1400px;
     margin: 0 auto;
     padding: 20px;
     min-height: 80vh;
@@ -7,294 +7,318 @@
 
 .header {
     text-align: center;
-    margin-bottom: 40px;
-}
-
-.backLink {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    color: var(--text-secondary);
-    text-decoration: none;
-    margin-bottom: 16px;
-    font-size: 14px;
-    font-weight: 500;
+    margin-bottom: 30px;
 }
 
 .header h1 {
-    font-size: 32px;
+    font-size: 36px;
     color: var(--text-primary);
     margin-bottom: 8px;
+}
+
+.header h1 span {
+    color: var(--primary-dark);
 }
 
 .header p {
     color: var(--text-secondary);
 }
 
-/* Upload Area (Reuse standard style) */
+/* Upload Area */
 .uploadArea {
     max-width: 600px;
     margin: 40px auto;
-    padding: 60px 20px;
+    padding: 80px 40px;
     background: var(--bg-secondary);
-    border: 2px dashed rgba(168, 197, 240, 0.6);
-    border-radius: 20px;
+    border: 3px dashed rgba(168, 197, 240, 0.4);
+    border-radius: 24px;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .uploadArea:hover {
     border-color: var(--primary-dark);
     background: rgba(168, 197, 240, 0.1);
+    transform: scale(1.01);
 }
 
 .iconCircle {
-    width: 80px;
-    height: 80px;
+    width: 90px;
+    height: 90px;
     background: white;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 20px;
-    box-shadow: 4px 4px 12px rgba(174, 186, 202, 0.3), -4px -4px 12px rgba(255, 255, 255, 0.8);
+    margin-bottom: 24px;
+    box-shadow: 6px 6px 15px rgba(174, 186, 202, 0.4), -6px -6px 15px rgba(255, 255, 255, 0.9);
     color: var(--primary-dark);
 }
 
 .uploadContent h3 {
-    font-size: 18px;
-    color: var(--text-primary);
+    font-size: 22px;
     margin-bottom: 8px;
+    color: var(--text-primary);
 }
 
 .uploadContent p {
     color: var(--text-muted);
-    font-size: 14px;
 }
 
-/* Workspace */
+.safeTag {
+    margin-top: 20px;
+    display: inline-block;
+    padding: 6px 14px;
+    background: #DCFCE7;
+    color: #166534;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* Workspace Layout */
 .workspace {
     display: flex;
     flex-direction: column;
     gap: 20px;
+    height: calc(100vh - 250px);
+    min-height: 600px;
+}
+
+/* Control Panel */
+.controlPanel {
+    display: flex;
     align-items: center;
-}
-
-/* Toolbar */
-.toolbar {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    padding: 12px 20px;
+    gap: 15px;
+    padding: 12px 24px;
     background: var(--bg-primary);
-    border-radius: 16px;
-    box-shadow: 4px 4px 12px rgba(174, 186, 202, 0.3), -4px -4px 12px rgba(255, 255, 255, 0.8);
+    border-radius: 20px;
+    box-shadow: 4px 4px 15px rgba(174, 186, 202, 0.3), -4px -4px 15px rgba(255, 255, 255, 0.8);
+    position: sticky;
+    top: 20px;
+    z-index: 100;
 }
 
-.toolGroup {
+.toolGroup,
+.zoomGroup,
+.actionGroup {
     display: flex;
-    gap: 12px;
+    align-items: center;
+    gap: 10px;
+}
+
+.divider {
+    width: 1px;
+    height: 24px;
+    background: rgba(0, 0, 0, 0.1);
 }
 
 .toolBtn {
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 8px 16px;
+    padding: 10px 18px;
+    border-radius: 12px;
     border: none;
-    border-radius: 8px;
     background: transparent;
     color: var(--text-secondary);
-    font-weight: 500;
+    font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
 }
 
-.toolBtn:hover {
-    color: var(--text-primary);
-    background: rgba(0, 0, 0, 0.05);
-}
-
 .toolBtn.active {
-    background: var(--primary-light);
-    color: var(--primary-dark);
-    box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.actionGroup {
-    display: flex;
-    gap: 12px;
+    background: #E0E7FF;
+    color: #4338CA;
+    box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .iconBtn {
+    width: 42px;
+    height: 42px;
     display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 8px 16px;
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    background: transparent;
-    color: var(--text-secondary);
-    font-size: 14px;
+    justify-content: center;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    background: white;
     cursor: pointer;
+    transition: all 0.2s;
+    color: var(--text-secondary);
+}
+
+.iconBtn:hover:not(:disabled) {
+    background: #F8FAFC;
+    color: var(--text-primary);
+    transform: translateY(-1px);
 }
 
 .iconBtn:disabled {
-    opacity: 0.5;
+    opacity: 0.4;
     cursor: not-allowed;
 }
 
-.iconBtn:not(:disabled):hover {
-    background: rgba(0, 0, 0, 0.05);
-    color: var(--text-primary);
+.zoomValue {
+    font-size: 14px;
+    font-weight: 600;
+    min-width: 50px;
+    text-align: center;
 }
 
 .downloadBtn {
+    padding: 10px 24px;
+    border-radius: 12px;
+    border: none;
+    background: linear-gradient(135deg, #1E3A8A, #3B82F6);
+    color: white;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 8px 20px;
-    background: linear-gradient(135deg, #2D4A7C, #5B8DEF);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    box-shadow: 2px 2px 6px rgba(45, 74, 124, 0.2);
+    box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
     transition: all 0.2s;
 }
 
 .downloadBtn:hover {
     transform: translateY(-2px);
-    box-shadow: 4px 4px 10px rgba(45, 74, 124, 0.3);
+    box-shadow: 0 6px 15px rgba(59, 130, 246, 0.4);
 }
 
-/* Canvas Wrapper */
-.canvasWrapper {
-    position: relative;
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 4px 4px 12px rgba(174, 186, 202, 0.3), -4px -4px 12px rgba(255, 255, 255, 0.8);
+.resetBtn {
+    width: 42px;
+    height: 42px;
     display: flex;
+    align-items: center;
     justify-content: center;
-    width: 100%;
+    border-radius: 12px;
+    border: none;
+    background: #FEE2E2;
+    color: #EF4444;
+    cursor: pointer;
 }
 
-.canvas {
-    max-width: 100%;
-    cursor: crosshair;
-    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
-}
-
-.overlayHint {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(0, 0, 0, 0.7);
-    color: white;
-    padding: 12px 24px;
-    border-radius: 30px;
+/* Viewer Container */
+.viewerContainer {
+    flex: 1;
+    overflow: auto;
+    background: #F1F5F9;
+    border-radius: 20px;
+    padding: 40px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
-    pointer-events: none;
-    animation: fadeOut 3s forwards;
-    z-index: 10;
+    box-shadow: inset 4px 4px 15px rgba(0, 0, 0, 0.05);
 }
 
-@keyframes fadeOut {
-    0% {
-        opacity: 1;
-    }
-
-    70% {
-        opacity: 1;
-    }
-
-    100% {
-        opacity: 0;
-        visibility: hidden;
-    }
+.pagesList {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
 }
 
-.resetLink {
-    background: none;
-    border: none;
+.pageWrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.pageLabel {
+    font-size: 13px;
+    font-weight: 600;
     color: var(--text-muted);
-    text-decoration: underline;
-    cursor: pointer;
-    font-size: 14px;
 }
 
-/* Dark Mode Overrides */
-:global([data-theme="dark"]) .canvasWrapper {
-    background: rgba(30, 41, 59, 0.6);
-    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.3), inset -2px -2px 5px rgba(51, 65, 85, 0.15);
+.canvasContainer {
+    background: white;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+    line-height: 0;
 }
 
-:global([data-theme="dark"]) .toolbar {
+.pageCanvas {
+    cursor: crosshair;
+}
+
+/* Dark Mode */
+:global([data-theme="dark"]) .controlPanel {
     background: var(--bg-secondary);
-    box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.4), -4px -4px 12px rgba(51, 65, 85, 0.2);
+    box-shadow: 4px 4px 15px rgba(0, 0, 0, 0.5), -4px -4px 15px rgba(51, 65, 85, 0.1);
+}
+
+:global([data-theme="dark"]) .viewerContainer {
+    background: #0F172A;
+    box-shadow: inset 4px 4px 15px rgba(0, 0, 0, 0.3);
 }
 
 :global([data-theme="dark"]) .iconBtn {
-    border-color: rgba(255, 255, 255, 0.1);
+    background: #1E293B;
+    border-color: rgba(255, 255, 255, 0.05);
+}
+
+:global([data-theme="dark"]) .toolBtn.active {
+    background: #312E81;
+    color: #C7D2FE;
 }
 
 :global([data-theme="dark"]) .iconCircle {
-    background: var(--bg-secondary);
-    box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.4), -4px -4px 12px rgba(51, 65, 85, 0.2);
+    background: #1E293B;
+    box-shadow: 6px 6px 15px rgba(0, 0, 0, 0.5), -6px -6px 15px rgba(51, 65, 85, 0.1);
+}
+
+:global([data-theme="dark"]) .safeTag {
+    background: #064E3B;
+    color: #D1FAE5;
+}
+
+:global([data-theme="dark"]) .divider {
+    background: rgba(255, 255, 255, 0.1);
 }
 
 /* Mobile */
-@media (max-width: 600px) {
-    .toolbar {
-        flex-direction: column;
-        gap: 16px;
-    }
-
-    .actionGroup {
-        justify-content: space-between;
-    }
-
-    .downloadBtn,
-    .iconBtn {
-        flex: 1;
+@media (max-width: 768px) {
+    .controlPanel {
+        flex-wrap: wrap;
         justify-content: center;
+        padding: 10px;
+    }
+
+    .viewerContainer {
+        padding: 20px 10px;
+    }
+
+    .divider {
+        display: none;
+    }
+
+    .toolBtn span {
+        display: none;
     }
 }
 
-/* Trust Badges */
+/* Trust Section */
 .trust {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 10px;
-    padding: 40px 0 20px;
-    margin-top: 40px;
+    gap: 15px;
+    padding: 60px 0 20px;
     border-top: 1px dashed rgba(0, 0, 0, 0.1);
 }
 
 .trustItem {
-    padding: 8px 16px;
+    padding: 10px 20px;
     background: var(--bg-primary);
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 500;
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 600;
     color: var(--text-secondary);
-    box-shadow: 2px 2px 6px rgba(174, 186, 202, 0.25), -2px -2px 6px rgba(255, 255, 255, 0.8);
-}
-
-:global([data-theme="dark"]) .trust {
-    border-top-color: rgba(255, 255, 255, 0.1);
-}
-
-:global([data-theme="dark"]) .trustItem {
-    background: var(--bg-secondary);
-    color: var(--text-muted);
-    box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.3), -2px -2px 6px rgba(51, 65, 85, 0.15);
+    box-shadow: 4px 4px 10px rgba(174, 186, 202, 0.3), -4px -4px 10px rgba(255, 255, 255, 0.8);
 }
