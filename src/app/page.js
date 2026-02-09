@@ -245,7 +245,7 @@ export default function Home() {
             })
             return
         }
-
+        setIsPdf(false)
         const reader = new FileReader()
         reader.onload = (event) => {
             const img = new Image()
@@ -507,9 +507,9 @@ export default function Home() {
             const rect = canvas.getBoundingClientRect()
             if (rect.width > 0 && canvas.width > 0) {
                 setCanvasMetrics({
-                    width: rect.width,
-                    height: rect.height,
-                    scale: rect.width / canvas.width
+                    width: rect.width / zoomLevel,
+                    height: rect.height / zoomLevel,
+                    scale: (rect.width / zoomLevel) / canvas.width
                 })
             }
         }
@@ -530,7 +530,7 @@ export default function Home() {
             clearTimeout(timer)
             window.removeEventListener('resize', updateMetrics)
         }
-    }, [imageLoaded, croppedImage, uploadedImage])
+    }, [imageLoaded, croppedImage, uploadedImage, zoomLevel])
 
     const handleWatermarkUpdate = (updates) => {
         if (updates.x !== undefined) setTextPosition(prev => ({ ...prev, x: updates.x, y: updates.y }))
