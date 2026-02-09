@@ -11,7 +11,7 @@ export default function ChangelogPage() {
             version: '1.0.0',
             date: '8 Februari 2026',
             title: 'Initial Release (Public)',
-            description: 'Peluncuran perdana AmaninKTP - Solusi terpadu untuk privasi dokumen identitas masyarakat Indonesia.',
+            description: 'Peluncuran perdana Amanin Data - Solusi terpadu untuk privasi dokumen identitas masyarakat Indonesia.',
             changes: [
                 { icon: Sparkles, text: 'Fitur Utama: Watermark KTP dan Tanda Tangan Digital (TTD) Online.' },
                 { icon: Shield, text: 'Privasi Mutlak: Seluruh pemrosesan dilakukan di sisi klien (browser), 100% tanpa upload ke server.' },
@@ -31,7 +31,7 @@ export default function ChangelogPage() {
                 <header className={styles.hero}>
                     <h1 className={styles.heroTitle}><History size={32} /> Riwayat Perubahan</h1>
                     <p className={styles.heroSubtitle}>
-                        Ikuti perkembangan fitur dan pembaruan sistem AmaninKTP.
+                        Ikuti perkembangan fitur dan pembaruan sistem Amanin Data.
                     </p>
                 </header>
 

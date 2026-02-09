@@ -55,7 +55,7 @@ export default function AboutPage() {
             <main className="container">
                 {/* Hero */}
                 <header className={styles.hero}>
-                    <h1 className={styles.heroTitle}>Tentang <span>AmaninKTP</span></h1>
+                    <h1 className={styles.heroTitle}>Tentang <span>Amanin Data</span></h1>
                     <p className={styles.heroSubtitle}>
                         Aplikasi gratis buatan Indonesia untuk melindungi dokumen identitas dengan watermark.
                         100% aman, 100% privat, langsung di browser Anda.
@@ -170,7 +170,7 @@ export default function AboutPage() {
                     <div className={`neu-card no-hover ${styles.openSourceCard}`}>
                         <Code size={32} />
                         <h3>Dibangun dengan Teknologi Open Source</h3>
-                        <p>AmaninKTP menggunakan Next.js, React, Lucide Icons, dan jsPDF untuk memberikan pengalaman terbaik.</p>
+                        <p>Amanin Data menggunakan Next.js, React, Lucide Icons, dan jsPDF untuk memberikan pengalaman terbaik.</p>
                         <Link href="/libraries" className={styles.textLink}>Lihat Perpustakaan →</Link>
                     </div>
                 </section>

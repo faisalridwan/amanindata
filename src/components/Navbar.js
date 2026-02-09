@@ -30,7 +30,7 @@ export default function Navbar() {
         <nav className={styles.navbar}>
             <div className={`container ${styles.navContent}`}>
                 <Link href="/" className={styles.logo}>
-                    📄 AmaninKTP
+                    📄 Amanin Data
                 </Link>
 
                 <button

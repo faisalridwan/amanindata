@@ -44,5 +44,17 @@ export default function sitemap() {
             changeFrequency: 'yearly',
             priority: 0.3,
         },
+        {
+            url: 'https://amanindata.qreatip.com/redact',
+            lastModified: new Date(),
+            changeFrequency: 'weekly',
+            priority: 0.8,
+        },
+        {
+            url: 'https://amanindata.qreatip.com/compress',
+            lastModified: new Date(),
+            changeFrequency: 'weekly',
+            priority: 0.8,
+        },
     ]
 }

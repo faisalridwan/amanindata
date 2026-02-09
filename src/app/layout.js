@@ -12,12 +12,12 @@ const poppins = Poppins({
 })
 
 export const metadata = {
-    title: 'Watermark KTP Online & TTD Digital – Aman & Lokal | AmaninKTP',
+    title: 'Watermark KTP Online & TTD Digital – Aman & Lokal | Amanin Data',
     description: 'Lindungi dokumen Anda dengan Watermark KTP dan Tanda Tangan Digital online gratis. Diproses 100% di browser, tanpa upload data ke server. Aman dan terpercaya.',
-    keywords: 'watermark ktp, watermark online, tanda tangan online, ttd digital, ttd pdf, keamanan data, amaninktp, qreatip',
+    keywords: 'watermark ktp, watermark online, tanda tangan online, ttd digital, ttd pdf, keamanan data, amanin data, qreatip',
     authors: [{ name: 'Faisal Ridwan', url: 'https://qreatip.com' }],
     creator: 'Faisal Ridwan',
-    publisher: 'AmaninKTP',
+    publisher: 'Amanin Data',
     metadataBase: new URL('https://amanindata.qreatip.com'),
     alternates: {
         canonical: '/',
@@ -27,14 +27,14 @@ export const metadata = {
         description: 'Cara aman buat watermark KTP dan tanda tangan digital langsung di browser tanpa upload data.',
         type: 'website',
         url: 'https://amanindata.qreatip.com',
-        siteName: 'AmaninKTP',
+        siteName: 'Amanin Data',
         locale: 'id_ID',
         images: [
             {
                 url: '/images/og-image.jpg',
                 width: 1200,
                 height: 630,
-                alt: 'AmaninKTP Preview',
+                alt: 'Amanin Data Preview',
             },
         ],
     },

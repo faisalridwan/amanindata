@@ -66,7 +66,7 @@ export default function LibrariesPage() {
                 <header className={styles.hero}>
                     <h1 className={styles.heroTitle}><Library size={32} /> Perpustakaan</h1>
                     <p className={styles.heroSubtitle}>
-                        AmaninKTP dibangun dengan teknologi open-source terbaik.
+                        Amanin Data dibangun dengan teknologi open-source terbaik.
                     </p>
                 </header>
 

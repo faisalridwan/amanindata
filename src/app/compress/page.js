@@ -1,24 +1,14 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import Head from 'next/head';
 import Link from 'next/link';
 
 import {
     Download,
     Upload,
     Image as ImageIcon,
-    ArrowRight,
-    RefreshCw,
-    FileImage,
-    Settings,
-    Check,
-    FileText,
     Zap,
     ShieldCheck,
-    Gauge,
-    X,
-    ChevronRight,
     Layout
 } from 'lucide-react';
 
@@ -45,6 +35,8 @@ export default function ImageCompressor() {
     const [compressedBlob, setCompressedBlob] = useState(null);
     const [compressedPages, setCompressedPages] = useState([]); // Array of dataURLs
     const [progress, setProgress] = useState(0);
+
+    const [isSettingsDirty, setIsSettingsDirty] = useState(true);
 
     const fileInputRef = useRef(null);
 
@@ -82,6 +74,7 @@ export default function ImageCompressor() {
         setOriginalSize(selectedFile.size);
         setCompressedBlob(null);
         setPreviews([]);
+        setIsSettingsDirty(true);
 
         // Set default custom target size to 50% of original
         const halfSizeMB = (selectedFile.size / (1024 * 1024)) * 0.5;
@@ -225,6 +218,7 @@ export default function ImageCompressor() {
                 // but for PNG download we need them. Let's collect them in runCompression.
             }
             setProgress(100);
+            setIsSettingsDirty(false); // Mark as clean after compression
         } catch (err) {
             console.error('Compression error:', err);
             alert('Gagal mengompres file.');
@@ -294,17 +288,25 @@ export default function ImageCompressor() {
         setCompressedSize(0);
         setCompressedPages([]);
         setAdvancedMode(false);
+        setIsSettingsDirty(true);
         if (fileInputRef.current) fileInputRef.current.value = '';
+    };
+
+    // Handler helpers to mark dirty
+    const updatePreset = (preset) => {
+        setQualityPreset(preset);
+        setIsSettingsDirty(true);
+    };
+
+    const updateCustomSettings = (newSettings) => {
+        setCustomSettings(newSettings);
+        setIsSettingsDirty(true);
     };
 
     return (
         <>
             <Navbar />
             <div className={styles.container}>
-                <Head>
-                    <title>Kompres Foto & PDF - AmaninKTP</title>
-                    <meta name="description" content="Kecilkan ukuran file KTP, dokumen, dan PDF secara offline dan aman." />
-                </Head>
 
                 <div className={styles.header}>
                     <h1>⚡ Kompres <span>File</span></h1>
@@ -332,6 +334,7 @@ export default function ImageCompressor() {
                             <div className={styles.supportedTypes}>
                                 <span>JPG</span> <span>PNG</span> <span>PDF</span>
                             </div>
+                            <span className={styles.safeTag}>🔒 100% Client-Side</span>
                         </div>
                     </div>
                 ) : (
@@ -358,7 +361,7 @@ export default function ImageCompressor() {
                                     <div className={styles.presetSelection}>
                                         <button
                                             className={`${styles.presetBtn} ${qualityPreset === 'high' ? styles.active : ''}`}
-                                            onClick={() => setQualityPreset('high')}
+                                            onClick={() => updatePreset('high')}
                                         >
                                             <div className={styles.presetTop}>
                                                 <div className={styles.presetLabel}>High</div>
@@ -368,7 +371,7 @@ export default function ImageCompressor() {
                                         </button>
                                         <button
                                             className={`${styles.presetBtn} ${qualityPreset === 'medium' ? styles.active : ''}`}
-                                            onClick={() => setQualityPreset('medium')}
+                                            onClick={() => updatePreset('medium')}
                                         >
                                             <div className={styles.presetTop}>
                                                 <div className={styles.presetLabel}>Medium</div>
@@ -378,7 +381,7 @@ export default function ImageCompressor() {
                                         </button>
                                         <button
                                             className={`${styles.presetBtn} ${qualityPreset === 'low' ? styles.active : ''}`}
-                                            onClick={() => setQualityPreset('low')}
+                                            onClick={() => updatePreset('low')}
                                         >
                                             <div className={styles.presetTop}>
                                                 <div className={styles.presetLabel}>Low</div>
@@ -397,7 +400,7 @@ export default function ImageCompressor() {
                                                 max="1"
                                                 step="0.05"
                                                 value={customSettings.quality}
-                                                onChange={(e) => setCustomSettings({ ...customSettings, quality: parseFloat(e.target.value) })}
+                                                onChange={(e) => updateCustomSettings({ ...customSettings, quality: parseFloat(e.target.value) })}
                                             />
                                         </div>
                                         <div className={styles.settingItem}>
@@ -408,7 +411,7 @@ export default function ImageCompressor() {
                                                 max="4000"
                                                 step="100"
                                                 value={customSettings.maxWidth}
-                                                onChange={(e) => setCustomSettings({ ...customSettings, maxWidth: parseInt(e.target.value) })}
+                                                onChange={(e) => updateCustomSettings({ ...customSettings, maxWidth: parseInt(e.target.value) })}
                                             />
                                         </div>
                                         <div className={styles.settingItem}>
@@ -419,7 +422,7 @@ export default function ImageCompressor() {
                                                 max="5"
                                                 step="0.05"
                                                 value={customSettings.maxSizeMB}
-                                                onChange={(e) => setCustomSettings({ ...customSettings, maxSizeMB: parseFloat(e.target.value) })}
+                                                onChange={(e) => updateCustomSettings({ ...customSettings, maxSizeMB: parseFloat(e.target.value) })}
                                             />
                                         </div>
                                     </div>
@@ -452,22 +455,23 @@ export default function ImageCompressor() {
                             </div>
 
                             <div className={styles.actions}>
-                                {!compressedBlob ? (
-                                    <button
-                                        className={styles.mainActionBtn}
-                                        onClick={runCompression}
-                                        disabled={isCompressing}
-                                    >
-                                        {isCompressing ? `Memproses ${Math.round(progress)}%` : 'Kompres Sekarang'}
-                                    </button>
-                                ) : (
-                                    <div className={styles.downloadGroup}>
+                                <button
+                                    className={`${styles.mainActionBtn} ${!isSettingsDirty && compressedBlob ? styles.disabledAction : ''}`}
+                                    onClick={runCompression}
+                                    disabled={isCompressing || (!isSettingsDirty && !!compressedBlob)}
+                                    style={{ opacity: (!isSettingsDirty && !!compressedBlob) ? 0.5 : 1 }}
+                                >
+                                    {isCompressing ? `Memproses ${Math.round(progress)}%` : 'Kompres Sekarang'}
+                                </button>
+
+                                {compressedBlob && (
+                                    <div className={`${styles.downloadGroup} ${styles.successGroup}`} style={{ marginTop: '10px' }}>
                                         <button
                                             className={styles.downloadBtnSplit}
                                             onClick={() => handleDownload(window.document.getElementById('compressFormat').value)}
                                             disabled={isCompressing}
                                         >
-                                            {isCompressing ? '...' : <><Download size={18} /> Simpan Selaku</>}
+                                            <Download size={18} /> Simpan
                                         </button>
                                         <select
                                             id="compressFormat"
@@ -479,6 +483,7 @@ export default function ImageCompressor() {
                                         </select>
                                     </div>
                                 )}
+
                                 <button className={styles.resetBtn} onClick={handleReset}>
                                     Ganti File
                                 </button>
@@ -512,7 +517,7 @@ export default function ImageCompressor() {
 
                 {/* Features Detail */}
                 <section className={styles.featuresSection}>
-                    <h2>Keunggulan AmaninKTP</h2>
+                    <h2>Keunggulan Amanin Data</h2>
                     <div className={styles.featureGrid}>
                         <div className={styles.featureItem}>
                             <ShieldCheck className={styles.featureIcon} />
@@ -527,7 +532,7 @@ export default function ImageCompressor() {
                         <div className={styles.featureItem}>
                             <Layout className={styles.featureIcon} />
                             <h3>Multi Format</h3>
-                            <p>Mendukung kompresi dokumen Gambar dan PDF untuk syarat pendaftaran CPNS/BUMN.</p>
+                            <p>Mendukung kompresi dokumen Gambar dan PDF untuk syarat pendaftaran Apapun untuk kegiatan anda. di sensor dengan sesuai dan sangat baik</p>
                         </div>
                     </div>
                 </section>

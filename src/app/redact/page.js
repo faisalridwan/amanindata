@@ -1,25 +1,20 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import Head from 'next/head';
 import Link from 'next/link';
 import {
     Download,
-    Upload,
-    ArrowRight,
-    Eraser,
-    MousePointer2,
     Square,
     EyeOff,
     RotateCcw,
     Image as ImageIcon,
-    FileText,
     ZoomIn,
     ZoomOut,
     X,
-    Type,
+    Zap,
     Maximize,
-    Layout
+    Layout,
+    ShieldCheck
 } from 'lucide-react';
 import styles from './page.module.css';
 import Navbar from '@/components/Navbar';
@@ -302,10 +297,6 @@ export default function RedactionTool() {
         <>
             <Navbar />
             <div className={styles.container}>
-                <Head>
-                    <title>Sensor Data Dokumen - AmaninKTP</title>
-                    <meta name="description" content="Tutup data sensitif pada dokumen KTP/SIM dengan mudah dan aman secara offline." />
-                </Head>
 
                 <div className={styles.header}>
                     <h1>🙈 Sensor <span>Data</span></h1>
@@ -329,7 +320,10 @@ export default function RedactionTool() {
                                 <EyeOff size={32} />
                             </div>
                             <h3>Upload Dokumen</h3>
-                            <p>Mendukung Gambar (JPG, PNG) & PDF</p>
+                            <p>Tarik file atau klik untuk memilih (Gambar/PDF)</p>
+                            <div className={styles.supportedTypes}>
+                                <span>JPG</span> <span>PNG</span> <span>PDF</span>
+                            </div>
                             <span className={styles.safeTag}>🔒 100% Client-Side</span>
                         </div>
                     </div>
@@ -453,6 +447,28 @@ export default function RedactionTool() {
                         </div>
                     </div>
                 )}
+
+                {/* Features Detail */}
+                <section className={styles.featuresSection}>
+                    <h2>Keunggulan Amanin Data</h2>
+                    <div className={styles.featureGrid}>
+                        <div className={styles.featureItem}>
+                            <ShieldCheck className={styles.featureIcon} />
+                            <h3>100% Privacy</h3>
+                            <p>Semua proses terjadi di browser Anda secara lokal. File tidak dikirim ke internet.</p>
+                        </div>
+                        <div className={styles.featureItem}>
+                            <Zap className={styles.featureIcon} />
+                            <h3>Instan & Cepat</h3>
+                            <p>Kompresi dokumen dalam hitungan detik tanpa perlu antrian server.</p>
+                        </div>
+                        <div className={styles.featureItem}>
+                            <Layout className={styles.featureIcon} />
+                            <h3>Multi Format</h3>
+                            <p>Mendukung kompresi dokumen Gambar dan PDF untuk syarat pendaftaran Apapun untuk kegiatan anda. di sensor dengan sesuai dan sangat baik</p>
+                        </div>
+                    </div>
+                </section>
 
                 {/* Trust Section */}
                 <section className={styles.trust}>

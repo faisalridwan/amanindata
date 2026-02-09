@@ -2,7 +2,7 @@ export default function JsonLd() {
     const jsonLd = {
         '@context': 'https://schema.org',
         '@type': 'SoftwareApplication',
-        name: 'AmaninKTP',
+        name: 'Amanin Data',
         applicationCategory: 'UtilitiesApplication',
         operatingSystem: 'Web Browser',
         offers: {

@@ -12,7 +12,7 @@ export default function GuidePage() {
     const watermarkSteps = [
         {
             title: 'Buka Aplikasi & Siapkan Dokumen',
-            desc: <>Akses halaman utama <strong>AmaninKTP</strong>. Anda tidak perlu mendaftar atau login. Siapkan file <em>KTP</em> atau dokumen penting lainnya (format <em>JPG, PNG</em>) yang ingin Anda beri watermark.</>
+            desc: <>Akses halaman utama <strong>Amanin Data</strong>. Anda tidak perlu mendaftar atau login. Siapkan file <em>KTP</em> atau dokumen penting lainnya (format <em>JPG, PNG</em>) yang ingin Anda beri watermark.</>
 
         },
         {
@@ -92,7 +92,7 @@ export default function GuidePage() {
             <main className="container">
                 <header className={styles.hero}>
                     <h1 className={styles.heroTitle}><BookOpen size={32} /> Cara Pakai</h1>
-                    <p className={styles.heroSubtitle}>Panduan lengkap mengamankan dokumen Anda dengan AmaninKTP</p>
+                    <p className={styles.heroSubtitle}>Panduan lengkap mengamankan dokumen Anda dengan Amanin Data</p>
                 </header>
 
                 <div className={styles.guideWrapper}>
@@ -214,12 +214,12 @@ export default function GuidePage() {
                     <h2 className={styles.sectionTitle}>Pertanyaan Umum (FAQ)</h2>
                     <div className={styles.faqGrid}>
                         {[
-                            { q: "Apakah data saya disimpan di server?", a: "Tidak sama sekali. AmaninKTP bekerja 100% di browser Anda (Client-Side). File gambar Anda tidak pernah diupload ke internet. Saat Anda menutup tab, data hilang." },
-                            { q: "Apakah aplikasi ini gratis?", a: "Ya, AmaninKTP 100% gratis tanpa biaya tersembunyi dan tanpa langganan. Kami berkomitmen untuk tetap menyediakan layanan ini secara gratis bagi semua pengguna." },
+                            { q: "Apakah data saya disimpan di server?", a: "Tidak sama sekali. Amanin Data bekerja 100% di browser Anda (Client-Side). File gambar Anda tidak pernah diupload ke internet. Saat Anda menutup tab, data hilang." },
+                            { q: "Apakah aplikasi ini gratis?", a: "Ya, Amanin Data 100% gratis tanpa biaya tersembunyi dan tanpa langganan. Kami berkomitmen untuk tetap menyediakan layanan ini secara gratis bagi semua pengguna." },
                             { q: "Apakah akan ada iklan di website ini?", a: "Untuk menjaga kelangsungan layanan dan biaya operasional server, kemungkinan akan ada iklan yang ditampilkan di website ini ke depannya. Namun, kami akan memastikan iklan tidak mengganggu pengalaman pengguna dan fungsi utama aplikasi tetap berjalan dengan baik." },
-                            { q: "Bagaimana cara mendukung AmaninKTP?", a: "Anda dapat mendukung pengembangan AmaninKTP dengan berdonasi melalui tombol \"Donasi\" di menu. Dukungan Anda membantu kami membiayai server, pengembangan fitur baru, dan menjaga layanan tetap gratis untuk semua orang." },
+                            { q: "Bagaimana cara mendukung Amanin Data?", a: "Anda dapat mendukung pengembangan Amanin Data dengan berdonasi melalui tombol \"Donasi\" di menu. Dukungan Anda membantu kami membiayai server, pengembangan fitur baru, dan menjaga layanan tetap gratis untuk semua orang." },
                             { q: "Bagaimana cara menghapus watermark?", a: "Tujuan watermark adalah agar sulit dihapus demi keamanan. Kami tidak menyediakan fitur penghapus watermark." },
-                            { q: "Apakah bisa di HP / Tablet?", a: "Bisa! AmaninKTP responsif dan ringan, bisa dibuka di browser Android (Chrome) maupun iOS (Safari)." },
+                            { q: "Apakah bisa di HP / Tablet?", a: "Bisa! Amanin Data responsif dan ringan, bisa dibuka di browser Android (Chrome) maupun iOS (Safari)." },
                             { q: "Kemana donasi akan digunakan?", a: "Donasi akan digunakan untuk: biaya server dan hosting, pengembangan fitur baru, pemeliharaan dan keamanan website, serta biaya operasional lainnya agar layanan tetap berjalan lancar." }
                         ].map((item, i) => (
                             <div key={i} className={`${styles.faqItem} ${openIndex === i ? styles.open : ''}`}>

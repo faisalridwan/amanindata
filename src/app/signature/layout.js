@@ -1,5 +1,5 @@
 export const metadata = {
-    title: 'Tanda Tangan Digital Online Gratis (Free) | AmaninKTP',
+    title: 'Tanda Tangan Digital Online Gratis (Free) | Amanin Data',
     description: 'Buat tanda tangan digital online gratis, mudah, dan aman. Tempel TTD ke PDF atau gambar langsung di browser tanpa install aplikasi.',
     alternates: {
         canonical: '/signature',

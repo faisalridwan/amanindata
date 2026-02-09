@@ -20,7 +20,7 @@ export default function PrivacyPolicyPage() {
                 <section className={`neu-card no-hover ${styles.content}`}>
                     <div className={styles.intro}>
                         <p>
-                            AmaninKTP ("kami", "kita", atau "milik kami") mengoperasikan website amanindata.qreatip.com
+                            Amanin Data ("kami", "kita", atau "milik kami") mengoperasikan website amanindata.qreatip.com
                             (selanjutnya disebut sebagai "Layanan"). Halaman ini memberitahu Anda tentang kebijakan kami
                             mengenai pengumpulan, penggunaan, dan pengungkapan data non-identifikasi pribadi ketika
                             Anda menggunakan Layanan kami dan pilihan-pilihan yang Anda miliki terkait dengan data tersebut.
@@ -97,7 +97,7 @@ export default function PrivacyPolicyPage() {
                         </p>
 
                         <h3><Eye size={20} /> Penggunaan Data</h3>
-                        <p>AmaninKTP menggunakan data yang dikumpulkan untuk berbagai tujuan:</p>
+                        <p>Amanin Data menggunakan data yang dikumpulkan untuk berbagai tujuan:</p>
                         <ul>
                             <li>Untuk menyediakan dan memelihara Layanan</li>
                             <li>Untuk menyediakan analisis atau informasi berharga sehingga kami dapat meningkatkan Layanan</li>
@@ -131,14 +131,14 @@ export default function PrivacyPolicyPage() {
 
                         <h3><Lock size={20} /> Pengungkapan untuk Penegakan Hukum</h3>
                         <p>
-                            Dalam keadaan tertentu, AmaninKTP mungkin diwajibkan untuk mengungkapkan Data Non-PII jika
+                            Dalam keadaan tertentu, Amanin Data mungkin diwajibkan untuk mengungkapkan Data Non-PII jika
                             diwajibkan oleh hukum atau sebagai respons terhadap permintaan yang sah oleh otoritas publik
                             (misalnya pengadilan atau lembaga pemerintah).
                         </p>
-                        <p>AmaninKTP dapat mengungkapkan Data Non-PII dengan keyakinan yang baik bahwa tindakan tersebut diperlukan untuk:</p>
+                        <p>Amanin Data dapat mengungkapkan Data Non-PII dengan keyakinan yang baik bahwa tindakan tersebut diperlukan untuk:</p>
                         <ul>
                             <li>Mematuhi kewajiban hukum</li>
-                            <li>Melindungi dan membela hak atau properti AmaninKTP</li>
+                            <li>Melindungi dan membela hak atau properti Amanin Data</li>
                             <li>Mencegah atau menyelidiki kemungkinan kesalahan sehubungan dengan Layanan</li>
                             <li>Melindungi keselamatan pribadi pengguna Layanan atau publik</li>
                             <li>Melindungi dari tanggung jawab hukum</li>

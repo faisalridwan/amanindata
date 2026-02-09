@@ -199,7 +199,7 @@ export default function SignaturePage() {
         if (!canvas || !hasDrawn) return
 
         const link = document.createElement('a')
-        link.download = `ttd-amaninktp-${Date.now()}.png`
+        link.download = `ttd-amanindata-${Date.now()}.png`
         link.href = canvas.toDataURL('image/png')
         link.click()
     }

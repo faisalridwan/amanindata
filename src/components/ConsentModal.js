@@ -10,14 +10,14 @@ export default function ConsentModal() {
     const [isExpanded, setIsExpanded] = useState(false)
 
     useEffect(() => {
-        const hasConsented = localStorage.getItem('amaninktp_consent')
+        const hasConsented = localStorage.getItem('amanindata_consent')
         if (!hasConsented) {
             setIsVisible(true)
         }
     }, [])
 
     const handleAccept = () => {
-        localStorage.setItem('amaninktp_consent', 'true')
+        localStorage.setItem('amanindata_consent', 'true')
         setIsVisible(false)
     }
 
@@ -47,7 +47,7 @@ export default function ConsentModal() {
                 {isExpanded && (
                     <div className={styles.expandedContent}>
                         <p>
-                            <strong>AmaninKTP</strong> adalah aplikasi open-source yang memproses seluruh data dokumen Anda secara <strong>100% Client-Side</strong>.
+                            <strong>Amanin Data</strong> adalah aplikasi open-source yang memproses seluruh data dokumen Anda secara <strong>100% Client-Side</strong>.
                             Artinya, gambar Anda <strong>TIDAK PERNAH</strong> diunggah ke server mana pun.
                             Data sementara akan terhapus otomatis saat tab ditutup.
                         </p>

@@ -1,6 +1,6 @@
-# AmaninKTP 📄 — Secure & Local KTP Watermarking & Digital Signature
+# Amanin Data 📄 — Secure & Local KTP Watermarking & Digital Signature
 
-**AmaninKTP** is a free, secure, and open-source web-based tool that allows you to protect your sensitive documents (ID Cards/KTP, Driver's License, Passport, etc.) by adding custom watermarks and precise digital signatures.
+**Amanin Data** is a free, secure, and open-source web-based tool that allows you to protect your sensitive documents (ID Cards/KTP, Driver's License, Passport, etc.) by adding custom watermarks and precise digital signatures.
 
 > [!IMPORTANT]  
 > **Official Website:** [https://amanindata.qreatip.com/](https://amanindata.qreatip.com/)
@@ -15,11 +15,11 @@ Every document manipulation process is performed **100% locally in your browser*
 
 ---
 
-## 🌟 Why AmaninKTP? (Problem Statement)
+## 🌟 Why Amanin Data? (Problem Statement)
 
 In today's digital age, identity theft and the misuse of personal data through scans of ID cards (KTP) or other important documents are increasingly common in Indonesia. Raw documents are often misappropriated for illegal online loan registrations or other fraudulent activities.
 
-**AmaninKTP** serves as a practical solution to:
+**Amanin Data** serves as a practical solution to:
 1.  **Provide Context**: Add specific watermark text such as *"For E-wallet Verification Only - 08/02/2026"* so the document cannot be used for unintended purposes.
 2.  **Legality & Personalization**: Attach digital signatures directly to PDF documents quickly and easily.
 3.  **Uncompromising Security**: Eliminate concerns about document "leaks" during editing, as your browser is the only place the document exists.
@@ -59,7 +59,7 @@ In today's digital age, identity theft and the misuse of personal data through s
 
 ## � Privacy & Security Architecture
 
-AmaninKTP is built on the principle of **Privacy by Design**:
+Amanin Data is built on the principle of **Privacy by Design**:
 
 1.  **Zero Server Upload**: We do not have a backend that stores files. When you select a file, the browser only reads the data locally into the application's memory.
 2.  **Client-Side Rendering**: `jsPDF` and `pdfjs-dist` libraries are used to manipulate images and text directly on your device's CPU.
@@ -83,7 +83,7 @@ The project utilizes modern web technologies for high performance and security:
 
 ## � Local Development Guide
 
-Want to run AmaninKTP on your own computer or contribute?
+Want to run Amanin Data on your own computer or contribute?
 
 ### 1. Prerequisites
 *   [Node.js](https://nodejs.org/) (Recommended v18 or higher)
@@ -92,10 +92,10 @@ Want to run AmaninKTP on your own computer or contribute?
 ### 2. Installation
 ```bash
 # Clone the repository
-git clone https://github.com/faisalridwan/amaninktp.git
+git clone https://github.com/faisalridwan/amanindata.git
 
 # Enter the directory
-cd amaninktp
+cd amanindata
 
 # Install dependencies
 npm install
@@ -112,7 +112,7 @@ npm install
 ## 📜 Changelog
 
 Want to know about the latest updates? Visit our changelog page directly in the application:
-[**Changelog - AmaninKTP**](https://amanindata.qreatip.com/changelog)
+[**Changelog - Amanin Data**](https://amanindata.qreatip.com/changelog)
 
 ---
 
@@ -121,7 +121,7 @@ Want to know about the latest updates? Visit our changelog page directly in the 
 We are very open to contributions! Please create an **Issue** to report bugs or a **Pull Request** to add new features.
 
 If you find this tool helpful, help us keep the server (hosting) and development running by making a donation:
-👉 [**Support AmaninKTP via Donation**](https://amanindata.qreatip.com/donate)
+👉 [**Support Amanin Data via Donation**](https://amanindata.qreatip.com/donate)
 
 ---
 

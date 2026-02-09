@@ -31,7 +31,7 @@ export default function Footer() {
             <div className={`container ${styles.footerContent}`}>
                 {/* Brand */}
                 <div className={styles.brand}>
-                    <Link href="/" className={styles.logo}>📄 AmaninKTP</Link>
+                    <Link href="/" className={styles.logo}>📄 Amanin Data</Link>
                     <p className={styles.tagline}>
                         Lindungi dokumen identitas Anda dengan watermark. 100% aman, tanpa upload ke server.
                     </p>
@@ -111,7 +111,7 @@ export default function Footer() {
                     <span className={styles.divider}>•</span>
                     <Link href="/terms"><FileText size={14} /> Terms of Service</Link>
                     <span className={styles.divider}>•</span>
-                    <a href="https://github.com/faisalridwan/amaninktp" target="_blank" rel="noopener noreferrer">
+                    <a href="https://github.com/faisalridwan/amanindata" target="_blank" rel="noopener noreferrer">
                         <Github size={14} /> GitHub
                     </a>
                 </div>

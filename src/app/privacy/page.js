@@ -20,7 +20,7 @@ export default function PrivacyPage() {
                 <section className={`neu-card no-hover ${styles.content}`}>
                     <div className={styles.intro}>
                         <p>
-                            Di AmaninKTP, privasi Anda adalah prioritas utama kami. Kami memahami bahwa dokumen identitas
+                            Di Amanin Data, privasi Anda adalah prioritas utama kami. Kami memahami bahwa dokumen identitas
                             (seperti KTP, SIM, Paspor) adalah data yang sangat sensitif. Oleh karena itu, kami merancang
                             sistem yang <strong>100% Client-Side</strong>, artinya semua pemrosesan terjadi di perangkat Anda sendiri.
                         </p>
@@ -47,7 +47,7 @@ export default function PrivacyPage() {
                     <article className={styles.policyText}>
                         <h3>1. Pengumpulan Data</h3>
                         <p>
-                            Kami <strong>TIDAK</strong> mengumpulkan, menyimpan, atau mentransmisikan gambar dokumen yang Anda proses menggunakan layanan AmaninKTP.
+                            Kami <strong>TIDAK</strong> mengumpulkan, menyimpan, atau mentransmisikan gambar dokumen yang Anda proses menggunakan layanan Amanin Data.
                             Semua gambar diproses secara lokal di memori browser (RAM) perangkat Anda dan akan hilang seketika saat Anda menutup tab atau merefresh halaman.
                         </p>
 

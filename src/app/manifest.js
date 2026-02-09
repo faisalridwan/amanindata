@@ -2,8 +2,8 @@ export const dynamic = 'force-static'
 
 export default function manifest() {
     return {
-        name: 'AmaninKTP - Watermark & TTD Digital',
-        short_name: 'AmaninKTP',
+        name: 'Amanin Data - Watermark & TTD Digital',
+        short_name: 'Amanin Data',
         description: 'Lindungi dokumen Anda dengan Watermark KTP dan Tanda Tangan Digital online gratis.',
         start_url: '/',
         display: 'standalone',

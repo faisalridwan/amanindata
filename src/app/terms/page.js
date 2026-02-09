@@ -21,7 +21,7 @@ export default function TermsPage() {
                     <div className={styles.intro}>
                         <p>
                             Terms of Service ("Syarat", "Syarat Layanan") ini mengatur hubungan Anda dengan website
-                            https://amanindata.qreatip.com ("Layanan") yang dioperasikan oleh AmaninKTP ("kami", "kita", atau "milik kami").
+                            https://amanindata.qreatip.com ("Layanan") yang dioperasikan oleh Amanin Data ("kami", "kita", atau "milik kami").
                         </p>
                         <p className={styles.important}>
                             <strong>Harap baca Syarat Layanan ini dengan seksama sebelum menggunakan Layanan.</strong>
@@ -48,7 +48,7 @@ export default function TermsPage() {
                             kelayakan jual, kesesuaian untuk tujuan tertentu, non-pelanggaran, atau kinerja.
                         </p>
                         <p>
-                            AmaninKTP, anak perusahaan, afiliasi, dan pemberi lisensinya tidak menjamin bahwa:
+                            Amanin Data, anak perusahaan, afiliasi, dan pemberi lisensinya tidak menjamin bahwa:
                         </p>
                         <ul>
                             <li>Layanan akan berfungsi tanpa gangguan, aman, atau tersedia pada waktu atau lokasi tertentu</li>
@@ -60,12 +60,12 @@ export default function TermsPage() {
                         <h3><Link2 size={20} /> Tautan ke Situs Web Lain</h3>
                         <p>
                             Website kami mungkin berisi tautan ke situs web atau layanan pihak ketiga yang tidak dimiliki
-                            atau dikendalikan oleh AmaninKTP.
+                            atau dikendalikan oleh Amanin Data.
                         </p>
                         <p>
-                            AmaninKTP tidak memiliki kendali atas, dan tidak bertanggung jawab atas, konten, kebijakan privasi,
+                            Amanin Data tidak memiliki kendali atas, dan tidak bertanggung jawab atas, konten, kebijakan privasi,
                             atau praktik situs web atau layanan pihak ketiga mana pun. Anda selanjutnya mengakui dan setuju
-                            bahwa AmaninKTP tidak bertanggung jawab, baik secara langsung maupun tidak langsung, atas kerusakan
+                            bahwa Amanin Data tidak bertanggung jawab, baik secara langsung maupun tidak langsung, atas kerusakan
                             atau kerugian yang disebabkan atau diduga disebabkan oleh atau sehubungan dengan penggunaan atau
                             ketergantungan pada konten, barang, atau layanan yang tersedia di atau melalui situs web atau layanan tersebut.
                         </p>
@@ -89,7 +89,7 @@ export default function TermsPage() {
                         <p>
                             Pelecehan dalam bentuk atau cara apapun di situs, termasuk melalui e-mail, chat, atau dengan
                             menggunakan bahasa cabul atau kasar, dilarang keras. Peniruan identitas orang lain, termasuk
-                            karyawan AmaninKTP atau yang berlisensi, host, atau perwakilan, serta anggota atau pengunjung
+                            karyawan Amanin Data atau yang berlisensi, host, atau perwakilan, serta anggota atau pengunjung
                             lain di situs, dilarang.
                         </p>
                         <p>
@@ -110,7 +110,7 @@ export default function TermsPage() {
 
                         <h3><Shield size={20} /> Ganti Rugi (Indemnifikasi)</h3>
                         <p>
-                            Anda setuju untuk mengganti rugi, membela, dan membebaskan AmaninKTP, pejabat, direktur,
+                            Anda setuju untuk mengganti rugi, membela, dan membebaskan Amanin Data, pejabat, direktur,
                             karyawan, agen, pemberi lisensi, dan pemasoknya (secara kolektif "Penyedia Layanan") dari
                             dan terhadap semua kerugian, biaya, kerusakan, dan ongkos, termasuk biaya pengacara yang
                             wajar, yang diakibatkan oleh pelanggaran syarat dan ketentuan ini atau aktivitas apapun
