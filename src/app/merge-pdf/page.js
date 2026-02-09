@@ -149,7 +149,7 @@ export default function MergePDF() {
             <Navbar />
             <div className={styles.container}>
                 <div className={styles.header}>
-                    <h1 className={styles.title}>Gabung PDF & Gambar</h1>
+                    <h1 className={styles.title}>Gabung PDF & Gambar 📑</h1>
                     <p className={styles.subtitle}>
                         Satukan file PDF dan gambar (JPG/PNG) menjadi satu dokumen PDF secara urut.
                         <br />Semua proses berjalan di browser Anda (Offline), privasi terjaga.
@@ -286,58 +286,58 @@ export default function MergePDF() {
                             </div>
                         </div>
                     )}
+                </div>
 
-                    {/* Trust Badges - Moved Outside */}
-                    <div className={styles.trustSection}>
-                        <div className={styles.trustBadge}>
-                            <Lock size={16} />
-                            <span>100% Client-Side</span>
+                {/* Trust Badges - Moved Outside */}
+                <div className={styles.trustSection}>
+                    <div className={styles.trustBadge}>
+                        <Lock size={16} />
+                        <span>100% Client-Side</span>
+                    </div>
+                    <div className={styles.trustBadge}>
+                        <Zap size={16} />
+                        <span>Proses Kilat</span>
+                    </div>
+                    <div className={styles.trustBadge}>
+                        <Shield size={16} />
+                        <span>Tanpa Upload Server</span>
+                    </div>
+                </div>
+
+                {/* New Advantages Section */}
+                <section className={styles.advantagesSection}>
+                    <h2 className={styles.sectionTitle}>Keunggulan Amanin Data ✨</h2>
+                    <div className={styles.advantagesGrid}>
+                        <div className={styles.advantageCard}>
+                            <span className={styles.cardIcon}>🔒</span>
+                            <h3 className={styles.cardTitle}>Privasi Utama</h3>
+                            <p className={styles.cardDesc}>
+                                File Anda tidak pernah meninggalkan perangkat. Semua proses dilakukan di browser Anda, 100% aman dari peretasan cloud.
+                            </p>
                         </div>
-                        <div className={styles.trustBadge}>
-                            <Zap size={16} />
-                            <span>Proses Kilat</span>
+                        <div className={styles.advantageCard}>
+                            <span className={styles.cardIcon}>⚡</span>
+                            <h3 className={styles.cardTitle}>Tanpa Antri</h3>
+                            <p className={styles.cardDesc}>
+                                Tidak perlu menunggu upload atau download. Proses penggabungan terjadi instan menggunakan kekuatan perangkat Anda sendiri.
+                            </p>
                         </div>
-                        <div className={styles.trustBadge}>
-                            <Shield size={16} />
-                            <span>Tanpa Upload Server</span>
+                        <div className={styles.advantageCard}>
+                            <span className={styles.cardIcon}>📱</span>
+                            <h3 className={styles.cardTitle}>Semua Perangkat</h3>
+                            <p className={styles.cardDesc}>
+                                Dapat digunakan di Laptop, HP, atau Tablet. Desain responsif memudahkan Anda bekerja dari mana saja tanpa instal aplikasi.
+                            </p>
+                        </div>
+                        <div className={styles.advantageCard}>
+                            <span className={styles.cardIcon}>✅</span>
+                            <h3 className={styles.cardTitle}>Gratis Selamanya</h3>
+                            <p className={styles.cardDesc}>
+                                Tanpa batasan jumlah file, tanpa watermark, dan tanpa biaya. Nikmati fitur premium secara cuma-cuma untuk produktivitas Anda.
+                            </p>
                         </div>
                     </div>
-
-                    {/* New Advantages Section */}
-                    <section className={styles.advantagesSection}>
-                        <h2 className={styles.sectionTitle}>Keunggulan Amanin Data ✨</h2>
-                        <div className={styles.advantagesGrid}>
-                            <div className={styles.advantageCard}>
-                                <span className={styles.cardIcon}>🔒</span>
-                                <h3 className={styles.cardTitle}>Privasi Utama</h3>
-                                <p className={styles.cardDesc}>
-                                    File Anda tidak pernah meninggalkan perangkat. Semua proses dilakukan di browser Anda, 100% aman dari peretasan cloud.
-                                </p>
-                            </div>
-                            <div className={styles.advantageCard}>
-                                <span className={styles.cardIcon}>⚡</span>
-                                <h3 className={styles.cardTitle}>Tanpa Antri</h3>
-                                <p className={styles.cardDesc}>
-                                    Tidak perlu menunggu upload atau download. Proses penggabungan terjadi instan menggunakan kekuatan perangkat Anda sendiri.
-                                </p>
-                            </div>
-                            <div className={styles.advantageCard}>
-                                <span className={styles.cardIcon}>📱</span>
-                                <h3 className={styles.cardTitle}>Semua Perangkat</h3>
-                                <p className={styles.cardDesc}>
-                                    Dapat digunakan di Laptop, HP, atau Tablet. Desain responsif memudahkan Anda bekerja dari mana saja tanpa instal aplikasi.
-                                </p>
-                            </div>
-                            <div className={styles.advantageCard}>
-                                <span className={styles.cardIcon}>✅</span>
-                                <h3 className={styles.cardTitle}>Gratis Selamanya</h3>
-                                <p className={styles.cardDesc}>
-                                    Tanpa batasan jumlah file, tanpa watermark, dan tanpa biaya. Nikmati fitur premium secara cuma-cuma untuk produktivitas Anda.
-                                </p>
-                            </div>
-                        </div>
-                    </section>
-                </div>
+                </section>
             </div>
 
             {/* File Preview Modal */}

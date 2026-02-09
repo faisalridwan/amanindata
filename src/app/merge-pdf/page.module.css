@@ -38,7 +38,7 @@
 .title {
     font-size: 2.5rem;
     font-weight: 800;
-    color: var(--primary-dark);
+    color: var(--text-primary);
     margin-bottom: 1rem;
 }
 
@@ -284,7 +284,8 @@
 .btnPrimary {
     background: linear-gradient(135deg, var(--primary), var(--primary-dark));
     color: white;
-    border: none;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    /* Added Border */
     padding: 12px 32px;
     border-radius: 12px;
     font-size: 1rem;
@@ -295,14 +296,14 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    border: 1px solid transparent;
-    /* Maintain size with border on other buttons */
 }
 
 /* Dark mode specific for primary button */
 :global([data-theme="dark"]) .btnPrimary {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
     border: 1px solid rgba(255, 255, 255, 0.1);
+    background: linear-gradient(135deg, #3B82F6, #1E40AF);
+    /* Ensure visible gradient */
 }
 
 .btnPrimary:hover {
@@ -317,7 +318,8 @@
 }
 
 .btnAddMore {
-    background: transparent;
+    background: var(--bg-white);
+    /* Solid background for visibility */
     color: var(--primary);
     border: 2px solid var(--primary);
     padding: 12px 32px;
@@ -329,21 +331,26 @@
     display: flex;
     align-items: center;
     gap: 8px;
+    box-shadow: var(--shadow-sm);
+    /* Add shadow */
 }
 
 /* Dark mode specific for add more button */
 :global([data-theme="dark"]) .btnAddMore {
-    color: var(--primary-light);
-    border-color: var(--primary-light);
+    background: rgba(255, 255, 255, 0.05);
+    color: #60A5FA;
+    /* Lighter blue for dark mode */
+    border-color: #60A5FA;
 }
 
 .btnAddMore:hover {
     background: var(--bg-secondary);
     transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
 }
 
 :global([data-theme="dark"]) .btnAddMore:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.1);
 }
 
 .loading {
