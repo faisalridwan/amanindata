@@ -39,6 +39,75 @@
     box-shadow: var(--shadow-light), var(--shadow-dark);
 }
 
+/* Upload Area (Standardized) */
+.uploadArea {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 80px 40px;
+    background: var(--bg-secondary);
+    border: 3px dashed rgba(168, 197, 240, 0.4);
+    border-radius: 24px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.uploadArea:hover {
+    border-color: var(--primary-dark);
+    background: rgba(168, 197, 240, 0.1);
+    transform: scale(1.01);
+}
+
+.dragActive {
+    border-color: var(--primary-dark);
+    background: rgba(168, 197, 240, 0.2);
+}
+
+.iconCircle {
+    width: 90px;
+    height: 90px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+    box-shadow: 6px 6px 15px rgba(174, 186, 202, 0.4), -6px -6px 15px rgba(255, 255, 255, 0.9);
+    color: var(--primary-dark);
+}
+
+.uploadContent h3 {
+    font-size: 22px;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+    font-weight: 700;
+}
+
+.uploadContent p {
+    color: var(--text-muted);
+}
+
+/* Dark theme overrides */
+:global([data-theme="dark"]) .uploadArea {
+    background: var(--bg-secondary);
+    border-color: rgba(99, 102, 241, 0.3);
+}
+
+:global([data-theme="dark"]) .uploadArea:hover {
+    background: rgba(99, 102, 241, 0.1);
+    border-color: var(--primary-color);
+}
+
+:global([data-theme="dark"]) .iconCircle {
+    background: linear-gradient(145deg, #1E293B, #0F172A);
+    box-shadow: 8px 8px 20px rgba(0, 0, 0, 0.6), -8px -8px 20px rgba(51, 65, 85, 0.15);
+    color: #818CF8;
+}
+
 .previewSection {
     flex: 1;
     min-width: 300px;

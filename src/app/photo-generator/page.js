@@ -22,8 +22,28 @@ export default function PhotoGeneratorPage() {
 
     // Crop State
     const [isDragging, setIsDragging] = useState(false)
+    const [dragActive, setDragActive] = useState(false)
     const [dragStart, setDragStart] = useState({ x: 0, y: 0 })
     const [cropRect, setCropRect] = useState(null) // { x, y, w, h } relative to image
+
+    const handleDrag = (e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        if (e.type === "dragenter" || e.type === "dragover") {
+            setDragActive(true)
+        } else if (e.type === "dragleave") {
+            setDragActive(false)
+        }
+    }
+
+    const handleDrop = (e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        setDragActive(false)
+        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+            handleFileChange({ target: { files: e.dataTransfer.files } })
+        }
+    }
 
     // Load Image
     const handleFileChange = (e) => {
@@ -227,18 +247,26 @@ export default function PhotoGeneratorPage() {
                     </div>
 
                     {!image ? (
-                        <div className={styles.uploadArea} onClick={() => fileInputRef.current?.click()}>
+                        <div
+                            className={`${styles.uploadArea} ${dragActive ? styles.dragActive : ''}`}
+                            onDragEnter={handleDrag}
+                            onDragLeave={handleDrag}
+                            onDragOver={handleDrag}
+                            onDrop={handleDrop}
+                            onClick={() => fileInputRef.current?.click()}
+                        >
                             <div className={styles.iconCircle}>
                                 <Camera size={40} />
                             </div>
                             <div className={styles.uploadContent}>
                                 <h3>Upload Foto Anda</h3>
-                                <p>Klik untuk memilih atau drag & drop foto di sini</p>
+                                <p>Tarik foto atau klik untuk memilih (JPG/PNG/WEBP)</p>
                                 <div className={styles.supportedTypes}>
                                     <span>JPG</span>
                                     <span>PNG</span>
                                     <span>WEBP</span>
                                 </div>
+                                <span className={styles.safeTag}>🔒 100% Client-Side</span>
                             </div>
                             <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} hidden />
                         </div>

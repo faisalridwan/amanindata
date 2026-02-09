@@ -182,13 +182,13 @@ export default function MergePDF() {
                         </div>
                         <div className={styles.uploadContent}>
                             <h3>Upload File PDF & Gambar</h3>
-                            <p>Drag & drop file di sini atau klik untuk memilih</p>
+                            <p>Tarik file atau klik untuk memilih (Gambar/PDF)</p>
                             <div className={styles.supportedTypes}>
                                 <span>PDF</span>
                                 <span>JPG</span>
                                 <span>PNG</span>
-                                <span className={styles.safeTag}>🔒 100% Client-Side</span>
                             </div>
+                            <span className={styles.safeTag}>🔒 100% Client-Side</span>
                         </div>
                         {error && (
                             <div className={styles.error} onClick={(e) => e.stopPropagation()}>
