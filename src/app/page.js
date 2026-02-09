@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { Upload, Crop, Type, Palette, Download, RotateCcw, FileImage, CreditCard, Users, FileText, Building, File, Check, Grid, Plus } from 'lucide-react'
+import { Upload, Crop, Type, Palette, Download, RotateCcw, FileImage, CreditCard, Users, FileText, Building, File, Check, Grid, Plus, Camera } from 'lucide-react'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import styles from './page.module.css'
@@ -54,12 +54,16 @@ export default function Home() {
     ]
 
     const documentTypes = [
-        { icon: CreditCard, label: 'KTP' },
-        { icon: CreditCard, label: 'SIM' },
-        { icon: Users, label: 'Kartu Keluarga' },
-        { icon: FileText, label: 'Paspor' },
-        { icon: Building, label: 'NPWP' },
+        { icon: FileImage, label: 'KTP' },
+        { icon: FileText, label: 'SIM' },
+        { icon: FileImage, label: 'Paspor' },
+        { icon: FileText, label: 'KK' },
+        { icon: FileImage, label: 'NPWP' },
+        { icon: FileText, label: 'PDF' },
         { icon: File, label: 'Dokumen Lain' },
+        { icon: File, label: 'Merge PDF' },
+        { icon: Users, label: 'NIK Parser' },
+        { icon: Camera, label: 'Pas Foto' },
     ]
 
     // Generate auto watermark text

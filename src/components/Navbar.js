@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { FileImage, PenTool, BookOpen, Shield, Info, Heart, Menu, X, Minimize2, EyeOff } from 'lucide-react'
+import { FileImage, PenTool, BookOpen, Shield, Info, Heart, Menu, X, Minimize2, EyeOff, User, Camera } from 'lucide-react'
 import styles from './Navbar.module.css'
 import ThemeToggle from './ThemeToggle'
 
@@ -16,6 +16,9 @@ export default function Navbar() {
         { href: '/signature', label: 'Tanda Tangan', icon: PenTool },
         { href: '/compress', label: 'Kompres Foto', icon: Minimize2 },
         { href: '/redact', label: 'Sensor Data', icon: EyeOff },
+        { href: '/merge-pdf', label: 'Gabung PDF', icon: FileImage },
+        { href: '/nik-parser', label: 'Cek NIK', icon: User },
+        { href: '/photo-generator', label: 'Pas Foto', icon: Camera },
         { href: '/guide', label: 'Cara Pakai', icon: BookOpen },
     ]
 
