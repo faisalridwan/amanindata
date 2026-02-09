@@ -1,15 +1,17 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { FileImage, PenTool, BookOpen, Shield, Info, Heart, Menu, X, Minimize2, EyeOff, User, Camera, ChevronDown } from 'lucide-react'
+import { FileImage, PenTool, BookOpen, Shield, Info, Heart, Menu, X, Minimize2, EyeOff, User, Camera, ChevronDown, Grid } from 'lucide-react'
+import { FileImage, PenTool, BookOpen, Shield, Info, Heart, Menu, X, Minimize2, EyeOff, User, Camera, ChevronDown, Grid } from 'lucide-react'
 import styles from './Navbar.module.css'
 import ThemeToggle from './ThemeToggle'
 
 export default function Navbar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false)
     const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+    const timeoutRef = useRef(null)
     const pathname = usePathname()
 
     // Main Links (Left)
@@ -31,7 +33,7 @@ export default function Navbar() {
     const infoItems = [
         { href: '/guide', label: 'Cara Pakai', icon: BookOpen },
         { href: '/privacy', label: 'Privasi', icon: Shield },
-        { href: '/about', label: 'About', icon: Info },
+        { href: '/about', label: 'Tentang', icon: Info },
     ]
 
     const isActive = (href) => {
@@ -39,6 +41,25 @@ export default function Navbar() {
             return pathname === '/'
         }
         return pathname.startsWith(href)
+    }
+
+    const isProductActive = () => {
+        return productItems.some(item => pathname.startsWith(item.href))
+    }
+
+    const handleMouseEnter = () => {
+        if (window.innerWidth > 900) {
+            if (timeoutRef.current) clearTimeout(timeoutRef.current)
+            setIsDropdownOpen(true)
+        }
+    }
+
+    const handleMouseLeave = () => {
+        if (window.innerWidth > 900) {
+            timeoutRef.current = setTimeout(() => {
+                setIsDropdownOpen(false)
+            }, 300) // 300ms delay
+        }
     }
 
     const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen)
@@ -76,14 +97,15 @@ export default function Navbar() {
                     {/* Mega Menu Dropdown */}
                     <li
                         className={styles.dropdownWrapper}
-                        onMouseEnter={() => window.innerWidth > 900 && setIsDropdownOpen(true)}
-                        onMouseLeave={() => window.innerWidth > 900 && setIsDropdownOpen(false)}
+                        onMouseEnter={handleMouseEnter}
+                        onMouseLeave={handleMouseLeave}
                     >
                         <button
-                            className={`${styles.navItem} ${isDropdownOpen ? styles.active : ''}`}
+                            className={`${styles.navItem} ${isDropdownOpen || isProductActive() ? styles.active : ''}`}
                             onClick={toggleDropdown}
                             style={{ width: '100%', justifyContent: 'flex-start' }} // Mobile adjustment
                         >
+                            <Grid size={16} />
                             <span>Produk Lainnya</span>
                             <span style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
                                 <ChevronDown size={14} style={{ transform: isDropdownOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
@@ -91,36 +113,38 @@ export default function Navbar() {
                         </button>
 
                         <div className={`${styles.dropdownContainer} ${isDropdownOpen ? styles.show : ''}`}>
-                            <div className={styles.dropdownGrid}>
-                                {productItems.map((item) => (
-                                    <Link
-                                        key={item.href}
-                                        href={item.href}
-                                        className={styles.dropdownItem}
-                                        onClick={() => { setIsMenuOpen(false); setIsDropdownOpen(false); }}
-                                    >
-                                        <div className={styles.itemIcon}>
-                                            <item.icon size={18} />
-                                        </div>
-                                        <div className={styles.itemContent}>
-                                            <span className={styles.itemTitle}>{item.label}</span>
-                                            <span className={styles.itemDesc}>{item.desc}</span>
-                                        </div>
-                                    </Link>
-                                ))}
-                            </div>
+                            <div className={styles.dropdownInner}>
+                                <div className={styles.dropdownGrid}>
+                                    {productItems.map((item) => (
+                                        <Link
+                                            key={item.href}
+                                            href={item.href}
+                                            className={`${styles.dropdownItem} ${isActive(item.href) ? styles.dropdownItemActive : ''}`}
+                                            onClick={() => { setIsMenuOpen(false); setIsDropdownOpen(false); }}
+                                        >
+                                            <div className={styles.itemIcon}>
+                                                <item.icon size={18} />
+                                            </div>
+                                            <div className={styles.itemContent}>
+                                                <span className={styles.itemTitle}>{item.label}</span>
+                                                <span className={styles.itemDesc}>{item.desc}</span>
+                                            </div>
+                                        </Link>
+                                    ))}
+                                </div>
 
-                            <div className={styles.dropdownFooter}>
-                                {infoItems.map((item) => (
-                                    <Link
-                                        key={item.href}
-                                        href={item.href}
-                                        className={styles.footerLink}
-                                        onClick={() => { setIsMenuOpen(false); setIsDropdownOpen(false); }}
-                                    >
-                                        <item.icon size={14} /> {item.label}
-                                    </Link>
-                                ))}
+                                <div className={styles.dropdownFooter}>
+                                    {infoItems.map((item) => (
+                                        <Link
+                                            key={item.href}
+                                            href={item.href}
+                                            className={styles.footerLink}
+                                            onClick={() => { setIsMenuOpen(false); setIsDropdownOpen(false); }}
+                                        >
+                                            <item.icon size={14} /> {item.label}
+                                        </Link>
+                                    ))}
+                                </div>
                             </div>
                         </div>
                     </li>
