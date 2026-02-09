@@ -330,6 +330,20 @@
     transform: translateY(-1px);
 }
 
+.btnPageAction.green {
+    background: #4caf50;
+    color: white;
+}
+
+.btnPageAction.green:disabled {
+    background: #e0e0e0;
+    color: #9e9e9e;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+
 .downloadActions {
     display: flex;
     justify-content: center;

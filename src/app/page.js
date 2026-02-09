@@ -867,8 +867,8 @@ export default function Home() {
                                 </div>
                             </div>
                         ) : (
-                            <div className={styles.canvasWrap} ref={cropWrapperRef} style={{ padding: 0, background: 'transparent', boxShadow: 'none' }}>
-                                {imageLoaded && (
+                            <div className={styles.canvasWrap} ref={cropWrapperRef} style={{ padding: imageLoaded && !isPdf ? '20px 0' : 0, background: 'transparent', boxShadow: 'none' }}>
+                                {imageLoaded && isPdf ? (
                                     <div className={styles.documentWorkspace}>
                                         <div className={styles.workspaceHeader}>
                                             <div className={styles.docInfo}>
@@ -876,16 +876,11 @@ export default function Home() {
                                                 <span>{truncateFilename(originalFileName)} ({pdfPages.length} Halaman)</span>
                                             </div>
                                             <div className={styles.docActions}>
-                                                {isPdf && (
-                                                    <div className={styles.zoomControls} style={{ position: 'static', transform: 'none', margin: 0, padding: '4px 8px', boxShadow: 'none', border: '1px solid rgba(0,0,0,0.1)' }}>
-                                                        <button onClick={() => setZoomLevel(prev => Math.max(0.5, prev - 0.1))} aria-label="Zoom Out"><ZoomOut size={16} /></button>
-                                                        <span style={{ fontSize: '11px', minWidth: '40px' }}>{Math.round(zoomLevel * 100)}%</span>
-                                                        <button onClick={() => setZoomLevel(prev => Math.min(2, prev + 0.1))} aria-label="Zoom In"><ZoomIn size={16} /></button>
-                                                    </div>
-                                                )}
-                                                <button onClick={handleReset} className={styles.btnResetDoc}>
-                                                    <RotateCcw size={14} /> Ganti Dokumen
-                                                </button>
+                                                <div className={styles.zoomControls} style={{ position: 'static', transform: 'none', margin: 0, padding: '4px 8px', boxShadow: 'none', border: '1px solid rgba(0,0,0,0.1)' }}>
+                                                    <button onClick={() => setZoomLevel(prev => Math.max(0.5, prev - 0.1))} aria-label="Zoom Out"><ZoomOut size={16} /></button>
+                                                    <span style={{ fontSize: '11px', minWidth: '40px' }}>{Math.round(zoomLevel * 100)}%</span>
+                                                    <button onClick={() => setZoomLevel(prev => Math.min(2, prev + 0.1))} aria-label="Zoom In"><ZoomIn size={16} /></button>
+                                                </div>
                                             </div>
                                         </div>
 
@@ -895,10 +890,11 @@ export default function Home() {
                                                     <div className={styles.pageHeaderItem}>
                                                         <div className={styles.pageNumber}>Halaman {i + 1}</div>
                                                         <div className={styles.pageActions}>
-                                                            <button className={styles.btnPageAction} onClick={() => downloadPageAsPNG(i)}>
+                                                            <button className={`${styles.btnPageAction} ${styles.green}`} onClick={() => downloadPageAsPNG(i)} disabled={true}>
                                                                 <Download size={14} /> PNG
                                                             </button>
                                                         </div>
+
                                                     </div>
                                                     <div
                                                         className={styles.pageContainer}
@@ -926,19 +922,32 @@ export default function Home() {
                                                 </div>
                                             ))}
                                         </div>
-
-                                        <div className={styles.downloadActions}>
-                                            <button
-                                                className={styles.btnPrimary}
-                                                onClick={handleDownloadPDF}
-                                                disabled={!imageLoaded}
-                                            >
-                                                <Download size={18} /> Download Semua Halaman (PDF)
-                                            </button>
-                                        </div>
                                     </div>
-                                )}
+                                ) : imageLoaded && !isPdf ? (
+                                    <div
+                                        className={styles.pageContainer}
+                                        ref={el => pageContainerRefs.current[0] = el}
+                                        style={{ width: canvasMetrics.width > 0 ? canvasMetrics.width * zoomLevel : 'auto', margin: '0 auto' }}
+                                    >
+                                        <canvas
+                                            ref={el => canvasRefs.current[0] = el}
+                                            className={styles.canvas}
+                                            style={{ display: 'block', width: '100%' }}
+                                        />
 
+                                        {watermarkType === 'single' && canvasMetrics.width > 0 && (
+                                            <WatermarkControls
+                                                position={textPosition}
+                                                dimensions={textDimensions}
+                                                rotation={rotation}
+                                                scale={textScale}
+                                                displayScale={canvasMetrics.scale * zoomLevel}
+                                                onUpdate={handleWatermarkUpdate}
+                                                isActive={true}
+                                            />
+                                        )}
+                                    </div>
+                                ) : null}
 
                                 {!imageLoaded && (
                                     <div className={styles.uploadArea} onClick={() => fileInputRef.current?.click()}>
@@ -958,6 +967,7 @@ export default function Home() {
                                     </div>
                                 )}
                             </div>
+
 
                         )}
                     </div>
