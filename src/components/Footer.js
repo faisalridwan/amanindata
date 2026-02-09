@@ -84,6 +84,9 @@ export default function Footer() {
                             <li>
                                 <Link href="/libraries"><Library size={14} /> Perpustakaan</Link>
                             </li>
+                            <li>
+                                <Link href="/privacy"><Shield size={14} /> Privasi</Link>
+                            </li>
                         </ul>
                     </div>
 

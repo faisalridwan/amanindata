@@ -1,6 +1,6 @@
 'use client'
 
-import { History, GitBranch, Sparkles, Shield, Monitor, Smartphone, Globe, Heart } from 'lucide-react'
+import { History, GitBranch, Sparkles, Shield, Monitor, Smartphone, Globe, Heart, Minimize2, EyeOff } from 'lucide-react'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import styles from './page.module.css'
@@ -8,13 +8,24 @@ import styles from './page.module.css'
 export default function ChangelogPage() {
     const changelog = [
         {
+            version: '1.1.0',
+            date: '9 Februari 2026',
+            title: 'New Tools: Compress & Redact',
+            description: 'Penambahan fitur produktivitas baru: Kompres Foto/PDF dan Sensor Data (Redaction) untuk keamanan dokumen yang lebih lengkap.',
+            changes: [
+                { icon: Minimize2, text: 'Kompres Foto & PDF: Perkecil ukuran dokumen Anda secara instan tanpa mengurangi kualitas terbaca.' },
+                { icon: EyeOff, text: 'Redact / Sensor Data: Tutup informasi sensitif (NIK, Nama, dll) pada dokumen langsung di browser.' },
+                { icon: Shield, text: 'Tetap 100% Client-Side: Fitur baru ini juga berjalan sepenuhnya di perangkat Anda, tanpa upload ke server.' }
+            ]
+        },
+        {
             version: '1.0.0',
             date: '8 Februari 2026',
             title: 'Initial Release (Public)',
             description: 'Peluncuran perdana Amanin Data - Solusi terpadu untuk privasi dokumen identitas masyarakat Indonesia.',
             changes: [
-                { icon: Sparkles, text: 'Fitur Utama: Watermark KTP dan Tanda Tangan Digital (TTD) Online.' },
-                { icon: Shield, text: 'Privasi Mutlak: Seluruh pemrosesan dilakukan di sisi klien (browser), 100% tanpa upload ke server.' },
+                { icon: Sparkles, text: 'Fitur Utama: Watermark PDF dan Image serta Tanda Tangan Digital.' },
+                { icon: Shield, text: 'Privasi: Seluruh pemrosesan dilakukan di sisi klien (browser), 100% tanpa upload ke server.' },
                 { icon: Monitor, text: 'Desain Premium: Antarmuka Neumorphic yang modern, tenang, dan mudah digunakan.' },
                 { icon: Smartphone, text: 'Responsive: Optimal digunakan di perangkat desktop, tablet, maupun smartphone.' },
                 { icon: Heart, text: 'Donasi Terintegrasi: Dukung pengembangan proyek via QRIS, Bank Jago, dan PayPal.' },
