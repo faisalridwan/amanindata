@@ -45,6 +45,13 @@ export default function Navbar() {
     }
 
     const isProductActive = () => {
+        // Dropdown inactive if on main links (Watermark / Signature) or if dropdown is closed
+        // Dropdown inactive if on main links (Watermark / Signature) or if dropdown is closed
+        const isMainLink = mainLinks.some(link =>
+            link.href === '/' ? pathname === '/' : pathname.startsWith(link.href)
+        )
+        if (isMainLink) return false
+
         return productItems.some(item => pathname.startsWith(item.href))
     }
 

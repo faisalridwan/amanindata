@@ -177,27 +177,30 @@
 }
 
 .dropdownContainer {
-    position: fixed;
-    /* Fixed to viewport is easiest for full width */
+    position: absolute;
     top: 70px;
-    /* Adjust based on navbar height */
-    left: 0;
-    right: 0;
+    /* Navbar height */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 1200px;
+    /* Standard container width */
     background: var(--bg-primary);
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-    border-top: 1px solid var(--bg-secondary);
-    border-bottom: 1px solid var(--bg-secondary);
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    border: 1px solid var(--bg-secondary);
+    border-top: none;
     padding: 1.5rem 0;
     display: none;
     opacity: 0;
     transition: opacity 0.3s ease;
     z-index: 99;
-    width: 100vw;
 }
 
 [data-theme="dark"] .dropdownContainer {
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-top: none;
 }
 
 .dropdownContainer.show {
@@ -208,7 +211,7 @@
 .dropdownInner {
     max-width: 1000px;
     margin: 0 auto;
-    padding: 0 1.5rem;
+    padding: 0 2rem;
 }
 
 .dropdownGrid {
@@ -294,9 +297,9 @@
     color: var(--text-secondary);
     text-decoration: none;
     font-weight: 500;
-    padding: 8px 16px;
-    border-radius: var(--radius-full);
-    /* Rounded pills */
+    padding: 10px 20px;
+    border-radius: var(--radius-md);
+    /* Consistent radius, not pills */
     transition: all 0.2s;
     border: 1px solid var(--bg-secondary);
     /* Border as requested */
@@ -320,6 +323,7 @@
     .dropdownContainer {
         position: static;
         width: 100%;
+        max-width: none;
         box-shadow: none;
         border: none;
         padding: 0;
@@ -327,6 +331,8 @@
         background: transparent;
         display: none;
         opacity: 1;
+        transform: none;
+        border-radius: 0;
     }
 
     .dropdownContainer.show {

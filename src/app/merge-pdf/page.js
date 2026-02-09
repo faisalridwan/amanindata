@@ -3,6 +3,8 @@
 import { useState, useRef } from 'react'
 import { PDFDocument } from 'pdf-lib'
 import { FileUp, Trash2, ArrowUp, ArrowDown, Download, FileText, X, AlertCircle, Eye, Image as ImageIcon } from 'lucide-react'
+import Navbar from '@/components/Navbar'
+import Footer from '@/components/Footer'
 import styles from './page.module.css'
 
 export default function MergePDF() {
@@ -131,133 +133,143 @@ export default function MergePDF() {
     }
 
     return (
-        <div className={styles.container}>
-            <div className={styles.header}>
-                <h1 className={styles.title}>Gabung PDF & Gambar</h1>
-                <p className={styles.subtitle}>
-                    Satukan file PDF dan gambar (JPG/PNG) menjadi satu dokumen PDF secara urut.
-                    <br />Semua proses berjalan di browser Anda (Offline), privasi terjaga.
-                </p>
-            </div>
+        <>
+            <Navbar />
+            <div className={styles.container}>
+                <div className={styles.header}>
+                    <h1 className={styles.title}>Gabung PDF & Gambar</h1>
+                    <p className={styles.subtitle}>
+                        Satukan file PDF dan gambar (JPG/PNG) menjadi satu dokumen PDF secara urut.
+                        <br />Semua proses berjalan di browser Anda (Offline), privasi terjaga.
+                    </p>
+                </div>
 
-            <div className={styles.workspace}>
-                {/* Upload Area */}
-                <div
-                    className={`${styles.uploadArea} ${dragActive ? styles.dragActive : ''}`}
-                    onDragEnter={handleDrag}
-                    onDragLeave={handleDrag}
-                    onDragOver={handleDrag}
-                    onDrop={handleDrop}
-                    onClick={() => fileInputRef.current?.click()}
-                >
-                    <input
-                        ref={fileInputRef}
-                        type="file"
-                        multiple
-                        accept="application/pdf,image/jpeg,image/png"
-                        onChange={handleFileUpload}
-                        style={{ display: 'none' }}
-                    />
-                    <div className={styles.uploadIcon}>
-                        <FileUp size={48} />
+                <div className={styles.workspace}>
+                    {/* Upload Area */}
+                    <div
+                        className={`${styles.uploadArea} ${dragActive ? styles.dragActive : ''}`}
+                        onDragEnter={handleDrag}
+                        onDragLeave={handleDrag}
+                        onDragOver={handleDrag}
+                        onDrop={handleDrop}
+                        onClick={() => fileInputRef.current?.click()}
+                    >
+                        <input
+                            ref={fileInputRef}
+                            type="file"
+                            multiple
+                            accept="application/pdf,image/jpeg,image/png"
+                            onChange={handleFileUpload}
+                            style={{ display: 'none' }}
+                        />
+                        <div className={styles.uploadIcon}>
+                            <FileUp size={48} />
+                        </div>
+                        <h3>Klik atau Tarik File ke Sini</h3>
+                        <p>PDF, JPG, atau PNG</p>
+                        <button className={styles.btnSecondary}>Pilih File</button>
+                        {error && (
+                            <div className={styles.error} onClick={(e) => e.stopPropagation()}>
+                                <AlertCircle size={16} />
+                                <span>{error}</span>
+                            </div>
+                        )}
                     </div>
-                    <h3>Klik atau Tarik File ke Sini</h3>
-                    <p>PDF, JPG, atau PNG</p>
-                    <button className={styles.btnSecondary}>Pilih File</button>
-                    {error && (
-                        <div className={styles.error} onClick={(e) => e.stopPropagation()}>
-                            <AlertCircle size={16} />
-                            <span>{error}</span>
+
+                    {/* File List */}
+                    {files.length > 0 && (
+                        <div className={styles.fileList}>
+                            <div className={styles.listHeader}>
+                                <span>File yang akan digabung ({files.length})</span>
+                                <button className={styles.btnClear} onClick={() => { setFiles([]); setMergedPdfUrl(null); }}>
+                                    Hapus Semua
+                                </button>
+                            </div>
+
+                            <div className={styles.filesGrid}>
+                                {files.map((file, index) => (
+                                    <div key={file.id} className={styles.fileCard}>
+                                        <div className={styles.filePreview}>
+                                            {file.type === 'image' ? (
+                                                <img src={file.preview} alt={file.name} className={styles.thumbImage} />
+                                            ) : (
+                                                <div className={styles.thumbPdf}>
+                                                    <FileText size={32} />
+                                                    <span className={styles.pdfLabel}>PDF</span>
+                                                </div>
+                                            )}
+                                            <button className={styles.btnRemove} onClick={() => removeFile(file.id)}>
+                                                <X size={14} />
+                                            </button>
+                                        </div>
+                                        <div className={styles.fileInfo}>
+                                            <p className={styles.fileName}>{file.name}</p>
+                                            <p className={styles.fileSize}>{file.size}</p>
+                                        </div>
+                                        <div className={styles.fileActions}>
+                                            <button
+                                                onClick={() => moveFile(index, -1)}
+                                                disabled={index === 0}
+                                                title="Geser Kiri/Atas"
+                                            >
+                                                <ArrowUp size={16} style={{ transform: 'rotate(-90deg)' }} />
+                                            </button>
+                                            <span className={styles.orderBadge}>{index + 1}</span>
+                                            <button
+                                                onClick={() => moveFile(index, 1)}
+                                                disabled={index === files.length - 1}
+                                                title="Geser Kanan/Bawah"
+                                            >
+                                                <ArrowDown size={16} style={{ transform: 'rotate(-90deg)' }} />
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* Merge Action */}
+                            <div className={styles.actionSection}>
+                                <button
+                                    className={`${styles.btnPrimary} ${isMerging ? styles.loading : ''}`}
+                                    onClick={mergePDFs}
+                                    disabled={isMerging || files.length === 0}
+                                >
+                                    {isMerging ? 'Memproses...' : 'Gabungkan File'}
+                                </button>
+                                {/* Features / Trust (Optional) */}
+                                <div className={styles.trust} style={{ marginTop: '2rem', display: 'flex', justifyContent: 'center', gap: '2rem', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+                                    <span>🔒 100% Client-Side</span>
+                                    <span>⚡ Proses Kilat</span>
+                                    <span>🚫 Tanpa Upload Server</span>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Result Preview */}
+                    {mergedPdfUrl && (
+                        <div className={styles.resultSection}>
+                            <div className={styles.resultHeader}>
+                                <h2>Hasil Penggabungan</h2>
+                                <div className={styles.resultActions}>
+                                    <a
+                                        href={mergedPdfUrl}
+                                        download={`merged_document_${new Date().getTime()}.pdf`}
+                                        className={styles.btnDownload}
+                                    >
+                                        <Download size={18} />
+                                        Download PDF
+                                    </a>
+                                </div>
+                            </div>
+                            <div className={styles.pdfPreviewFrame}>
+                                <iframe src={mergedPdfUrl} title="PDF Preview" width="100%" height="600px" />
+                            </div>
                         </div>
                     )}
                 </div>
-
-                {/* File List */}
-                {files.length > 0 && (
-                    <div className={styles.fileList}>
-                        <div className={styles.listHeader}>
-                            <span>File yang akan digabung ({files.length})</span>
-                            <button className={styles.btnClear} onClick={() => { setFiles([]); setMergedPdfUrl(null); }}>
-                                Hapus Semua
-                            </button>
-                        </div>
-
-                        <div className={styles.filesGrid}>
-                            {files.map((file, index) => (
-                                <div key={file.id} className={styles.fileCard}>
-                                    <div className={styles.filePreview}>
-                                        {file.type === 'image' ? (
-                                            <img src={file.preview} alt={file.name} className={styles.thumbImage} />
-                                        ) : (
-                                            <div className={styles.thumbPdf}>
-                                                <FileText size={32} />
-                                                <span className={styles.pdfLabel}>PDF</span>
-                                            </div>
-                                        )}
-                                        <button className={styles.btnRemove} onClick={() => removeFile(file.id)}>
-                                            <X size={14} />
-                                        </button>
-                                    </div>
-                                    <div className={styles.fileInfo}>
-                                        <p className={styles.fileName}>{file.name}</p>
-                                        <p className={styles.fileSize}>{file.size}</p>
-                                    </div>
-                                    <div className={styles.fileActions}>
-                                        <button
-                                            onClick={() => moveFile(index, -1)}
-                                            disabled={index === 0}
-                                            title="Geser Kiri/Atas"
-                                        >
-                                            <ArrowUp size={16} style={{ transform: 'rotate(-90deg)' }} />
-                                        </button>
-                                        <span className={styles.orderBadge}>{index + 1}</span>
-                                        <button
-                                            onClick={() => moveFile(index, 1)}
-                                            disabled={index === files.length - 1}
-                                            title="Geser Kanan/Bawah"
-                                        >
-                                            <ArrowDown size={16} style={{ transform: 'rotate(-90deg)' }} />
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-
-                        {/* Merge Action */}
-                        <div className={styles.actionSection}>
-                            <button
-                                className={`${styles.btnPrimary} ${isMerging ? styles.loading : ''}`}
-                                onClick={mergePDFs}
-                                disabled={isMerging || files.length === 0}
-                            >
-                                {isMerging ? 'Memproses...' : 'Gabungkan File'}
-                            </button>
-                        </div>
-                    </div>
-                )}
-
-                {/* Result Preview */}
-                {mergedPdfUrl && (
-                    <div className={styles.resultSection}>
-                        <div className={styles.resultHeader}>
-                            <h2>Hasil Penggabungan</h2>
-                            <div className={styles.resultActions}>
-                                <a
-                                    href={mergedPdfUrl}
-                                    download={`merged_document_${new Date().getTime()}.pdf`}
-                                    className={styles.btnDownload}
-                                >
-                                    <Download size={18} />
-                                    Download PDF
-                                </a>
-                            </div>
-                        </div>
-                        <div className={styles.pdfPreviewFrame}>
-                            <iframe src={mergedPdfUrl} title="PDF Preview" width="100%" height="600px" />
-                        </div>
-                    </div>
-                )}
             </div>
-        </div>
+            <Footer />
+        </>
     )
 }
