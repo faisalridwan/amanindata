@@ -187,6 +187,7 @@ export default function MergePDF() {
                                 <span>PDF</span>
                                 <span>JPG</span>
                                 <span>PNG</span>
+                                <span className={styles.safeTag}>🔒 100% Client-Side</span>
                             </div>
                         </div>
                         {error && (
