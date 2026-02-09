@@ -125,7 +125,7 @@ export default function NikParserPage() {
             <Navbar />
             <main className="container">
                 <div className={styles.hero}>
-                    <h1 className={styles.heroTitle}>Cek NIK <span>Parser</span></h1>
+                    <h1 className={styles.heroTitle}>🔍 Cek NIK <span>Parser</span></h1>
                     <p className={styles.heroSubtitle}>Cek daerah, tanggal lahir, dan usia dari NIK KTP Anda. Detail & Akurat.</p>
                 </div>
 
@@ -157,8 +157,7 @@ export default function NikParserPage() {
                             </div>
                         )}
                         <button
-                            className="btn-primary"
-                            style={{ width: '100%', marginTop: '1rem', padding: '1rem', fontSize: '1rem' }}
+                            className={styles.btnCheck}
                             onClick={parseNik}
                             disabled={!nik || nik.length < 16}
                         >
@@ -213,6 +212,16 @@ export default function NikParserPage() {
                             </div>
                         </div>
                     )}
+
+                    {/* Cara Pakai / How To Use */}
+                    {/* Cara Pakai Link */}
+                    <div className={styles.howToUse} style={{ marginTop: '80px', padding: '40px', background: 'var(--bg-white)', borderRadius: '24px', border: '1px solid var(--bg-secondary)', textAlign: 'center' }}>
+                        <h2 style={{ fontSize: '1.75rem', marginBottom: '16px', fontWeight: '800', color: 'var(--text-primary)' }}>Bingung Caranya?</h2>
+                        <p style={{ color: 'var(--text-secondary)', marginBottom: '24px' }}>Lihat panduan lengkap cara membaca data NIK.</p>
+                        <a href="/guide#nik-parser" className={styles.btnCheck} style={{ display: 'inline-flex', width: 'auto', padding: '12px 32px', borderRadius: '50px', textDecoration: 'none' }}>
+                            Panduan Lengkap
+                        </a>
+                    </div>
                 </div>
             </main>
             <Footer />

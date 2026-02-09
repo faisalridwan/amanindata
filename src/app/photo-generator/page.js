@@ -216,102 +216,119 @@ export default function PhotoGeneratorPage() {
     return (
         <>
             <Navbar />
-            <main className="container">
-                <div className={styles.hero}>
-                    <h1 className={styles.heroTitle}>Photo <span>Generator</span></h1>
-                    <p className={styles.heroSubtitle}>Buat pas foto ukuran 2x3, 3x4, dan 4x6 secara instan. Crop presisi dan ganti background warna.</p>
-                </div>
-
-                <div className={styles.workspace}>
-                    <div className={styles.previewSection}>
-                        {!image ? (
-                            <div className={styles.placeholder} onClick={() => fileInputRef.current?.click()}>
-                                <Camera size={64} style={{ opacity: 0.3 }} />
-                                <h3>Upload Foto Anda</h3>
-                                <p>Pastikan wajah terlihat jelas dan tegak lurus.</p>
-                                <button className={styles.uploadBtn}>
-                                    <Upload size={18} /> Pilih Foto
-                                </button>
-                            </div>
-                        ) : (
-                            <div className={styles.canvasWrap}
-                                onMouseDown={handleMouseDown}
-                                onMouseMove={handleMouseMove}
-                                onMouseUp={handleMouseUp}
-                                onMouseLeave={handleMouseUp}
-                            >
-                                <canvas ref={canvasRef} style={{ maxWidth: '100%', cursor: isDragging ? 'grabbing' : 'grab' }} />
-                                <p style={{ textAlign: 'center', marginTop: '1rem', fontSize: '0.9rem', color: '#666' }}>
-                                    💡 Geser kotak untuk mengatur posisi wajah
-                                </p>
-                            </div>
-                        )}
-                        <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} hidden />
+            <main className={styles.container}>
+                <div className="container">
+                    <div className={styles.hero}>
+                        <h1 className={styles.heroTitle}>📸 Photo <span>Generator</span></h1>
+                        <p className={styles.heroSubtitle}>Buat pas foto ukuran 2x3, 3x4, dan 4x6 secara instan. Crop presisi dan ganti background warna.</p>
                     </div>
 
-                    <div className={styles.controlsSection}>
-                        {/* Size Selection */}
-                        <div className={styles.controlGroup}>
-                            <label className={styles.controlLabel}><Scissors size={18} /> Pilih Ukuran</label>
-                            <div className={styles.ratioGrid}>
-                                <button
-                                    className={`${styles.ratioBtn} ${aspect === 2 / 3 ? styles.active : ''}`}
-                                    onClick={() => setAspect(2 / 3)}
-                                >2x3</button>
-                                <button
-                                    className={`${styles.ratioBtn} ${aspect === 3 / 4 ? styles.active : ''}`}
-                                    onClick={() => setAspect(3 / 4)}
-                                >3x4</button>
-                                <button
-                                    className={`${styles.ratioBtn} ${aspect === 4 / 6 ? styles.active : ''}`}
-                                    onClick={() => setAspect(4 / 6)}
-                                >4x6</button>
+                    {!image ? (
+                        <div className={styles.uploadArea} onClick={() => fileInputRef.current?.click()}>
+                            <div className={styles.iconCircle}>
+                                <Camera size={40} />
                             </div>
-                        </div>
-
-                        {/* Background Color */}
-                        <div className={styles.controlGroup}>
-                            <label className={styles.controlLabel}><RefreshCw size={18} /> Warna Background</label>
-                            <div className={styles.colorGrid}>
-                                <button
-                                    className={`${styles.colorBtn} ${bgColor === '#ff0000' ? styles.active : ''}`}
-                                    style={{ background: '#ff0000' }}
-                                    onClick={() => setBgColor('#ff0000')}
-                                    title="Merah (Tahun Ganjil)"
-                                />
-                                <button
-                                    className={`${styles.colorBtn} ${bgColor === '#0000ff' ? styles.active : ''}`}
-                                    style={{ background: '#0000ff' }}
-                                    onClick={() => setBgColor('#0000ff')}
-                                    title="Biru (Tahun Genap)"
-                                />
-                                <button
-                                    className={`${styles.colorBtn} ${bgColor === '#ffffff' ? styles.active : ''}`}
-                                    style={{ background: '#ffffff', border: '1px solid #ccc' }}
-                                    onClick={() => setBgColor('#ffffff')}
-                                    title="Putih"
-                                />
+                            <div className={styles.uploadContent}>
+                                <h3>Upload Foto Anda</h3>
+                                <p>Klik untuk memilih atau drag & drop foto di sini</p>
+                                <div className={styles.supportedTypes}>
+                                    <span>JPG</span>
+                                    <span>PNG</span>
+                                    <span>WEBP</span>
+                                </div>
                             </div>
-                            <p style={{ fontSize: '0.8rem', color: '#888' }}>
-                                *Warna background hanya efektif jika foto asli transparan.
-                            </p>
+                            <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} hidden />
                         </div>
-
-                        {/* Actions */}
-                        {image && (
-                            <div className={styles.controlGroup} style={{ marginTop: 'auto' }}>
-                                <button className={styles.downloadBtn} onClick={() => handleDownload(`${aspect === 3 / 4 ? '3x4' : aspect === 2 / 3 ? '2x3' : '4x6'}`)}>
-                                    <Download size={20} /> Download Pas Foto
-                                </button>
-                                <button
-                                    className={styles.uploadBtn}
-                                    onClick={() => { setImage(null); fileInputRef.current.value = '' }}
-                                    style={{ marginTop: '1rem', width: '100%' }}
+                    ) : (
+                        <div className={styles.workspace}>
+                            <div className={styles.previewSection}>
+                                <div className={styles.canvasWrap}
+                                    onMouseDown={handleMouseDown}
+                                    onMouseMove={handleMouseMove}
+                                    onMouseUp={handleMouseUp}
+                                    onMouseLeave={handleMouseUp}
                                 >
-                                    Upload Foto Lain
-                                </button>
+                                    <canvas ref={canvasRef} style={{ maxWidth: '100%', cursor: isDragging ? 'grabbing' : 'grab' }} />
+                                    <p style={{ textAlign: 'center', marginTop: '1rem', fontSize: '0.9rem', color: '#666' }}>
+                                        💡 Geser kotak untuk mengatur posisi wajah
+                                    </p>
+                                </div>
+                                <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} hidden />
                             </div>
-                        )}
+
+                            <div className={styles.controlsSection}>
+                                {/* Size Selection */}
+                                <div className={styles.controlGroup}>
+                                    <label className={styles.controlLabel}><Scissors size={18} /> Pilih Ukuran</label>
+                                    <div className={styles.ratioGrid}>
+                                        <button
+                                            className={`${styles.ratioBtn} ${aspect === 2 / 3 ? styles.active : ''}`}
+                                            onClick={() => setAspect(2 / 3)}
+                                        >2x3</button>
+                                        <button
+                                            className={`${styles.ratioBtn} ${aspect === 3 / 4 ? styles.active : ''}`}
+                                            onClick={() => setAspect(3 / 4)}
+                                        >3x4</button>
+                                        <button
+                                            className={`${styles.ratioBtn} ${aspect === 4 / 6 ? styles.active : ''}`}
+                                            onClick={() => setAspect(4 / 6)}
+                                        >4x6</button>
+                                    </div>
+                                </div>
+
+                                {/* Background Color */}
+                                <div className={styles.controlGroup}>
+                                    <label className={styles.controlLabel}><RefreshCw size={18} /> Warna Background</label>
+                                    <div className={styles.colorGrid}>
+                                        <button
+                                            className={`${styles.colorBtn} ${bgColor === '#ff0000' ? styles.active : ''}`}
+                                            style={{ background: '#ff0000' }}
+                                            onClick={() => setBgColor('#ff0000')}
+                                            title="Merah (Tahun Ganjil)"
+                                        />
+                                        <button
+                                            className={`${styles.colorBtn} ${bgColor === '#0000ff' ? styles.active : ''}`}
+                                            style={{ background: '#0000ff' }}
+                                            onClick={() => setBgColor('#0000ff')}
+                                            title="Biru (Tahun Genap)"
+                                        />
+                                        <button
+                                            className={`${styles.colorBtn} ${bgColor === '#ffffff' ? styles.active : ''}`}
+                                            style={{ background: '#ffffff', border: '1px solid #ccc' }}
+                                            onClick={() => setBgColor('#ffffff')}
+                                            title="Putih"
+                                        />
+                                    </div>
+                                    <p style={{ fontSize: '0.8rem', color: '#888' }}>
+                                        *Warna background hanya efektif jika foto asli transparan.
+                                    </p>
+                                </div>
+
+                                {/* Actions */}
+                                <div className={styles.controlGroup} style={{ marginTop: 'auto' }}>
+                                    <button className={styles.downloadBtn} onClick={() => handleDownload(`${aspect === 3 / 4 ? '3x4' : aspect === 2 / 3 ? '2x3' : '4x6'}`)}>
+                                        <Download size={20} /> Download Pas Foto
+                                    </button>
+                                    <button
+                                        className={styles.uploadBtn}
+                                        onClick={() => { setImage(null); fileInputRef.current.value = '' }}
+                                        style={{ marginTop: '1rem', width: '100%' }}
+                                    >
+                                        Upload Foto Lain
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Cara Pakai / How To Use */}
+                    {/* Cara Pakai Link */}
+                    <div className={styles.howToUse} style={{ marginTop: '80px', padding: '40px', background: 'var(--bg-white)', borderRadius: '24px', border: '1px solid var(--bg-secondary)', textAlign: 'center' }}>
+                        <h2 style={{ fontSize: '1.75rem', marginBottom: '16px', fontWeight: '800', color: 'var(--text-primary)' }}>Bingung Caranya?</h2>
+                        <p style={{ color: 'var(--text-secondary)', marginBottom: '24px' }}>Lihat panduan lengkap cara menggunakan Photo Generator.</p>
+                        <a href="/guide#photo-generator" className={styles.btnPrimary} style={{ display: 'inline-flex', padding: '12px 32px', borderRadius: '50px', textDecoration: 'none' }}>
+                            Panduan Lengkap
+                        </a>
                     </div>
                 </div>
             </main>

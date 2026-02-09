@@ -448,6 +448,16 @@ export default function RedactionTool() {
                     </div>
                 )}
 
+                {/* Cara Pakai / How To Use */}
+                {/* Cara Pakai Link */}
+                <div className={styles.howToUse} style={{ marginTop: '80px', padding: '40px', background: 'var(--bg-white)', borderRadius: '24px', border: '1px solid var(--bg-secondary)', textAlign: 'center' }}>
+                    <h2 style={{ fontSize: '1.75rem', marginBottom: '16px', fontWeight: '800', color: 'var(--text-primary)' }}>Bingung Caranya?</h2>
+                    <p style={{ color: 'var(--text-secondary)', marginBottom: '24px' }}>Lihat panduan lengkap cara menyensor data pribadi.</p>
+                    <a href="/guide#redact" className={styles.btnPrimary} style={{ display: 'inline-flex', padding: '12px 32px', borderRadius: '50px', textDecoration: 'none' }}>
+                        Panduan Lengkap
+                    </a>
+                </div>
+
                 {/* Features Detail */}
                 <section className={styles.featuresSection}>
                     <h2>Keunggulan Amanin Data</h2>

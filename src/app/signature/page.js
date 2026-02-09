@@ -1122,6 +1122,15 @@ export default function SignaturePage() {
                         </div>
                     )}
                 </section>
+                {/* Cara Pakai / How To Use */}
+                {/* Cara Pakai Link */}
+                <div className={styles.howToUse} style={{ marginTop: '80px', marginBottom: '80px', padding: '40px', background: 'var(--bg-white)', borderRadius: '24px', border: '1px solid var(--bg-secondary)', textAlign: 'center' }}>
+                    <h2 style={{ fontSize: '1.75rem', marginBottom: '16px', fontWeight: '800', color: 'var(--text-primary)' }}>Bingung Caranya?</h2>
+                    <p style={{ color: 'var(--text-secondary)', marginBottom: '24px' }}>Lihat panduan lengkap cara menggunakan tanda tangan digital.</p>
+                    <a href="/guide#signature-guide" className={styles.btnPrimary} style={{ display: 'inline-flex', padding: '12px 32px', borderRadius: '50px', textDecoration: 'none' }}>
+                        Panduan Lengkap
+                    </a>
+                </div>
             </main >
 
             <Footer />

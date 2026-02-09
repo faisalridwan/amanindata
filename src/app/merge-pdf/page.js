@@ -158,6 +158,7 @@ export default function MergePDF() {
 
                 <div className={styles.workspace}>
                     {/* Upload Area */}
+                    {/* Upload Area */}
                     <div
                         className={`${styles.uploadArea} ${dragActive ? styles.dragActive : ''}`}
                         onDragEnter={handleDrag}
@@ -165,7 +166,7 @@ export default function MergePDF() {
                         onDragOver={handleDrag}
                         onDrop={handleDrop}
                         onClick={() => fileInputRef.current?.click()}
-                        style={{ display: files.length > 0 ? 'none' : 'block' }}
+                        style={{ display: files.length > 0 ? 'none' : 'flex' }}
                     >
                         <input
                             ref={fileInputRef}
@@ -175,12 +176,18 @@ export default function MergePDF() {
                             onChange={handleFileUpload}
                             style={{ display: 'none' }}
                         />
-                        <div className={styles.uploadIcon}>
-                            <FileUp size={48} />
+                        <div className={styles.iconCircle}>
+                            <FileUp size={40} />
                         </div>
-                        <h3>Klik atau Tarik File ke Sini</h3>
-                        <p>PDF, JPG, atau PNG</p>
-                        <button className={styles.btnSecondary}>Pilih File</button>
+                        <div className={styles.uploadContent}>
+                            <h3>Upload File PDF & Gambar</h3>
+                            <p>Drag & drop file di sini atau klik untuk memilih</p>
+                            <div className={styles.supportedTypes}>
+                                <span>PDF</span>
+                                <span>JPG</span>
+                                <span>PNG</span>
+                            </div>
+                        </div>
                         {error && (
                             <div className={styles.error} onClick={(e) => e.stopPropagation()}>
                                 <AlertCircle size={16} />
@@ -302,6 +309,16 @@ export default function MergePDF() {
                         <Shield size={16} />
                         <span>Tanpa Upload Server</span>
                     </div>
+                </div>
+
+                {/* Cara Pakai / How To Use */}
+                {/* Cara Pakai Link */}
+                <div className={styles.howToUse} style={{ marginTop: '80px', padding: '40px', background: 'var(--bg-white)', borderRadius: '24px', border: '1px solid var(--bg-secondary)', textAlign: 'center' }}>
+                    <h2 style={{ fontSize: '1.75rem', marginBottom: '16px', fontWeight: '800', color: 'var(--text-primary)' }}>Bingung Caranya?</h2>
+                    <p style={{ color: 'var(--text-secondary)', marginBottom: '24px' }}>Lihat panduan lengkap cara menggabungkan file PDF.</p>
+                    <a href="/guide#merge-pdf" className={styles.btnPrimary} style={{ display: 'inline-flex', padding: '12px 32px', borderRadius: '50px', textDecoration: 'none' }}>
+                        Panduan Lengkap
+                    </a>
                 </div>
 
                 {/* New Advantages Section */}

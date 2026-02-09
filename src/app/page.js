@@ -755,15 +755,34 @@ export default function Home() {
                                 </div>
 
                                 {!imageLoaded && (
-                                    <div className={styles.placeholder} onClick={() => fileInputRef.current?.click()} style={{ cursor: 'pointer' }}>
-                                        <FileImage size={48} strokeWidth={1} />
-                                        <p>Drag & Drop gambar di sini</p>
-                                        <span>atau klik Upload / Ctrl+V</span>
+                                    <div className={styles.uploadArea} onClick={() => fileInputRef.current?.click()}>
+                                        <div className={styles.iconCircle}>
+                                            <FileImage size={40} />
+                                        </div>
+                                        <div className={styles.uploadContent}>
+                                            <h3>Upload Gambar</h3>
+                                            <p>Drag & drop gambar, paste (Ctrl+V), atau klik untuk memilih</p>
+                                            <div className={styles.supportedTypes}>
+                                                <span>JPG</span>
+                                                <span>PNG</span>
+                                                <span>WEBP</span>
+                                            </div>
+                                        </div>
                                     </div>
                                 )}
                             </div>
                         )}
                     </div>
+                </div>
+
+                {/* Cara Pakai / How To Use */}
+                {/* Cara Pakai Link */}
+                <div className={styles.howToUse} style={{ marginTop: '80px', padding: '40px', background: 'var(--bg-white)', borderRadius: '24px', border: '1px solid var(--bg-secondary)', textAlign: 'center' }}>
+                    <h2 style={{ fontSize: '1.75rem', marginBottom: '16px', fontWeight: '800', color: 'var(--text-primary)' }}>Bingung Caranya?</h2>
+                    <p style={{ color: 'var(--text-secondary)', marginBottom: '24px' }}>Lihat panduan lengkap cara menggunakan watermark.</p>
+                    <a href="/guide#watermark-guide" className={styles.btnPrimary} style={{ display: 'inline-flex', padding: '12px 32px', borderRadius: '50px', textDecoration: 'none' }}>
+                        Panduan Lengkap
+                    </a>
                 </div>
 
                 {/* Trust */}

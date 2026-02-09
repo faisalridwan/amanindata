@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { BookOpen, AlertTriangle, Lightbulb, MousePointer, Info, Shield, CheckCircle, ChevronDown } from 'lucide-react'
+import { BookOpen, AlertTriangle, Lightbulb, MousePointer, Info, Shield, CheckCircle, ChevronDown, Camera, FileStack, Search, Eraser, Minimize2 } from 'lucide-react'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import styles from './page.module.css'
@@ -85,6 +85,97 @@ export default function GuidePage() {
         }
     ]
 
+    const photoGeneratorSteps = [
+        {
+            title: 'Upload Foto',
+            desc: <>Upload pasfoto Anda yang ingin diedit background-nya. Disarankan menggunakan foto dengan pencahayaan yang baik.</>
+        },
+        {
+            title: 'Pilih Warna Background',
+            desc: <>Pilih warna <strong>Merah</strong>, <strong>Biru</strong>, atau warna kustom lainnya sesuai kebutuhan dokumen Anda.</>
+        },
+        {
+            title: 'Atur Ukuran',
+            desc: <>Pilih ukuran standar (2x3, 3x4, 4x6) untuk hasil cetak yang presisi.</>
+        },
+        {
+            title: 'Download Hasil',
+            desc: <>Klik download untuk menyimpan foto yang sudah diedit. Kualitas foto tetap terjaga.</>
+        }
+    ]
+
+    const mergePdfSteps = [
+        {
+            title: 'Pilih File PDF',
+            desc: <>Upload beberapa file PDF yang ingin Anda gabungkan menjadi satu dokumen.</>
+        },
+        {
+            title: 'Atur Urutan',
+            desc: <>Drag & Drop file untuk mengatur urutan halaman sesuai keinginan Anda.</>
+        },
+        {
+            title: 'Gabungkan',
+            desc: <>Klik tombol <strong>"Gabungkan PDF"</strong> untuk memproses penyatuan file.</>
+        },
+        {
+            title: 'Simpan',
+            desc: <>Download file PDF baru yang berisi gabungan dari dokumen-dokumen Anda.</>
+        }
+    ]
+
+    const nikParserSteps = [
+        {
+            title: 'Masukkan NIK',
+            desc: <>Ketik 16 digit Nomor Induk Kependudukan (NIK) pada kolom yang tersedia.</>
+        },
+        {
+            title: 'Cek Data',
+            desc: <>Klik tombol <strong>"Cek NIK Sekarang"</strong>. Sistem akan mengekstrak informasi yang terkandung dalam NIK tersebut.</>
+        },
+        {
+            title: 'Lihat Hasil',
+            desc: <>Informasi seperti Tanggal Lahir, Jenis Kelamin, dan Wilayah akan ditampilkan. Data ini diekstrak dari logika penomoran NIK, bukan dari database pemerintah.</>
+        }
+    ]
+
+    const redactSteps = [
+        {
+            title: 'Upload Gambar',
+            desc: <>Upload foto KTP, dokumen, atau tangkapan layar yang mengandung data sensitif.</>
+        },
+        {
+            title: 'Pilih Area',
+            desc: <>Gunakan mouse untuk menyeleksi area yang ingin disensor (blok kotak).</>
+        },
+        {
+            title: 'Pilih Efek Sensor',
+            desc: <>Pilih mode sensor: <strong>Blur</strong>, <strong>Pixelate</strong>, atau <strong>Solid Color</strong> (blok hitam/putih).</>
+        },
+        {
+            title: 'Download Aman',
+            desc: <>Download gambar yang sudah disensor. Data asli tertutup permanen di gambar baru.</>
+        }
+    ]
+
+    const compressSteps = [
+        {
+            title: 'Pilih File',
+            desc: <>Upload file Gambar (JPG/PNG) atau PDF yang ukurannya ingin dikecilkan.</>
+        },
+        {
+            title: 'Tentukan Kualitas',
+            desc: <>Pilih preset kompresi (Low, Medium, High) atau atur slider manual untuk menyeimbangkan ukuran dan kualitas.</>
+        },
+        {
+            title: 'Proses Kompresi',
+            desc: <>Tunggu sejenak hingga proses kompresi selesai dilakukan di browser Anda.</>
+        },
+        {
+            title: 'Bandingkan & Download',
+            desc: <>Lihat perbandingan ukuran file sebelum dan sesudah kompresi, lalu download hasilnya jika sudah sesuai.</>
+        }
+    ]
+
     return (
         <>
             <Navbar />
@@ -114,6 +205,31 @@ export default function GuidePage() {
                                 <li>
                                     <a href="#security-tips">
                                         <Lightbulb size={16} /> Tips Keamanan
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#photo-generator">
+                                        <Camera size={16} /> Photo Generator
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#merge-pdf">
+                                        <FileStack size={16} /> Gabung PDF
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#nik-parser">
+                                        <Search size={16} /> Cek NIK
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#redact">
+                                        <Eraser size={16} /> Sensor Data
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#compress">
+                                        <Minimize2 size={16} /> Kompres File
                                     </a>
                                 </li>
                             </ul>
@@ -150,7 +266,7 @@ export default function GuidePage() {
                                 </div>
                             </div>
 
-                            {/*     Signature Guide */}
+                            {/* Signature Guide */}
                             <div id="signature-guide" className={`neu-card no-hover ${styles.guideCard}`}>
                                 <div className={styles.cardHeader}>
                                     <MousePointer size={24} className={styles.iconBlue} />
@@ -175,6 +291,116 @@ export default function GuidePage() {
                                 </div>
                                 <div className={styles.cardFooter}>
                                     <a href="/signature" className={`${styles.actionBtn} ${styles.btnAlt}`}>Buat Tanda Tangan</a>
+                                </div>
+                            </div>
+
+                            {/* Photo Generator Guide */}
+                            <div id="photo-generator" className={`neu-card no-hover ${styles.guideCard}`}>
+                                <div className={styles.cardHeader}>
+                                    <Camera size={24} className={styles.iconBlue} />
+                                    <h2>Panduan Photo Generator</h2>
+                                </div>
+                                <div className={styles.stepList}>
+                                    {photoGeneratorSteps.map((step, index) => (
+                                        <div key={index} className={styles.stepItem}>
+                                            <div className={styles.stepNumber}>{index + 1}</div>
+                                            <div className={styles.stepContent}>
+                                                <h3>{step.title}</h3>
+                                                <p>{step.desc}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className={styles.cardFooter}>
+                                    <a href="/photo-generator" className={`${styles.actionBtn} ${styles.btnAlt}`}>Buka Photo Generator</a>
+                                </div>
+                            </div>
+
+                            {/* Merge PDF Guide */}
+                            <div id="merge-pdf" className={`neu-card no-hover ${styles.guideCard}`}>
+                                <div className={styles.cardHeader}>
+                                    <FileStack size={24} className={styles.iconBlue} />
+                                    <h2>Panduan Gabung PDF</h2>
+                                </div>
+                                <div className={styles.stepList}>
+                                    {mergePdfSteps.map((step, index) => (
+                                        <div key={index} className={styles.stepItem}>
+                                            <div className={styles.stepNumber}>{index + 1}</div>
+                                            <div className={styles.stepContent}>
+                                                <h3>{step.title}</h3>
+                                                <p>{step.desc}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className={styles.cardFooter}>
+                                    <a href="/merge-pdf" className={`${styles.actionBtn} ${styles.btnAlt}`}>Gabung PDF Sekarang</a>
+                                </div>
+                            </div>
+
+                            {/* NIK Parser Guide */}
+                            <div id="nik-parser" className={`neu-card no-hover ${styles.guideCard}`}>
+                                <div className={styles.cardHeader}>
+                                    <Search size={24} className={styles.iconBlue} />
+                                    <h2>Panduan Cek NIK</h2>
+                                </div>
+                                <div className={styles.stepList}>
+                                    {nikParserSteps.map((step, index) => (
+                                        <div key={index} className={styles.stepItem}>
+                                            <div className={styles.stepNumber}>{index + 1}</div>
+                                            <div className={styles.stepContent}>
+                                                <h3>{step.title}</h3>
+                                                <p>{step.desc}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className={styles.cardFooter}>
+                                    <a href="/nik-parser" className={`${styles.actionBtn} ${styles.btnAlt}`}>Cek NIK</a>
+                                </div>
+                            </div>
+
+                            {/* Redact Guide */}
+                            <div id="redact" className={`neu-card no-hover ${styles.guideCard}`}>
+                                <div className={styles.cardHeader}>
+                                    <Eraser size={24} className={styles.iconBlue} />
+                                    <h2>Panduan Sensor Data</h2>
+                                </div>
+                                <div className={styles.stepList}>
+                                    {redactSteps.map((step, index) => (
+                                        <div key={index} className={styles.stepItem}>
+                                            <div className={styles.stepNumber}>{index + 1}</div>
+                                            <div className={styles.stepContent}>
+                                                <h3>{step.title}</h3>
+                                                <p>{step.desc}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className={styles.cardFooter}>
+                                    <a href="/redact" className={`${styles.actionBtn} ${styles.btnAlt}`}>Sensor Data</a>
+                                </div>
+                            </div>
+
+                            {/* Compress Guide */}
+                            <div id="compress" className={`neu-card no-hover ${styles.guideCard}`}>
+                                <div className={styles.cardHeader}>
+                                    <Minimize2 size={24} className={styles.iconBlue} />
+                                    <h2>Panduan Kompres File</h2>
+                                </div>
+                                <div className={styles.stepList}>
+                                    {compressSteps.map((step, index) => (
+                                        <div key={index} className={styles.stepItem}>
+                                            <div className={styles.stepNumber}>{index + 1}</div>
+                                            <div className={styles.stepContent}>
+                                                <h3>{step.title}</h3>
+                                                <p>{step.desc}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className={styles.cardFooter}>
+                                    <a href="/compress" className={`${styles.actionBtn} ${styles.btnAlt}`}>Kompres File</a>
                                 </div>
                             </div>
                         </div>
