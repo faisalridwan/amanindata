@@ -23,27 +23,27 @@ export default function GuidePage() {
         {
             title: 'Crop & Potong (Opsional)',
             desc: <>Jika foto dokumen terlalu lebar, aktifkan mode <strong>Crop</strong>. Tarik sudut-sudut grid untuk memotong bagian yang tidak perlu, lalu klik <strong>Selesai Crop</strong>.</>,
-            image: '/images/guide/watermark-3.png'
+            image: ''
         },
         {
             title: 'Pilih Mode Watermark',
             desc: <>Pilih <strong>"Full Gambar"</strong> untuk watermark memenuhi seluruh halaman (lebih aman), atau <strong>"Satu Teks"</strong> untuk menempatkan satu tulisan saja di posisi tertentu.</>,
-            image: '/images/guide/watermark-4.png'
+            image: ''
         },
         {
             title: 'Isi Teks & Tujuan',
             desc: <>Ketik teks watermark, misalnya <em>"VERIFIKASI PINJOL"</em> atau <em>"LAMARAN KERJA"</em>. Klik tombol <strong>+ Tambah Verifikasi & Tanggal</strong> untuk otomatis menambahkan tanggal hari ini agar dokumen valid.</>,
-            image: '/images/guide/watermark-5.png'
+            image: ''
         },
         {
             title: 'Kustomisasi Tampilan',
             desc: <>Atur <strong>Ukuran</strong> (besar kecil teks), <strong>Rotasi</strong> (kemiringan), dan <strong>Transparansi</strong> (agar dokumen asli tetap terbaca). Gunakan slider <strong>Jarak Horizontal/Vertikal</strong> untuk mengatur kerapatan watermark.</>,
-            image: '/images/guide/watermark-6.png'
+            image: ''
         },
         {
             title: 'Download & Simpan',
             desc: <>Cek hasil preview. Jika sudah pas, klik tombol <strong>Download PNG</strong> (gambar) atau <strong>Download PDF</strong> untuk menyimpan hasilnya ke perangkat Anda.</>,
-            image: '/images/guide/watermark-7.png'
+            image: ''
         }
     ]
 
@@ -51,37 +51,37 @@ export default function GuidePage() {
         {
             title: 'Masuk ke Menu Tanda Tangan',
             desc: <>Klik menu <strong>Tanda Tangan</strong> di navigasi atas. Halaman ini untuk membuat tanda tangan digital dan menempelkannya ke dokumen <em>PDF</em> atau <em>Gambar</em>.</>,
-            image: '/images/guide/signature-1.png'
+            image: ''
         },
         {
             title: 'Buat Tanda Tangan Baru',
             desc: <>Di area kanvas putih, goreskan tanda tangan Anda menggunakan <em>mouse</em> atau <em>layar sentuh</em>. Anda bisa ganti <strong>Warna</strong> (Hitam/Biru/Merah) dan <strong>Ketebalan</strong> garis.</>,
-            image: '/images/guide/signature-2.png'
+            image: ''
         },
         {
             title: 'Simpan Tanda Tangan',
             desc: <>Setelah menggambar, klik tombol <strong>"Simpan ke Dokumen"</strong>. Tanda tangan akan disimpan sementara di daftar bawah kanvas untuk dipakai.</>,
-            image: '/images/guide/signature-3.png'
+            image: ''
         },
         {
             title: 'Upload Dokumen',
             desc: <>Scroll ke bawah ke bagian <strong>"Tambahkan ke Dokumen"</strong>. Upload file <em>PDF</em> atau <em>Gambar</em> yang ingin ditandatangani.</>,
-            image: '/images/guide/signature-4.png'
+            image: ''
         },
         {
             title: 'Pilih & Tempel Tanda Tangan',
             desc: <>Pilih tanda tangan dari daftar. Lalu di area dokumen, <strong>KLIK DAN TAHAN (Drag)</strong> mouse Anda membentuk kotak untuk menempelkan tanda tangan di posisi yang pas.</>,
-            image: '/images/guide/signature-5.png'
+            image: ''
         },
         {
             title: 'Sesuaikan Posisi',
             desc: <>Jika posisi kurang pas, klik tanda tangan di dokumen lalu <strong>geser-geser</strong>. Tarik ujung kanan-bawah tanda tangan untuk <strong>memperbesar atau memperkecil</strong>.</>,
-            image: '/images/guide/signature-6.png'
+            image: ''
         },
         {
             title: 'Download Dokumen',
             desc: <>Setelah selesai, klik <strong>"Download Semua Halaman (PDF)"</strong> untuk menyimpan dokumen yang sudah resmi ditandatangani.</>,
-            image: '/images/guide/signature-7.png'
+            image: ''
         }
     ]
 
