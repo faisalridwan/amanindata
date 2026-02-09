@@ -776,11 +776,11 @@ export default function SignaturePage() {
         <>
             <Navbar />
 
-            <main className="container">
+            <main className={styles.container}>
                 <div className={styles.pageHeader}>
                     <h1>✍️ Tanda Tangan <span>Digital</span></h1>
                     <p>Buat tanda tangan dan tambahkan langsung ke dokumen Anda</p>
-                    <TrustSection />
+
                 </div>
 
                 {/* SECTION 1: Create Signature */}
@@ -1121,6 +1121,8 @@ export default function SignaturePage() {
                         </div>
                     )}
                 </section>
+
+                <TrustSection />
                 {/* Cara Pakai / How To Use */}
                 <GuideSection
                     linkHref="/guide#signature-guide"

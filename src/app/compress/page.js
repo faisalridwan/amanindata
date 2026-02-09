@@ -313,7 +313,7 @@ export default function ImageCompressor() {
                 <div className={styles.header}>
                     <h1>⚡ Kompres <span>File</span></h1>
                     <p>Kecilkan ukuran Foto atau PDF secara instan tanpa upload ke server.</p>
-                    <TrustSection />
+
                 </div>
 
                 {!file ? (
@@ -517,6 +517,7 @@ export default function ImageCompressor() {
                         </div>
                     </div>
                 )}
+                <TrustSection />
 
                 {/* Cara Pakai / How To Use */}
                 <GuideSection

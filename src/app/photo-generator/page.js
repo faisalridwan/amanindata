@@ -223,7 +223,7 @@ export default function PhotoGeneratorPage() {
                     <div className={styles.hero}>
                         <h1 className={styles.heroTitle}>📸 Photo <span>Generator</span></h1>
                         <p className={styles.heroSubtitle}>Buat pas foto ukuran 2x3, 3x4, dan 4x6 secara instan. Crop presisi dan ganti background warna.</p>
-                        <TrustSection />
+
                     </div>
 
                     {!image ? (
@@ -323,6 +323,7 @@ export default function PhotoGeneratorPage() {
                             </div>
                         </div>
                     )}
+                    <TrustSection />
 
                     {/* Cara Pakai / How To Use */}
                     <GuideSection

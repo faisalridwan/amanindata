@@ -151,12 +151,12 @@ export default function MergePDF() {
             <Navbar />
             <div className={styles.container}>
                 <div className={styles.header}>
-                    <h1 className={styles.title}>Gabung PDF & Gambar 📑</h1>
+                    <h1 className={styles.title}>📑 Gabung PDF & Gambar</h1>
                     <p className={styles.subtitle}>
                         Satukan file PDF dan gambar (JPG/PNG) menjadi satu dokumen PDF secara urut.
-                        <br />Semua proses berjalan di browser Anda (Offline), privasi terjaga.
+
                     </p>
-                    <TrustSection />
+
                 </div>
 
                 <div className={styles.workspace}>
@@ -298,7 +298,7 @@ export default function MergePDF() {
                     )}
                 </div>
 
-
+                <TrustSection />
 
                 {/* Cara Pakai / How To Use */}
                 <GuideSection

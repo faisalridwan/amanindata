@@ -570,7 +570,7 @@ export default function Home() {
                 <header className={styles.hero}>
                     <h1 className={styles.heroTitle}>📄 Watermark Dokumen <span>Online</span></h1>
                     <p className={styles.heroSubtitle}>Lindungi dokumen identitas dengan watermark. 100% di browser.</p>
-                    <TrustSection />
+
                 </header>
 
                 {/* Document Types */}
@@ -767,9 +767,9 @@ export default function Home() {
                                             <p>Drag & drop gambar, paste (Ctrl+V), atau klik untuk memilih</p>
                                             <div className={styles.supportedTypes}>
                                                 <span>JPG</span>
-                                                <span>PNG</span>
                                                 <span>WEBP</span>
                                             </div>
+                                            <span className={styles.safeTag}>🔒 100% Client-Side</span>
                                         </div>
                                     </div>
                                 )}
@@ -777,6 +777,7 @@ export default function Home() {
                         )}
                     </div>
                 </div>
+                <TrustSection />
 
                 {/* Cara Pakai / How To Use */}
                 <GuideSection
