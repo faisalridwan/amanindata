@@ -1,6 +1,6 @@
 export const metadata = {
     title: 'Cara Pakai Amanin Data - Panduan Lengkap Watermark & TTD',
-    description: 'Panduan langkah demi langkah menggunakan Amanin Data untuk membuat watermark KTP dan tanda tangan digital. Lengkap dengan gambar petunjuk.',
+    description: 'Panduan langkah demi langkah menggunakan Amanin Data untuk membuat Watermark Dokumen dan tanda tangan digital. Lengkap dengan gambar petunjuk.',
     alternates: {
         canonical: '/guide',
     },

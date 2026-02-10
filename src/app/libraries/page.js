@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Library, Package, ExternalLink, Code2, Globe } from 'lucide-react'
+import { Library, Package, ExternalLink, Code2, Globe, FileText, Image } from 'lucide-react'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import styles from './page.module.css'
@@ -10,7 +10,7 @@ export default function LibrariesPage() {
     const libraries = [
         {
             name: 'Next.js',
-            ver: '15.1.0',
+            ver: '16.1.6',
             desc: 'Framework React utama untuk performa, routing, dan optimasi SEO.',
             link: 'https://nextjs.org',
             github: 'https://github.com/vercel/next.js',
@@ -33,6 +33,14 @@ export default function LibrariesPage() {
             icon: Package
         },
         {
+            name: 'pdf-lib',
+            ver: '1.17.1',
+            desc: 'Manipulasi PDF yang powerful dengan fitur merge, split, dan modifikasi halaman.',
+            link: 'https://pdf-lib.js.org/',
+            github: 'https://github.com/Hopding/pdf-lib',
+            icon: FileText
+        },
+        {
             name: 'jsPDF',
             ver: '4.1.0',
             desc: 'Library untuk pembuatan dokumen PDF langsung di sisi klien (browser).',
@@ -47,6 +55,22 @@ export default function LibrariesPage() {
             link: 'https://mozilla.github.io/pdf.js',
             github: 'https://github.com/mozilla/pdf.js',
             icon: Library
+        },
+        {
+            name: 'browser-image-compression',
+            ver: '2.0.2',
+            desc: 'Kompresi gambar cerdas di sisi klien dengan tetap menjaga kualitas visual.',
+            link: 'https://github.com/Donaldcwl/browser-image-compression',
+            github: 'https://github.com/Donaldcwl/browser-image-compression',
+            icon: Image
+        },
+        {
+            name: 'background-removal',
+            ver: '1.7.0',
+            desc: 'Penghapus latar belakang otomatis berbasis AI yang berjalan sepenuhnya di browser.',
+            link: 'https://img.ly/showcases/cesdk/background-removal',
+            github: 'https://github.com/imgly/background-removal-js',
+            icon: Image
         },
         {
             name: 'qrcode.react',

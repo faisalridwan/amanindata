@@ -17,7 +17,7 @@ export default function AboutPage() {
     const tools = [
         {
             icon: FileImage,
-            title: 'Watermark KTP',
+            title: 'Watermark Dokumen',
             desc: 'Lindungi identitas dengan watermark anti-maling. Mendukung edit massal dan multi-halaman.',
             href: '/'
         },
@@ -170,7 +170,7 @@ export default function AboutPage() {
                         <Code size={32} />
                         <h3>Dibangun dengan Teknologi Modern</h3>
                         <p>
-                            Amanin Data dibangun menggunakan <strong>Next.js 14</strong> dan teknologi web modern lainnya.
+                            Amanin Data dibangun menggunakan <strong>Next.js 16</strong> dan teknologi web modern lainnya.
                             Kami memanfaatkan library canggih seperti <code>pdf-lib</code>, <code>jspdf</code>, <code>sharp</code>,
                             dan <code>@imgly/background-removal</code> untuk menghadirkan fitur desktop-class langsung di browser.
                         </p>

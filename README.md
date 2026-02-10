@@ -10,7 +10,7 @@ Every document manipulation process is performed **100% locally in your browser*
 ---
 
 [![Main Website](https://img.shields.io/badge/Main%20Website-amanindata.qreatip.com-4CAF50?style=for-the-badge&logo=google-chrome&logoColor=white)](https://amanindata.qreatip.com/)
-[![Next.js](https://img.shields.io/badge/Framework-Next.js%2015-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+[![Next.js](https://img.shields.io/badge/Framework-Next.js%2016-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 
 ---
@@ -50,6 +50,11 @@ In today's digital age, identity theft and the misuse of personal data through s
 *   **Customization**: Choose custom colors for redaction blocks to match document background.
 *   **Export Options**: Save redacted documents as PDF or PNG.
 
+### ✂️ Background Remover
+*   **AI-Powered Removal**: Instantly remove backgrounds from photos using advanced AI models directly in the browser.
+*   **100% Client-Side**: No image uploads to servers; everything is processed locally for maximum privacy.
+*   **High Precision**: Accurately separates subjects from backgrounds.
+
 ### 🔄 Efficient Workflow
 *   **Insta-Reset**: Revert all changes to default with a single click if a mistake occurs.
 *   **Real-Time Preview**: See every change you make instantly before saving the document.
@@ -57,7 +62,7 @@ In today's digital age, identity theft and the misuse of personal data through s
 
 ---
 
-## � Privacy & Security Architecture
+##  Privacy & Security Architecture
 
 Amanin Data is built on the principle of **Privacy by Design**:
 
@@ -72,11 +77,14 @@ Amanin Data is built on the principle of **Privacy by Design**:
 
 The project utilizes modern web technologies for high performance and security:
 
-*   **Next.js 15**: The latest React framework for fast and SEO-friendly application performance.
+*   **Next.js 16**: The latest React framework for fast and SEO-friendly application performance.
 *   **React 19**: A component-based UI library for interactive interfaces.
 *   **Lucide React**: A consistent and elegant collection of open-source icons.
+*   **pdf-lib**: Powerful PDF manipulation library for merging, splitting, and modifying documents.
 *   **jsPDF**: The primary engine for generating and manipulating PDF documents on the client side.
 *   **PDF.js**: Used for high-performance rendering of PDF files into the browser canvas.
+*   **@imgly/background-removal**: AI-based background removal running entirely in the browser.
+*   **browser-image-compression**: Efficient client-side image compression.
 *   **Vanilla CSS (CSS Modules)**: A calming **Neumorphic** design without heavy CSS library dependencies.
 
 ---
