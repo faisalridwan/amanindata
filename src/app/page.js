@@ -547,6 +547,12 @@ export default function Home() {
                 // 2. Draw Watermark
                 if (watermarkType === 'single' && watermarkText) {
                     ctx.save()
+
+                    // CRITICAL FIX: Scale context to match High-DPI canvas (e.g., PDF Scale 2 vs Logical 1)
+                    // If page.width exists (PDF), calculate ratio. If image, ratio is 1.
+                    const ratio = page.width ? (canvas.width / page.width) : 1
+                    ctx.scale(ratio, ratio)
+
                     ctx.globalAlpha = opacity
                     ctx.translate(textPosition.x, textPosition.y)
                     ctx.rotate((rotation * Math.PI) / 180)
@@ -1003,7 +1009,8 @@ export default function Home() {
                                                             style={{ display: imageLoaded ? 'block' : 'none', width: '100%' }}
                                                         />
 
-                                                        {imageLoaded && watermarkType === 'single' && (
+
+                                                        {imageLoaded && watermarkType === 'single' && watermarkText && (
                                                             <WatermarkControls
                                                                 position={textPosition}
                                                                 dimensions={textDimensions}
@@ -1031,7 +1038,7 @@ export default function Home() {
                                             style={{ display: 'block', width: '100%' }}
                                         />
 
-                                        {watermarkType === 'single' && canvasMetrics.width > 0 && (
+                                        {watermarkType === 'single' && watermarkText && canvasMetrics.width > 0 && (
                                             <WatermarkControls
                                                 position={textPosition}
                                                 dimensions={textDimensions}
