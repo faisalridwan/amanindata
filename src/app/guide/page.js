@@ -88,19 +88,19 @@ export default function GuidePage() {
     const photoGeneratorSteps = [
         {
             title: 'Upload Foto',
-            desc: <>Upload pasfoto Anda yang ingin diedit background-nya. Disarankan menggunakan foto dengan pencahayaan yang baik.</>
+            desc: <>Upload foto yang ingin Anda edit. Bisa untuk pas foto, wallpaper, atau post sosial media.</>
         },
         {
-            title: 'Pilih Warna Background',
-            desc: <>Pilih warna <strong>Merah</strong>, <strong>Biru</strong>, atau warna kustom lainnya sesuai kebutuhan dokumen Anda.</>
+            title: 'Pilih Ukuran / Preset',
+            desc: <>Pilih preset siap pakai (Pas Foto 3x4, Instagram, Wallpaper) atau atur <strong>Dimensi Custom</strong> (px, cm, mm, inch) dan <strong>DPI</strong> untuk keperluan cetak.</>
         },
         {
-            title: 'Atur Ukuran',
-            desc: <>Pilih ukuran standar (2x3, 3x4, 4x6) untuk hasil cetak yang presisi.</>
+            title: 'Ganti Background',
+            desc: <>Pilih mode resize: <strong>Cover</strong> (potong penuh) atau <strong>Fit</strong> (utuh). Jika "Fit", Anda bisa ubah warna latar belakang menjadi Putih, Hitam, atau Blur.</>
         },
         {
-            title: 'Download Hasil',
-            desc: <>Klik download untuk menyimpan foto yang sudah diedit. Kualitas foto tetap terjaga.</>
+            title: 'Format & Kualitas',
+            desc: <>Pilih format output (JPG/PNG/WEBP) dan atur kualitas kompresi sesuai kebutuhan, lalu klik <strong>Download Image</strong>.</>
         }
     ]
 
@@ -202,11 +202,7 @@ export default function GuidePage() {
                                         <MousePointer size={16} /> Tanda Tangan
                                     </a>
                                 </li>
-                                <li>
-                                    <a href="#security-tips">
-                                        <Lightbulb size={16} /> Tips Keamanan
-                                    </a>
-                                </li>
+
                                 <li>
                                     <a href="#photo-generator">
                                         <Camera size={16} /> Photo Generator
@@ -230,6 +226,11 @@ export default function GuidePage() {
                                 <li>
                                     <a href="#compress">
                                         <Minimize2 size={16} /> Kompres File
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#security-tips">
+                                        <Lightbulb size={16} /> Tips Keamanan
                                     </a>
                                 </li>
                             </ul>

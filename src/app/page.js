@@ -574,9 +574,77 @@ export default function Home() {
                     })
 
                     ctx.restore()
-                } else if (watermarkType === 'tiled' && watermarkText) {
-                    // Simple Tiled Logic (Optional: add if needed, but user focused on single)
-                    // For now, only single is requested to be fixed
+                } else if (watermarkType === 'tiled') {
+                    // Full Area (Tiled) Logic
+                    ctx.save()
+
+                    const ratio = page.width ? (canvas.width / page.width) : 1
+                    ctx.scale(ratio, ratio)
+
+                    ctx.globalAlpha = opacity
+                    ctx.font = `bold ${fontSize}px "${fontFamily}", sans-serif`
+                    ctx.fillStyle = color
+                    ctx.textAlign = 'center'
+                    ctx.textBaseline = 'middle'
+
+                    const text = getFinalWatermarkText() // Use default if empty
+                    const metrics = ctx.measureText(text)
+                    const textWidth = metrics.width
+                    const textHeight = fontSize * 1.2 * (text.split('\n').length)
+
+                    // Spacing between watermarks
+                    const spacingX = textWidth + (gapX * 10) + 100
+                    const spacingY = textHeight + (gapY * 10) + 100
+
+                    // Calculate grid
+                    // Use logical dimensions (before scaling)
+                    const logicalWidth = canvas.width / ratio
+                    const logicalHeight = canvas.height / ratio
+
+                    // Rotate entire grid or individual items?
+                    // Standard is rotating the text item, but placing on grid.
+                    // Or rotating the context and drawing grid?
+                    // Let's rotate individual items for better "pattern" look
+
+                    // Actually, usually tiled watermarks are rotated 45deg.
+                    // If user rotation is applied, we rotate the text.
+
+                    // To cover full area with rotation, we need to generate points beyond the visible area
+                    const diag = Math.sqrt(logicalWidth * logicalWidth + logicalHeight * logicalHeight)
+
+                    // Simple grid for now, but rotated context is easier for consistency
+                    // If we rotate context, the grid is rotated.
+
+                    // Let's use specific rotation logic for tiled:
+                    // If we rotate the whole canvas context, the grid is rotated.
+                    // Center rotation on canvas center?
+
+                    ctx.translate(logicalWidth / 2, logicalHeight / 2)
+                    ctx.rotate((rotation * Math.PI) / 180)
+                    ctx.translate(-logicalWidth / 2, -logicalHeight / 2)
+
+                    // Draw grid covering enough area to account for rotation
+                    // We need to cover a larger area.
+                    const extra = diag - Math.min(logicalWidth, logicalHeight)
+                    const startX = -extra
+                    const startY = -extra
+                    const endX = logicalWidth + extra
+                    const endY = logicalHeight + extra
+
+                    for (let x = startX; x < endX; x += spacingX) {
+                        for (let y = startY; y < endY; y += spacingY) {
+
+                            // Offset every other row for brick pattern
+                            const xOffset = (Math.floor((y - startY) / spacingY) % 2 === 0) ? 0 : spacingX / 2
+
+                            const lines = text.split('\n')
+                            lines.forEach((line, idx) => {
+                                ctx.fillText(line, x + xOffset, y + (idx * (fontSize * 1.2)))
+                            })
+                        }
+                    }
+
+                    ctx.restore()
                 }
             })
         }

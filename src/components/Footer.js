@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { FileImage, PenTool, BookOpen, Info, HelpCircle, Shield, Library, Mail, Heart, FileText, Github, GitBranch, Minimize2, EyeOff, User } from 'lucide-react'
+import { FileImage, PenTool, BookOpen, Info, HelpCircle, FileStack, Shield, Library, Mail, Heart, FileText, Github, GitBranch, Minimize2, EyeOff, User } from 'lucide-react'
 import styles from './Footer.module.css'
 
 export default function Footer() {
@@ -56,7 +56,7 @@ export default function Footer() {
                                 <Link href="/redact"><EyeOff size={14} /> Sensor Data</Link>
                             </li>
                             <li>
-                                <Link href="/merge"><FileImage size={14} /> Gabung Dokumen</Link>
+                                <Link href="/merge"><FileStack size={14} /> Gabung Dokumen</Link>
                             </li>
                             <li>
                                 <Link href="/nik-parser"><User size={14} /> Cek NIK</Link>

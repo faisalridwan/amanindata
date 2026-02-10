@@ -3,7 +3,7 @@
 import { useState, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { FileImage, PenTool, BookOpen, Shield, Info, Heart, Menu, X, Minimize2, EyeOff, User, Camera, ChevronDown, Grid } from 'lucide-react'
+import { FileImage, PenTool, BookOpen, Shield, Info, Heart, Menu, X, Minimize2, EyeOff, User, Camera, ChevronDown, FileStack, Grid } from 'lucide-react'
 import styles from './Navbar.module.css'
 import ThemeToggle from './ThemeToggle'
 
@@ -21,13 +21,13 @@ export default function Navbar() {
 
     // Product Dropdown Items
     const productItems = [
-        { href: '/', label: 'Watermark KTP', icon: FileImage, desc: 'Tambahkan watermark pada scan dokumen agar aman.' },
+        { href: '/', label: 'Watermark Dokumen', icon: FileImage, desc: 'Tambahkan watermark pada scan dokumen agar aman.' },
         { href: '/signature', label: 'Tanda Tangan', icon: PenTool, desc: 'Buat tanda tangan digital transparan dan tambahkan langsung ke dokumen.' },
         { href: '/compress', label: 'Kompres Foto', icon: Minimize2, desc: 'Perkecil ukuran foto tanpa kurangi kualitas.' },
         { href: '/redact', label: 'Sensor Data', icon: EyeOff, desc: 'Sensor & blur data pribadi di dokumen.' },
-        { href: '/merge', label: 'Gabung Dokumen', icon: FileImage, desc: 'Satukan banyak file PDF dan gambar jadi satu.' },
+        { href: '/merge', label: 'Gabung Dokumen', icon: FileStack, desc: 'Satukan banyak file PDF dan gambar jadi satu.' },
         { href: '/nik-parser', label: 'Cek NIK', icon: User, desc: 'Cek informasi daerah & lahir dari NIK.' },
-        { href: '/photo-generator', label: 'Pas Foto', icon: Camera, desc: 'Buat pas foto otomatis background merah/biru.' },
+        { href: '/photo-generator', label: 'Photo Generator', icon: Camera, desc: 'Ubah ukuran, format photo, dan atur DPI foto.' },
     ]
 
     // Info/Footer Items in Dropdown

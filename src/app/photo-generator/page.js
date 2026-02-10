@@ -1,49 +1,98 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
-import { Upload, Download, Check, RefreshCw, Scissors, Image as ImageIcon, Camera } from 'lucide-react'
+import { useState, useRef, useEffect, useMemo } from 'react'
+import { Upload, Download, Check, RefreshCw, Scissors, Image as ImageIcon, Camera, Settings, Maximize, Minimize, Grid, Layout, Monitor, Instagram, Facebook, Share2 } from 'lucide-react'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import GuideSection from '@/components/GuideSection'
 import TrustSection from '@/components/TrustSection'
 import styles from './page.module.css'
 
+// Helper: Unit Conversions
+const UNITS = {
+    px: { label: 'px', scale: 1 },
+    cm: { label: 'cm', scale: 37.795 }, // 1cm = 37.795px at 96 DPI (default screen)
+    mm: { label: 'mm', scale: 3.7795 },
+    inch: { label: 'inch', scale: 96 }
+}
+
+const PRESETS = {
+    pasfoto: [
+        { label: '2x3', w: 2, h: 3, unit: 'cm' },
+        { label: '3x4', w: 3, h: 4, unit: 'cm' },
+        { label: '4x6', w: 4, h: 6, unit: 'cm' },
+        { label: '3.5x4.5', w: 35, h: 45, unit: 'mm', desc: 'Visa Standard' }
+    ],
+    social: [
+        { label: 'Instagram Post', w: 1080, h: 1080, unit: 'px', icon: Instagram },
+        { label: 'Instagram Story', w: 1080, h: 1920, unit: 'px', icon: Instagram },
+        { label: 'Facebook Post', w: 1200, h: 630, unit: 'px', icon: Facebook },
+        { label: 'Twitter Post', w: 1200, h: 675, unit: 'px', icon: Share2 }
+    ],
+    device: [
+        { label: 'FHD Wallpaper', w: 1920, h: 1080, unit: 'px', icon: Monitor },
+        { label: '4K Wallpaper', w: 3840, h: 2160, unit: 'px', icon: Monitor },
+        { label: 'iPhone Wallpaper', w: 1170, h: 2532, unit: 'px', icon: Monitor }
+    ]
+}
+
 export default function PhotoGeneratorPage() {
     const [image, setImage] = useState(null)
     const [fileName, setFileName] = useState('')
-    const [crop, setCrop] = useState({ x: 0, y: 0 })
-    const [zoom, setZoom] = useState(1)
-    const [aspect, setAspect] = useState(3 / 4) // Default 3x4
-    const [bgColor, setBgColor] = useState('#ff0000') // Default Red
+
+    // UI State
+    const [activeTab, setActiveTab] = useState('presets')
+    const [expandedCategory, setExpandedCategory] = useState({ pasfoto: true, social: false, device: false })
+
+    const toggleCategory = (cat) => {
+        setExpandedCategory(prev => ({ ...prev, [cat]: !prev[cat] }))
+    }
+
+    // Settings
+    const [settings, setSettings] = useState({
+        width: 3,
+        height: 4,
+        unit: 'cm',
+        dpi: 300,
+        mode: 'cover', // cover, contain, stretch
+        bg: '#ffffff', // For contain mode
+        bgType: 'color', // color, blur
+        format: 'image/jpeg',
+        quality: 0.9,
+        aspectLock: true
+    })
+
+    // Output Dimensions (Calculated in PX)
+    const outDims = useMemo(() => {
+        let wPx, hPx
+        if (settings.unit === 'px') {
+            wPx = settings.width
+            hPx = settings.height
+        } else {
+            // Convert everything to INCHES first
+            const inchW = settings.unit === 'inch' ? settings.width :
+                settings.unit === 'cm' ? settings.width / 2.54 :
+                    settings.width / 25.4
+
+            const inchH = settings.unit === 'inch' ? settings.height :
+                settings.unit === 'cm' ? settings.height / 2.54 :
+                    settings.height / 25.4
+
+            // Multiply by DPI
+            wPx = Math.round(inchW * settings.dpi)
+            hPx = Math.round(inchH * settings.dpi)
+        }
+        return { w: wPx, h: hPx }
+    }, [settings.width, settings.height, settings.unit, settings.dpi])
 
     // Canvas Refs
     const canvasRef = useRef(null)
     const fileInputRef = useRef(null)
 
-    // Crop State
+    // Drag State (for move logic in Fill mode)
+    const [offset, setOffset] = useState({ x: 0, y: 0 })
     const [isDragging, setIsDragging] = useState(false)
-    const [dragActive, setDragActive] = useState(false)
     const [dragStart, setDragStart] = useState({ x: 0, y: 0 })
-    const [cropRect, setCropRect] = useState(null) // { x, y, w, h } relative to image
-
-    const handleDrag = (e) => {
-        e.preventDefault()
-        e.stopPropagation()
-        if (e.type === "dragenter" || e.type === "dragover") {
-            setDragActive(true)
-        } else if (e.type === "dragleave") {
-            setDragActive(false)
-        }
-    }
-
-    const handleDrop = (e) => {
-        e.preventDefault()
-        e.stopPropagation()
-        setDragActive(false)
-        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-            handleFileChange({ target: { files: e.dataTransfer.files } })
-        }
-    }
 
     // Load Image
     const handleFileChange = (e) => {
@@ -55,23 +104,9 @@ export default function PhotoGeneratorPage() {
                 const img = new Image()
                 img.onload = () => {
                     setImage(img)
-                    // Initial center crop
-                    const viewportRatio = aspect
-                    const imageRatio = img.width / img.height
-                    let w, h
-                    if (imageRatio > viewportRatio) {
-                        h = img.height
-                        w = h * viewportRatio
-                    } else {
-                        w = img.width
-                        h = w / viewportRatio
-                    }
-                    setCropRect({
-                        x: (img.width - w) / 2,
-                        y: (img.height - h) / 2,
-                        w: w,
-                        h: h
-                    })
+                    setOffset({ x: 0, y: 0 })
+                    // Default to 4x6 cm ?
+                    setSettings(prev => ({ ...prev, width: 4, height: 6, unit: 'cm' }))
                 }
                 img.src = event.target.result
             }
@@ -79,159 +114,191 @@ export default function PhotoGeneratorPage() {
         }
     }
 
-    // Update Crop Rect when aspect changes
-    useEffect(() => {
-        if (!image || !cropRect) return
-        // Maintain center, update W/H based on new aspect
-        // Try to keep height constant if possible, else width
-        let h = cropRect.h
-        let w = h * aspect
+    // Update Settings Helper
+    const updateSetting = (key, value) => {
+        setSettings(prev => ({ ...prev, [key]: value }))
+    }
 
-        if (w > image.width) {
-            w = image.width
-            h = w / aspect
-        }
-        if (h > image.height) {
-            h = image.height
-            w = h * aspect
-        }
+    // Apply Preset
+    const applyPreset = (preset) => {
+        setSettings(prev => ({
+            ...prev,
+            width: preset.w,
+            height: preset.h,
+            unit: preset.unit,
+            dpi: preset.unit === 'px' ? 72 : 300, // Default 300 for physical, 72 for digital
+            mode: 'cover' // Usually cover for presets
+        }))
+        setOffset({ x: 0, y: 0 })
+    }
 
-        // Sender
-        const cx = cropRect.x + cropRect.w / 2
-        const cy = cropRect.y + cropRect.h / 2
-
-        setCropRect({
-            x: Math.max(0, Math.min(image.width - w, cx - w / 2)),
-            y: Math.max(0, Math.min(image.height - h, cy - h / 2)),
-            w: w,
-            h: h
-        })
-    }, [aspect])
-
-    // Draw Canvas (Preview)
+    // Draw Preview
     useEffect(() => {
         const canvas = canvasRef.current
-        if (!canvas || !image || !cropRect) return
+        if (!canvas || !image) return
 
         const ctx = canvas.getContext('2d')
 
-        // We want to show the whole image, but darken the area outside crop
-        // Display size
-        const maxWidth = 500
-        const scale = Math.min(1, maxWidth / image.width)
+        // Preview Canvas Size (Display Purpose)
+        // We render at most 800px width/height to be performant
+        const maxDisplay = 800
+        const { w: rawW, h: rawH } = outDims
 
-        canvas.width = image.width * scale
-        canvas.height = image.height * scale
+        if (rawW === 0 || rawH === 0) return
 
-        ctx.scale(scale, scale)
+        const scalePreview = Math.min(1, maxDisplay / rawW, maxDisplay / rawH)
 
-        // Draw Bg Color (visible if transparent)
-        ctx.fillStyle = bgColor === 'transparent' ? '#ffffff' : bgColor;
-        ctx.fillRect(0, 0, image.width, image.height)
+        // Logical size of canvas = scaled output
+        canvas.width = rawW * scalePreview
+        canvas.height = rawH * scalePreview
 
-        // Draw Image
-        ctx.drawImage(image, 0, 0)
+        // Use the scale for drawing context
+        ctx.scale(scalePreview, scalePreview)
 
-        // Draw Overlay (Darken outside)
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.6)'
-        ctx.fillRect(0, 0, image.width, cropRect.y) // Top
-        ctx.fillRect(0, cropRect.y + cropRect.h, image.width, image.height - (cropRect.y + cropRect.h)) // Bottom
-        ctx.fillRect(0, cropRect.y, cropRect.x, cropRect.h) // Left
-        ctx.fillRect(cropRect.x + cropRect.w, cropRect.y, image.width - (cropRect.x + cropRect.w), cropRect.h) // Right
+        // Draw Logic based on Mode
+        const w = rawW
+        const h = rawH
 
-        // Draw Crop Border
-        ctx.strokeStyle = '#fff'
-        ctx.lineWidth = 2 / scale
-        ctx.setLineDash([10, 10])
-        ctx.strokeRect(cropRect.x, cropRect.y, cropRect.w, cropRect.h)
-
-        // Reset dash
-        ctx.setLineDash([])
-    }, [image, cropRect, bgColor])
-
-    // Interaction Handlers (Simple Drag to Move)
-    const handleMouseDown = (e) => {
-        if (!cropRect) return
-        const canvas = canvasRef.current
-        const rect = canvas.getBoundingClientRect()
-        const scaleX = canvas.width / rect.width
-        const scaleY = canvas.height / rect.height
-
-        // Convert screen to canvas coords (scaled)
-        const x = (e.clientX - rect.left) * scaleX
-        const y = (e.clientY - rect.top) * scaleY
-
-        // Convert to image coords
-        const scale = image.width / canvas.width // Image / Canvas
-        const imgX = x * scale
-        const imgY = y * scale
-
-        // Check if inside crop rect
-        if (imgX >= cropRect.x && imgX <= cropRect.x + cropRect.w &&
-            imgY >= cropRect.y && imgY <= cropRect.y + cropRect.h) {
-            setIsDragging(true)
-            setDragStart({ x: imgX, y: imgY })
-        }
-    }
-
-    const handleMouseMove = (e) => {
-        if (!isDragging || !cropRect) return
-        const canvas = canvasRef.current
-        const rect = canvas.getBoundingClientRect()
-        const scaleX = canvas.width / rect.width
-        const scaleY = canvas.height / rect.height
-
-        const x = (e.clientX - rect.left) * scaleX
-        const y = (e.clientY - rect.top) * scaleY
-
-        const scale = image.width / canvas.width
-        const imgX = x * scale
-        const imgY = y * scale
-
-        const dx = imgX - dragStart.x
-        const dy = imgY - dragStart.y
-
-        let newX = cropRect.x + dx
-        let newY = cropRect.y + dy
-
-        // Constrain
-        newX = Math.max(0, Math.min(image.width - cropRect.w, newX))
-        newY = Math.max(0, Math.min(image.height - cropRect.h, newY))
-
-        setCropRect(prev => ({ ...prev, x: newX, y: newY }))
-        setDragStart({ x: imgX, y: imgY }) // Update drag start to avoid jitter
-    }
-
-    const handleMouseUp = () => {
-        setIsDragging(false)
-    }
-
-    // Download
-    const handleDownload = (sizeLabel) => {
-        if (!image || !cropRect) return
-
-        const canvas = document.createElement('canvas')
-        const w = cropRect.w
-        const h = cropRect.h
-
-        // Set high resolution for print (e.g. 300 DPI approx)
-        // 3x4 cm at 300 DPI is approx 354x472 pixels
-        // Let's just use the source image resolution cropped
-        canvas.width = w
-        canvas.height = h
-        const ctx = canvas.getContext('2d')
-
-        // Fill bg first
-        if (bgColor !== 'transparent') {
-            ctx.fillStyle = bgColor
+        // Background
+        if (settings.bgType === 'color') {
+            ctx.fillStyle = settings.bg
+            ctx.fillRect(0, 0, w, h)
+        } else if (settings.bgType === 'blur') {
+            // Draw blurred background (stretch)
+            ctx.filter = 'blur(40px)'
+            // Draw a slightly larger image to avoid fade at edges
+            ctx.drawImage(image, -w * 0.1, -h * 0.1, w * 1.2, h * 1.2)
+            ctx.filter = 'none'
+            // Darken slightly to make foreground pop
+            ctx.fillStyle = 'rgba(0,0,0,0.1)'
             ctx.fillRect(0, 0, w, h)
         }
 
-        ctx.drawImage(image, cropRect.x, cropRect.y, w, h, 0, 0, w, h)
+        if (settings.mode === 'stretch') {
+            ctx.drawImage(image, 0, 0, w, h)
+        } else if (settings.mode === 'contain') { // Fit
+            // Ratio
+            const ratio = Math.min(w / image.width, h / image.height)
+            const drawW = image.width * ratio
+            const drawH = image.height * ratio
+            const x = (w - drawW) / 2
+            const y = (h - drawH) / 2
+
+            // Draw image
+            ctx.drawImage(image, x, y, drawW, drawH)
+
+        } else { // Cover (Fill)
+            const ratio = Math.max(w / image.width, h / image.height)
+            const drawW = image.width * ratio
+            const drawH = image.height * ratio
+
+            // Center + Offset
+            // Offset is in PREVIEW PIXELS? No, state offset should be in output pixels?
+            // Or better: normalized -1 to 1?
+            // Let's keep offset in output pixels for simplicity, but scaled
+
+            let x = (w - drawW) / 2 + offset.x
+            let y = (h - drawH) / 2 + offset.y
+
+            ctx.drawImage(image, x, y, drawW, drawH)
+        }
+
+    }, [image, outDims, settings, offset])
+
+    // Drag Logic for Preview
+    const handleMouseDown = (e) => {
+        setIsDragging(true)
+        setDragStart({ x: e.clientX, y: e.clientY })
+    }
+
+    const handleMouseMove = (e) => {
+        if (!isDragging || settings.mode !== 'cover') return
+        const dx = e.clientX - dragStart.x
+        const dy = e.clientY - dragStart.y
+
+        // Calculate factor to convert screen pixels to canvas logical pixels
+        // Canvas is scaled. Input dx/dy are screen pixels.
+        // We need to apply this to the underlying offset which is in Output Pixels.
+        // Canvas Width (Screen) ~ Canvas Width (Logical) ?
+        // CSS max-width: 100%.
+
+        const canvas = canvasRef.current
+        const rect = canvas.getBoundingClientRect()
+        const scaleX = canvas.width / rect.width // Logical / Screen
+
+        // But canvas logical is *Preview Scaled*.
+        // And we draw with `ctx.scale(scalePreview)`.
+        // So offset needs to be divided by scalePreview?
+
+        // Let's simplify: 
+        // We update offset. The effect is `x + offset.x`.
+        // If we move mouse 10px right.
+        // We want image to move 10px right visually.
+        // Visually 10px = 10 * scaleX (logical pixels).
+        // Logical pixels = Output Pixels * scalePreview.
+        // So Output Delta = (10 * scaleX) / scalePreview.
+
+        // We can just accumulate delta and multiply by a sensitivity factor
+        // Sensitivity: 1 screen pixel -> 1 output pixel (approx)
+        // If image is huge (4000px) and preview is small (400px), 1px screen move should correspond to 10px output move?
+        // Yes, so sensitivity = outDims.w / rect.width
+
+        const sensitivity = outDims.w / rect.width
+
+        setOffset(prev => ({ x: prev.x + dx * sensitivity, y: prev.y + dy * sensitivity }))
+        setDragStart({ x: e.clientX, y: e.clientY })
+    }
+
+    const handleMouseUp = () => setIsDragging(false)
+
+
+    // Download
+    const handleDownload = () => {
+        const canvas = document.createElement('canvas')
+        canvas.width = outDims.w
+        canvas.height = outDims.h
+        const ctx = canvas.getContext('2d')
+
+        const { w, h } = outDims
+
+        // BG
+        if (settings.bgType === 'color') {
+            ctx.fillStyle = settings.bg
+            ctx.fillRect(0, 0, w, h)
+        } else if (settings.bgType === 'blur') {
+            ctx.filter = 'blur(40px)'
+            ctx.drawImage(image, -w * 0.1, -h * 0.1, w * 1.2, h * 1.2)
+            ctx.filter = 'none'
+            ctx.fillStyle = 'rgba(0,0,0,0.1)'
+            ctx.fillRect(0, 0, w, h)
+        }
+
+        // Image
+        if (settings.mode === 'stretch') {
+            ctx.drawImage(image, 0, 0, w, h)
+        } else if (settings.mode === 'contain') {
+            const ratio = Math.min(w / image.width, h / image.height)
+            const drawW = image.width * ratio
+            const drawH = image.height * ratio
+            const x = (w - drawW) / 2
+            const y = (h - drawH) / 2
+            ctx.drawImage(image, x, y, drawW, drawH)
+        } else {
+            const ratio = Math.max(w / image.width, h / image.height)
+            const drawW = image.width * ratio
+            const drawH = image.height * ratio
+            let x = (w - drawW) / 2 + offset.x
+            let y = (h - drawH) / 2 + offset.y
+            ctx.drawImage(image, x, y, drawW, drawH)
+        }
+
+        // Format
+        let mime = settings.format // image/jpeg
+        let ext = mime.split('/')[1]
 
         const link = document.createElement('a')
-        link.download = `${fileName || 'foto'}-${sizeLabel}-amanindata.jpg`
-        link.href = canvas.toDataURL('image/jpeg', 0.95)
+        link.download = `${fileName}-amanin-${w}x${h}.${ext}`
+        link.href = canvas.toDataURL(mime, settings.quality)
         link.click()
     }
 
@@ -239,39 +306,32 @@ export default function PhotoGeneratorPage() {
         <>
             <Navbar />
             <main className={styles.container}>
-                <div className="container">
-                    <div className={styles.hero}>
-                        <h1 className={styles.heroTitle}>📸 Photo <span>Generator</span></h1>
-                        <p className={styles.heroSubtitle}>Buat pas foto ukuran 2x3, 3x4, dan 4x6 secara instan. Crop presisi dan ganti background warna.</p>
-
+                <div className="container" style={{ maxWidth: '1200px' }}>
+                    <div className={styles.hero} style={{ marginBottom: image ? '2rem' : '3rem', transition: 'all 0.3s' }}>
+                        <h1 className={styles.heroTitle} style={{ fontSize: image ? '1.8rem' : '2.5rem' }}>📸 Photo Generator <span>Online</span></h1>
+                        <p className={styles.heroSubtitle} style={{ display: image ? 'block' : 'block', fontSize: image ? '0.9rem' : '1.1rem', marginTop: '8px' }}>
+                            Ubah ukuran, DPI, dan format foto dengan presisi tinggi.
+                        </p>
                     </div>
 
                     {!image ? (
                         <div
-                            className={`${styles.uploadArea} ${dragActive ? styles.dragActive : ''}`}
-                            onDragEnter={handleDrag}
-                            onDragLeave={handleDrag}
-                            onDragOver={handleDrag}
-                            onDrop={handleDrop}
+                            className={styles.uploadArea}
                             onClick={() => fileInputRef.current?.click()}
                         >
                             <div className={styles.iconCircle}>
                                 <Camera size={40} />
                             </div>
                             <div className={styles.uploadContent}>
-                                <h3>Upload Foto Anda</h3>
-                                <p>Tarik foto atau klik untuk memilih (JPG/PNG/WEBP)</p>
-                                <div className={styles.supportedTypes}>
-                                    <span>JPG</span>
-                                    <span>PNG</span>
-                                    <span>WEBP</span>
-                                </div>
+                                <h3>Upload Foto</h3>
+                                <p>JPG, PNG, WEBP (Max 10MB)</p>
                                 <span className={styles.safeTag}>🔒 100% Client-Side</span>
                             </div>
                             <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} hidden />
                         </div>
                     ) : (
                         <div className={styles.workspace}>
+                            {/* PREVIEW SECTION */}
                             <div className={styles.previewSection}>
                                 <div className={styles.canvasWrap}
                                     onMouseDown={handleMouseDown}
@@ -279,84 +339,212 @@ export default function PhotoGeneratorPage() {
                                     onMouseUp={handleMouseUp}
                                     onMouseLeave={handleMouseUp}
                                 >
-                                    <canvas ref={canvasRef} style={{ maxWidth: '100%', cursor: isDragging ? 'grabbing' : 'grab' }} />
-                                    <p style={{ textAlign: 'center', marginTop: '1rem', fontSize: '0.9rem', color: '#666' }}>
-                                        💡 Geser kotak untuk mengatur posisi wajah
-                                    </p>
+                                    {isDragging && settings.mode === 'cover' && (
+                                        <div className={styles.cropOverlay} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', textShadow: '0 2px 4px rgba(0,0,0,0.5)', zIndex: 10 }}>
+                                            <Maximize size={24} style={{ opacity: 0.8 }} />
+                                        </div>
+                                    )}
+                                    <canvas ref={canvasRef} style={{ maxWidth: '100%', maxHeight: '60vh', borderRadius: '4px', cursor: settings.mode === 'cover' ? (isDragging ? 'grabbing' : 'grab') : 'default', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
                                 </div>
-                                <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} hidden />
                             </div>
 
+                            {/* CONTROLS SECTION */}
                             <div className={styles.controlsSection}>
-                                {/* Size Selection */}
-                                <div className={styles.controlGroup}>
-                                    <label className={styles.controlLabel}><Scissors size={18} /> Pilih Ukuran</label>
-                                    <div className={styles.ratioGrid}>
-                                        <button
-                                            className={`${styles.ratioBtn} ${aspect === 2 / 3 ? styles.active : ''}`}
-                                            onClick={() => setAspect(2 / 3)}
-                                        >2x3</button>
-                                        <button
-                                            className={`${styles.ratioBtn} ${aspect === 3 / 4 ? styles.active : ''}`}
-                                            onClick={() => setAspect(3 / 4)}
-                                        >3x4</button>
-                                        <button
-                                            className={`${styles.ratioBtn} ${aspect === 4 / 6 ? styles.active : ''}`}
-                                            onClick={() => setAspect(4 / 6)}
-                                        >4x6</button>
+                                {/* Output Info moved here */}
+                                <div className={styles.outputInfoCard}>
+                                    <div className={styles.outputDetails}>
+                                        <span className={styles.outputLabel}>Output Size:</span>
+                                        <strong>{outDims.w} x {outDims.h} px</strong>
+                                        <span className={styles.outputDpi}>@ {settings.dpi} DPI</span>
+                                    </div>
+                                    <button onClick={() => { setImage(null); setSettings({ ...settings, width: 3, height: 4, unit: 'cm' }) }} className={styles.changeBtn}>
+                                        <RefreshCw size={14} /> Ganti Foto
+                                    </button>
+                                </div>
+
+                                <div className={styles.tabs}>
+                                    <button className={`${styles.tab} ${activeTab === 'presets' ? styles.active : ''}`} onClick={() => setActiveTab('presets')}>Presets</button>
+                                    <button className={`${styles.tab} ${activeTab === 'custom' ? styles.active : ''}`} onClick={() => setActiveTab('custom')}>Custom</button>
+                                </div>
+
+                                {activeTab === 'presets' ? (
+                                    <>
+                                        {/* Pas Foto Accordion */}
+                                        <div className={styles.accordion}>
+                                            <button className={styles.accordionHeader} onClick={() => toggleCategory('pasfoto')}>
+                                                <span>Pas Foto (Cetak)</span>
+                                                {expandedCategory.pasfoto ? <Minimize size={16} /> : <Maximize size={16} />}
+                                            </button>
+                                            {expandedCategory.pasfoto && (
+                                                <div className={`${styles.accordionContent} ${styles.grid3}`}>
+                                                    {PRESETS.pasfoto.map((p, i) => (
+                                                        <button key={i} className={`${styles.presetBtn} ${settings.width === p.w && settings.height === p.h && settings.unit === p.unit ? styles.active : ''}`} onClick={() => applyPreset(p)}>
+                                                            <span className={styles.presetLabel}>{p.label}</span>
+                                                            <span className={styles.presetSub}>{p.w}x{p.h} {p.unit}</span>
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {/* Social Accordion */}
+                                        <div className={styles.accordion}>
+                                            <button className={styles.accordionHeader} onClick={() => toggleCategory('social')}>
+                                                <span>Social Media</span>
+                                                {expandedCategory.social ? <Minimize size={16} /> : <Maximize size={16} />}
+                                            </button>
+                                            {expandedCategory.social && (
+                                                <div className={`${styles.accordionContent} ${styles.grid2}`}>
+                                                    {PRESETS.social.map((p, i) => (
+                                                        <button key={i} className={`${styles.presetBtn} ${settings.width === p.w && settings.height === p.h && settings.unit === p.unit ? styles.active : ''}`} onClick={() => applyPreset(p)}>
+                                                            <p.icon size={20} className={styles.presetIcon} />
+                                                            <span className={styles.presetLabel}>{p.label}</span>
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {/* Device Accordion */}
+                                        <div className={styles.accordion}>
+                                            <button className={styles.accordionHeader} onClick={() => toggleCategory('device')}>
+                                                <span>Devices</span>
+                                                {expandedCategory.device ? <Minimize size={16} /> : <Maximize size={16} />}
+                                            </button>
+                                            {expandedCategory.device && (
+                                                <div className={`${styles.accordionContent} ${styles.grid2}`}>
+                                                    {PRESETS.device.map((p, i) => (
+                                                        <button key={i} className={`${styles.presetBtn} ${settings.width === p.w && settings.height === p.h && settings.unit === p.unit ? styles.active : ''}`} onClick={() => applyPreset(p)}>
+                                                            <p.icon size={20} className={styles.presetIcon} />
+                                                            <span className={styles.presetLabel}>{p.label}</span>
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </>
+                                ) : (
+                                    <div className={styles.controlGroup}>
+                                        <label className={styles.controlLabel}>
+                                            <Grid size={16} /> Dimensi & Resolusi
+                                            <div className={styles.tooltipGroup}>
+                                                <span className={styles.infoIcon}>?</span>
+                                                <span className={styles.tooltipText}>Atur lebar dan tinggi foto. Gunakan "cm" untuk cetak, "px" untuk digital.</span>
+                                            </div>
+                                        </label>
+                                        <div className={styles.grid2}>
+                                            <div className={styles.inputGroup}>
+                                                <span className={styles.inputLabel}>Width</span>
+                                                <input type="number" className={styles.input} value={settings.width} onChange={(e) => updateSetting('width', Number(e.target.value))} />
+                                            </div>
+                                            <div className={styles.inputGroup}>
+                                                <span className={styles.inputLabel}>Height</span>
+                                                <input type="number" className={styles.input} value={settings.height} onChange={(e) => updateSetting('height', Number(e.target.value))} />
+                                            </div>
+                                        </div>
+                                        <div className={styles.grid2} style={{ marginTop: '12px' }}>
+                                            <div className={styles.inputGroup}>
+                                                <span className={styles.inputLabel}>Unit</span>
+                                                <select className={styles.unitSelect} value={settings.unit} onChange={(e) => updateSetting('unit', e.target.value)} style={{ width: '100%' }}>
+                                                    {Object.keys(UNITS).map(u => <option key={u} value={u}>{UNITS[u].label}</option>)}
+                                                </select>
+                                            </div>
+                                            <div className={styles.inputGroup}>
+                                                <span className={styles.inputLabel}>DPI</span>
+                                                <input type="number" className={styles.input} value={settings.dpi} onChange={(e) => updateSetting('dpi', Number(e.target.value))} />
+                                                <div className={styles.tooltipGroup} style={{ marginLeft: 'auto' }}>
+                                                    <span className={styles.infoIcon} style={{ fontSize: '10px', width: '14px', height: '14px' }}>?</span>
+                                                    <span className={styles.tooltipText}>Dots Per Inch. Standar cetak adalah 300 DPI. Web biasanya 72 DPI.</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Common Settings */}
+                                <div className={styles.controlGroup} style={{ borderTop: '1px solid #eee', paddingTop: '20px' }}>
+                                    <label className={styles.controlLabel}>
+                                        <Layout size={16} /> Mode Resize
+                                        <div className={styles.tooltipGroup}>
+                                            <span className={styles.infoIcon}>?</span>
+                                            <span className={styles.tooltipText}>
+                                                <b>Cover</b>: Potong gambar agar penuh.<br />
+                                                <b>Fit</b>: Masukkan seluruh gambar.<br />
+                                                <b>Stretch</b>: Paksa tarik gambar.
+                                            </span>
+                                        </div>
+                                    </label>
+                                    <div className={styles.grid3}>
+                                        {[
+                                            { id: 'cover', label: 'Cover', desc: 'Potong' },
+                                            { id: 'contain', label: 'Fit', desc: 'Utuh' },
+                                            { id: 'stretch', label: 'Stretch', desc: 'Tarik' }
+                                        ].map(m => (
+                                            <button key={m.id} className={`${styles.modeBtn} ${settings.mode === m.id ? styles.active : ''}`} onClick={() => updateSetting('mode', m.id)}>
+                                                <span className={styles.modeLabel}>{m.label}</span>
+                                                <span className={styles.modeDesc}>({m.desc})</span>
+                                            </button>
+                                        ))}
                                     </div>
                                 </div>
 
-                                {/* Background Color */}
-                                <div className={styles.controlGroup}>
-                                    <label className={styles.controlLabel}><RefreshCw size={18} /> Warna Background</label>
-                                    <div className={styles.colorGrid}>
-                                        <button
-                                            className={`${styles.colorBtn} ${bgColor === '#ff0000' ? styles.active : ''}`}
-                                            style={{ background: '#ff0000' }}
-                                            onClick={() => setBgColor('#ff0000')}
-                                            title="Merah (Tahun Ganjil)"
-                                        />
-                                        <button
-                                            className={`${styles.colorBtn} ${bgColor === '#0000ff' ? styles.active : ''}`}
-                                            style={{ background: '#0000ff' }}
-                                            onClick={() => setBgColor('#0000ff')}
-                                            title="Biru (Tahun Genap)"
-                                        />
-                                        <button
-                                            className={`${styles.colorBtn} ${bgColor === '#ffffff' ? styles.active : ''}`}
-                                            style={{ background: '#ffffff', border: '1px solid #ccc' }}
-                                            onClick={() => setBgColor('#ffffff')}
-                                            title="Putih"
-                                        />
+                                {settings.mode === 'contain' && (
+                                    <div className={styles.controlGroup}>
+                                        <label className={styles.controlLabel}>Background</label>
+                                        <div className={styles.grid3}>
+                                            <button className={`${styles.presetBtn} ${settings.bgType === 'color' && settings.bg === '#ffffff' ? styles.active : ''}`} onClick={() => setSettings(p => ({ ...p, bgType: 'color', bg: '#ffffff' }))} style={{ height: '40px', padding: 0 }}>White</button>
+                                            <button className={`${styles.presetBtn} ${settings.bgType === 'color' && settings.bg === '#000000' ? styles.active : ''}`} onClick={() => setSettings(p => ({ ...p, bgType: 'color', bg: '#000000' }))} style={{ height: '40px', padding: 0 }}>Black</button>
+                                            <button className={`${styles.presetBtn} ${settings.bgType === 'blur' ? styles.active : ''}`} onClick={() => updateSetting('bgType', 'blur')} style={{ height: '40px', padding: 0 }}>Blur</button>
+                                        </div>
                                     </div>
-                                    <p style={{ fontSize: '0.8rem', color: '#888' }}>
-                                        *Warna background hanya efektif jika foto asli transparan.
-                                    </p>
+                                )}
+
+                                <div className={styles.controlGroup}>
+                                    <label className={styles.controlLabel}><Settings size={16} /> Output</label>
+                                    <div className={styles.grid2}>
+                                        <div className={styles.inputGroup}>
+                                            <select className={styles.unitSelect} value={settings.format} onChange={(e) => updateSetting('format', e.target.value)} style={{ width: '100%' }}>
+                                                <option value="image/jpeg">JPG</option>
+                                                <option value="image/png">PNG</option>
+                                                <option value="image/webp">WEBP</option>
+                                            </select>
+                                        </div>
+                                        <div className={styles.inputGroup}>
+                                            <span className={styles.inputLabel} style={{ minWidth: 'auto' }}>
+                                                Kualitas
+                                                <div className={styles.tooltipGroup} style={{ marginLeft: '4px', display: 'inline-flex' }}>
+                                                    <span className={styles.infoIcon} style={{ fontSize: '10px', width: '14px', height: '14px' }}>?</span>
+                                                    <span className={styles.tooltipText}>Semakin tinggi %, semakin bagus gambarnya tapi ukuran file lebih besar.</span>
+                                                </div>
+                                            </span>
+                                            <input
+                                                type="number"
+                                                min="10"
+                                                max="100"
+                                                className={styles.input}
+                                                value={Math.round(settings.quality * 100)}
+                                                onChange={(e) => {
+                                                    let val = Number(e.target.value);
+                                                    if (val > 100) val = 100;
+                                                    if (val < 0) val = 0;
+                                                    updateSetting('quality', val / 100);
+                                                }}
+                                                style={{ textAlign: 'right' }}
+                                            />
+                                            <span className={styles.unitSelect} style={{ opacity: 0.5, paddingLeft: '2px' }}>%</span>
+                                        </div>
+                                    </div>
                                 </div>
 
-                                {/* Actions */}
-                                <div className={styles.controlGroup} style={{ marginTop: 'auto' }}>
-                                    <button className={styles.downloadBtn} onClick={() => handleDownload(`${aspect === 3 / 4 ? '3x4' : aspect === 2 / 3 ? '2x3' : '4x6'}`)}>
-                                        <Download size={20} /> Download Pas Foto
-                                    </button>
-                                    <button
-                                        className={styles.uploadBtn}
-                                        onClick={() => { setImage(null); fileInputRef.current.value = '' }}
-                                        style={{ marginTop: '1rem', width: '100%' }}
-                                    >
-                                        Upload Foto Lain
-                                    </button>
-                                </div>
+                                <button className={styles.downloadBtn} onClick={handleDownload} style={{ marginTop: 'auto' }}>
+                                    <Download size={20} /> Download Image
+                                </button>
+
                             </div>
                         </div>
                     )}
                     <TrustSection />
-
-                    {/* Cara Pakai / How To Use */}
-                    <GuideSection
-                        linkHref="/guide#photo-generator"
-                    />
+                    <GuideSection linkHref="/guide#photo-generator" />
                 </div>
             </main>
             <Footer />
