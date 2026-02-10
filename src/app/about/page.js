@@ -1,51 +1,91 @@
+
 'use client'
 
-import { useState } from 'react'
 import Link from 'next/link'
-import { FileImage, Shield, CreditCard, Users, FileText, Building, File, Upload, Crop, Type, Palette, Download, Move, RotateCcw, PenTool, Eraser, Lock, Server, Zap, Trash2, Heart, Code } from 'lucide-react'
+import { FileImage, Shield, CreditCard, Users, FileText, Building, File, Upload, Crop, Type, Palette, Download, Move, RotateCcw, PenTool, Eraser, Lock, Server, Zap, Trash2, Heart, Code, Camera, Scissors, FileStack, EyeOff, User, Minimize2, CheckCircle, Smartphone, Globe } from 'lucide-react'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import styles from './page.module.css'
 
 export default function AboutPage() {
-    const documentTypes = [
-        { icon: CreditCard, label: 'KTP', desc: 'Kartu Tanda Penduduk' },
-        { icon: CreditCard, label: 'SIM', desc: 'Surat Izin Mengemudi' },
-        { icon: Users, label: 'Kartu Keluarga', desc: 'Dokumen keluarga' },
-        { icon: FileText, label: 'Paspor', desc: 'Dokumen perjalanan' },
-        { icon: Building, label: 'NPWP', desc: 'Nomor Pokok Wajib Pajak' },
-        { icon: File, label: 'Dokumen Lain', desc: 'Ijazah, akta, dll' },
-    ]
-
-    const watermarkFeatures = [
-        { icon: Upload, title: 'Upload Fleksibel', desc: 'Klik, drag & drop, atau paste (Ctrl+V) gambar dengan mudah' },
-        { icon: Crop, title: 'Crop Gambar', desc: 'Potong area dokumen dengan grid guide untuk hasil presisi' },
-        { icon: Type, title: 'Teks Kustom', desc: 'Tulis watermark sesuai kebutuhan atau gunakan template otomatis' },
-        { icon: Palette, title: 'Warna & Style', desc: 'Atur font, warna, ukuran, dan transparansi watermark' },
-        { icon: Move, title: 'Drag & Resize', desc: 'Posisikan watermark di mana saja dengan mode satu teks' },
-        { icon: RotateCcw, title: 'Rotasi Bebas', desc: 'Putar watermark dari -180° hingga 180° sesuai selera' },
-        { icon: Download, title: 'Export Mudah', desc: 'Download hasil sebagai PNG berkualitas tinggi atau PDF' },
-        { icon: Shield, title: 'Auto Verifikasi', desc: 'Tambah tanggal otomatis untuk bukti waktu penggunaan' },
-    ]
-
-    const signatureFeatures = [
-        { icon: PenTool, title: 'Kanvas Digital', desc: 'Tulis tanda tangan dengan mouse, trackpad, atau layar sentuh' },
-        { icon: Palette, title: 'Pilihan Warna', desc: 'Lima warna pena tersedia: hitam, biru, merah, hijau, ungu' },
-        { icon: Type, title: 'Ketebalan Pena', desc: 'Atur ketebalan garis dari tipis hingga tebal sesuai kebutuhan' },
-        { icon: Eraser, title: 'Hapus & Ulang', desc: 'Clear canvas kapan saja untuk membuat tanda tangan baru' },
-    ]
-
-    const securityFeatures = [
-        { icon: Lock, title: '100% Client-Side', desc: 'Semua proses terjadi di browser Anda, bukan di server kami' },
-        { icon: Server, title: 'Tanpa Upload', desc: 'Gambar tidak pernah dikirim ke server manapun di internet' },
-        { icon: Zap, title: 'Tanpa Login', desc: 'Langsung pakai tanpa perlu membuat akun atau mendaftar' },
-        { icon: Trash2, title: 'Tidak Disimpan', desc: 'Data hilang otomatis saat Anda menutup tab browser' },
-    ]
-
     const stats = [
         { value: '100%', label: 'Gratis Selamanya' },
         { value: '0', label: 'Data Disimpan' },
-        { value: '∞', label: 'Penggunaan Tanpa Batas' },
+        { value: '8+', label: 'Tools Produktif' },
+    ]
+
+    const tools = [
+        {
+            icon: FileImage,
+            title: 'Watermark KTP',
+            desc: 'Lindungi identitas dengan watermark anti-maling. Mendukung edit massal dan multi-halaman.',
+            href: '/'
+        },
+        {
+            icon: PenTool,
+            title: 'Tanda Tangan Digital',
+            desc: 'Buat tanda tangan transparan profesional dan tempel langsung ke dokumen PDF/Gambar.',
+            href: '/signature'
+        },
+        {
+            icon: Camera,
+            title: 'Photo Generator',
+            desc: 'Buat pas foto otomatis (2x3, 3x4, 4x6), ganti background warna, dan atur DPI cetak.',
+            href: '/photo-generator'
+        },
+        {
+            icon: Scissors,
+            title: 'Hapus Background',
+            desc: 'Hapus latar belakang foto otomatis dengan AI canggih dalam hitungan detik.',
+            href: '/remove-background'
+        },
+        {
+            icon: FileStack,
+            title: 'Gabung Dokumen',
+            desc: 'Satukan banyak file PDF dan Gambar menjadi satu file PDF yang rapi.',
+            href: '/merge'
+        },
+        {
+            icon: EyeOff,
+            title: 'Sensor Data',
+            desc: 'Blur atau tutup data sensitif pada dokumen sebelum dibagikan ke orang lain.',
+            href: '/redact'
+        },
+        {
+            icon: Minimize2,
+            title: 'Kompres File',
+            desc: 'Kecilkan ukuran foto dan PDF hingga 90% tanpa mengurangi kualitas visual.',
+            href: '/compress'
+        },
+        {
+            icon: User,
+            title: 'Cek NIK',
+            desc: 'Cek informasi daerah, tanggal lahir, dan jenis kelamin dari nomor NIK KTP.',
+            href: '/nik-parser'
+        }
+    ]
+
+    const whyChooseUs = [
+        {
+            icon: Lock,
+            title: '100% Client-Side',
+            desc: 'Semua proses terjadi di browser Anda. File tidak pernah diupload ke server kami.'
+        },
+        {
+            icon: Zap,
+            title: 'Cepat & Ringan',
+            desc: 'Tanpa antrian server. Proses instan karena menggunakan resource perangkat Anda sendiri.'
+        },
+        {
+            icon: Globe,
+            title: 'Karya Anak Bangsa',
+            desc: 'Dibuat dengan bangga di Indonesia untuk keamanan data masyarakat Indonesia.'
+        },
+        {
+            icon: Smartphone,
+            title: 'Mobile Friendly',
+            desc: 'Desain responsif yang nyaman digunakan di HP, Tablet, maupun Desktop.'
+        }
     ]
 
     return (
@@ -57,12 +97,15 @@ export default function AboutPage() {
                 <header className={styles.hero}>
                     <h1 className={styles.heroTitle}>Tentang <span>Amanin Data</span></h1>
                     <p className={styles.heroSubtitle}>
-                        Aplikasi gratis buatan Indonesia untuk melindungi dokumen identitas dengan watermark.
-                        100% aman, 100% privat, langsung di browser Anda.
+                        Platform "All-in-One" untuk mengelola dan mengamankan dokumen digital Anda.
+                        Gratis, Aman, dan Tanpa Server.
                     </p>
                     <div className={styles.heroActions}>
                         <Link href="/" className={styles.ctaBtn}>
-                            <Shield size={18} /> Mulai Watermark
+                            <Shield size={18} /> Mulai Amankan Data
+                        </Link>
+                        <Link href="/guide" className={styles.ctaBtnAlt}>
+                            Lihat Panduan
                         </Link>
                     </div>
                 </header>
@@ -77,101 +120,68 @@ export default function AboutPage() {
                     ))}
                 </section>
 
-                {/* Document Types Section */}
+                {/* All Tools Section */}
+                <section className={styles.featureSection}>
+                    <h2 className={styles.sectionTitle}>
+                        <Zap size={24} /> 8 Tools dalam 1 Aplikasi
+                    </h2>
+                    <p className={styles.sectionDesc}>
+                        Tidak perlu install banyak aplikasi. Semua kebutuhan dokumen digital Anda ada di sini.
+                    </p>
+                    <div className={styles.toolGrid}>
+                        {tools.map((tool, i) => (
+                            <Link key={i} href={tool.href} className={styles.toolCard}>
+                                <div className={styles.toolIcon}>
+                                    <tool.icon size={24} />
+                                </div>
+                                <div className={styles.toolContent}>
+                                    <h3>{tool.title}</h3>
+                                    <p>{tool.desc}</p>
+                                </div>
+                            </Link>
+                        ))}
+                    </div>
+                </section>
+
+                {/* Why Choose Us */}
                 <section className={styles.docSection}>
                     <h2 className={styles.sectionTitle}>
-                        <FileImage size={24} /> Melindungi Berbagai Dokumen Anda
+                        <Shield size={24} /> Mengapa Amanin Data?
                     </h2>
                     <p className={styles.sectionDesc}>
-                        Aman dari penyalahgunaan digital! Watermark KTP membantu melindungi berbagai dokumen penting Anda — dari KTP, SIM, hingga paspor — dengan mudah dan profesional.
+                        Kami berkomitmen menjaga privasi Anda dengan teknologi Client-Side Processing.
                     </p>
-                    <div className={styles.docGrid}>
-                        {documentTypes.map((doc, i) => (
-                            <div key={i} className={`neu-card no-hover ${styles.docCard}`}>
-                                <doc.icon size={32} />
-                                <h3>{doc.label}</h3>
-                                <p>{doc.desc}</p>
+                    <div className={styles.whyGrid}>
+                        {whyChooseUs.map((item, i) => (
+                            <div key={i} className={`neu-card no-hover ${styles.whyCard}`}>
+                                <div className={styles.whyIconWrapper}>
+                                    <item.icon size={32} />
+                                </div>
+                                <h3>{item.title}</h3>
+                                <p>{item.desc}</p>
                             </div>
                         ))}
                     </div>
                 </section>
 
-                {/* Watermark Features */}
-                <section className={styles.featureSection}>
-                    <h2 className={styles.sectionTitle}>
-                        <FileImage size={24} /> Fitur Watermark KTP
-                    </h2>
-                    <p className={styles.sectionDesc}>
-                        Lengkap dan mudah digunakan untuk semua tingkat pengguna.
-                    </p>
-                    <div className={styles.featureGrid}>
-                        {watermarkFeatures.map((f, i) => (
-                            <div key={i} className={styles.featureCard}>
-                                <div className={styles.featureIcon}>
-                                    <f.icon size={22} />
-                                </div>
-                                <div>
-                                    <h4>{f.title}</h4>
-                                    <p>{f.desc}</p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </section>
-
-                {/* Signature Features */}
-                <section className={styles.featureSection}>
-                    <h2 className={styles.sectionTitle}>
-                        <PenTool size={24} /> Fitur Tanda Tangan
-                    </h2>
-                    <p className={styles.sectionDesc}>
-                        Buat tanda tangan digital transparan untuk dokumen Anda.
-                    </p>
-                    <div className={styles.featureGrid}>
-                        {signatureFeatures.map((f, i) => (
-                            <div key={i} className={styles.featureCard}>
-                                <div className={styles.featureIcon}>
-                                    <f.icon size={22} />
-                                </div>
-                                <div>
-                                    <h4>{f.title}</h4>
-                                    <p>{f.desc}</p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </section>
-
-                {/* Security */}
-                <section className={styles.featureSection}>
-                    <h2 className={styles.sectionTitle}>
-                        <Shield size={24} /> Keamanan & Privasi
-                    </h2>
-                    <p className={styles.sectionDesc}>
-                        Privasi Anda adalah prioritas utama kami.
-                    </p>
-                    <div className={styles.featureGrid}>
-                        {securityFeatures.map((f, i) => (
-                            <div key={i} className={styles.featureCard}>
-                                <div className={styles.featureIcon}>
-                                    <f.icon size={22} />
-                                </div>
-                                <div>
-                                    <h4>{f.title}</h4>
-                                    <p>{f.desc}</p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </section>
-
-                {/* Open Source */}
+                {/* Tech Stack */}
                 <section className={styles.openSourceSection}>
                     <div className={`neu-card no-hover ${styles.openSourceCard}`}>
                         <Code size={32} />
-                        <h3>Dibangun dengan Teknologi Open Source</h3>
-                        <p>Amanin Data menggunakan Next.js, React, Lucide Icons, dan jsPDF untuk memberikan pengalaman terbaik.</p>
-                        <Link href="/libraries" className={styles.textLink}>Lihat Perpustakaan →</Link>
+                        <h3>Dibangun dengan Teknologi Modern</h3>
+                        <p>
+                            Amanin Data dibangun menggunakan <strong>Next.js 14</strong> dan teknologi web modern lainnya.
+                            Kami memanfaatkan library canggih seperti <code>pdf-lib</code>, <code>jspdf</code>, <code>sharp</code>,
+                            dan <code>@imgly/background-removal</code> untuk menghadirkan fitur desktop-class langsung di browser.
+                        </p>
+                        <div className={styles.techTags}>
+                            <span>React</span>
+                            <span>Next.js</span>
+                            <span>Client-Side Only</span>
+                            <span>PWA Ready</span>
+                        </div>
+                        <br />
+                        <Link href="/libraries" className={styles.textLink}>Lihat Daftar Pustaka →</Link>
                     </div>
                 </section>
             </main>
