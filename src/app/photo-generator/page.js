@@ -324,7 +324,10 @@ export default function PhotoGeneratorPage() {
                             </div>
                             <div className={styles.uploadContent}>
                                 <h3>Upload Foto</h3>
-                                <p>JPG, PNG, WEBP (Max 10MB)</p>
+                                <p>Tarik file atau klik untuk memilih</p>
+                                <div className={styles.supportedTypes}>
+                                    <span>JPG</span> <span>PNG</span> <span>WEBP</span>
+                                </div>
                                 <span className={styles.safeTag}>🔒 100% Client-Side</span>
                             </div>
                             <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} hidden />

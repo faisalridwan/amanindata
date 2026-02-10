@@ -182,7 +182,7 @@ export default function MergePDF() {
                         </div>
                         <div className={styles.uploadContent}>
                             <h3>Upload File PDF & Gambar</h3>
-                            <p>Tarik file atau klik untuk memilih (Gambar/PDF)</p>
+                            <p>Tarik file atau klik untuk memilih</p>
                             <div className={styles.supportedTypes}>
                                 <span>PDF</span>
                                 <span>JPG</span>

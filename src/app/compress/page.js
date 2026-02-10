@@ -333,7 +333,7 @@ export default function ImageCompressor() {
                                 <Upload size={32} />
                             </div>
                             <h3>Pilih File</h3>
-                            <p>Tarik file atau klik untuk memilih (Gambar/PDF)</p>
+                            <p>Tarik file atau klik untuk memilih</p>
                             <div className={styles.supportedTypes}>
                                 <span>JPG</span> <span>PNG</span> <span>PDF</span>
                             </div>

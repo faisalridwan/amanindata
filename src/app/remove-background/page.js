@@ -90,8 +90,8 @@ export default function RemoveBackgroundPage() {
 
             <main className={styles.container}>
                 <header className={styles.hero}>
-                    <h1 className={styles.heroTitle}>✂️ Hapus <span>Background</span></h1>
-                    <p className={styles.heroSubtitle}>Hapus latar belakang foto otomatis dengan AI. 100% Gratis & Client-Side.</p>
+                    <h1 className={styles.heroTitle}>✂️ Hapus Background<span>dengan AI</span></h1>
+                    <p className={styles.heroSubtitle}>Hapus latar belakang foto otomatis. 100% Gratis & Client-Side.</p>
                 </header>
 
                 {!image ? (
@@ -115,12 +115,11 @@ export default function RemoveBackgroundPage() {
                         </div>
                         <div className={styles.uploadContent}>
                             <h3>Upload Foto</h3>
-                            <p>Klik atau drag & drop foto di sini</p>
-                            <div className={styles.supportedTypes} style={{ marginTop: '16px', display: 'flex', gap: '8px', justifyContent: 'center' }}>
-                                <span style={{ background: 'rgba(0,0,0,0.05)', padding: '4px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold', color: '#666' }}>JPG</span>
-                                <span style={{ background: 'rgba(0,0,0,0.05)', padding: '4px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold', color: '#666' }}>PNG</span>
-                                <span style={{ background: 'rgba(0,0,0,0.05)', padding: '4px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold', color: '#666' }}>WEBP</span>
+                            <p>Tarik file atau klik untuk memilih</p>
+                            <div className={styles.supportedTypes}>
+                                <span>JPG</span> <span>PNG</span> <span>WEBP</span>
                             </div>
+                            <span className={styles.safeTag}>🔒 100% Client-Side</span>
                         </div>
                     </div>
                 ) : (

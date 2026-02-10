@@ -323,7 +323,7 @@ export default function RedactionTool() {
                                 <EyeOff size={32} />
                             </div>
                             <h3>Upload Dokumen</h3>
-                            <p>Tarik file atau klik untuk memilih (Gambar/PDF)</p>
+                            <p>Tarik file atau klik untuk memilih</p>
                             <div className={styles.supportedTypes}>
                                 <span>JPG</span> <span>PNG</span> <span>PDF</span>
                             </div>
