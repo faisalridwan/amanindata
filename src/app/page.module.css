@@ -703,8 +703,7 @@
 
 .canvas {
     max-width: 100%;
-    max-height: 75vh;
-    /* Restored constraints to fit window */
+    /* max-height: 75vh; REMOVED to allow vertical scaling with zoom */
     width: auto;
     height: auto;
     border-radius: 8px;
