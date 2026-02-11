@@ -614,11 +614,7 @@ export default function QRCodePage() {
         { id: 'frame9', name: 'Rotated', icon: <div className={`${styles.sprite} ${styles.spriteFrame} ${styles.spriteFrame9}`}></div> },
         { id: 'frame10', name: 'Hook', icon: <div className={`${styles.sprite} ${styles.spriteFrame} ${styles.spriteFrame10}`}></div> },
         { id: 'frame11', name: 'Japanese', icon: <div className={`${styles.sprite} ${styles.spriteFrame} ${styles.spriteFrame11}`}></div> },
-        { id: 'frame12', name: 'Bubble', icon: <div className={`${styles.sprite} ${styles.spriteFrame} ${styles.spriteFrame12}`}></div> },
-        { id: 'frame13', name: 'Square Dot', icon: <div className={`${styles.sprite} ${styles.spriteFrame} ${styles.spriteFrame13}`}></div> },
-        { id: 'frame14', name: 'Small Dot', icon: <div className={`${styles.sprite} ${styles.spriteFrame} ${styles.spriteFrame14}`}></div> },
-        { id: 'frame15', name: 'Empty', icon: <div className={`${styles.sprite} ${styles.spriteFrame} ${styles.spriteFrame15}`}></div> },
-        { id: 'frame16', name: 'Bold', icon: <div className={`${styles.sprite} ${styles.spriteFrame} ${styles.spriteFrame16}`}></div> }
+        { id: 'frame12', name: 'Bubble', icon: <div className={`${styles.sprite} ${styles.spriteFrame} ${styles.spriteFrame12}`}></div> }
     ];
 
     const cornerDotTypes = [
@@ -634,14 +630,7 @@ export default function QRCodePage() {
         { id: 'ball9', name: 'Flower', icon: <div className={`${styles.sprite} ${styles.spriteBall} ${styles.spriteBall9}`}></div> },
         { id: 'ball10', name: 'Liquid', icon: <div className={`${styles.sprite} ${styles.spriteBall} ${styles.spriteBall10}`}></div> },
         { id: 'ball11', name: 'Japanese', icon: <div className={`${styles.sprite} ${styles.spriteBall} ${styles.spriteBall11}`}></div> },
-        { id: 'ball12', name: 'Heart', icon: <div className={`${styles.sprite} ${styles.spriteBall} ${styles.spriteBall12}`}></div> },
-        { id: 'ball13', name: 'Pointed', icon: <div className={`${styles.sprite} ${styles.spriteBall} ${styles.spriteBall13}`}></div> },
-        { id: 'ball14', name: 'Thin', icon: <div className={`${styles.sprite} ${styles.spriteBall} ${styles.spriteBall14}`}></div> },
-        { id: 'ball15', name: 'Wide', icon: <div className={`${styles.sprite} ${styles.spriteBall} ${styles.spriteBall15}`}></div> },
-        { id: 'ball16', name: 'Small', icon: <div className={`${styles.sprite} ${styles.spriteBall} ${styles.spriteBall16}`}></div> },
-        { id: 'ball17', name: 'Ring', icon: <div className={`${styles.sprite} ${styles.spriteBall} ${styles.spriteBall17}`}></div> },
-        { id: 'ball18', name: 'Inverted', icon: <div className={`${styles.sprite} ${styles.spriteBall} ${styles.spriteBall18}`}></div> },
-        { id: 'ball19', name: 'Split', icon: <div className={`${styles.sprite} ${styles.spriteBall} ${styles.spriteBall19}`}></div> }
+        { id: 'ball12', name: 'Heart', icon: <div className={`${styles.sprite} ${styles.spriteBall} ${styles.spriteBall12}`}></div> }
     ];
 
     const toggleSection = (section) => {
