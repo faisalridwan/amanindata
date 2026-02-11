@@ -413,7 +413,8 @@
 .btnUploadPremium {
     width: 100%;
     padding: 12px 20px;
-    background: linear-gradient(135deg, var(--primary), #4834d4);
+    background: #000000;
+    /* Black for light mode */
     color: white;
     border: none;
     border-radius: 16px;
@@ -425,13 +426,25 @@
     justify-content: center;
     gap: 10px;
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1),
+        0 4px 6px rgba(0, 0, 0, 0.05);
+    margin-bottom: 20px;
+}
+
+:global([data-theme="dark"]) .btnUploadPremium {
+    background: linear-gradient(135deg, var(--primary), #4834d4);
     box-shadow: 0 10px 20px rgba(108, 92, 231, 0.2),
         0 4px 6px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
 }
 
 .btnUploadPremium:hover {
     transform: translateY(-2px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15),
+        0 6px 10px rgba(0, 0, 0, 0.1);
+    background: #2d3436;
+}
+
+:global([data-theme="dark"]) .btnUploadPremium:hover {
     box-shadow: 0 15px 30px rgba(108, 92, 231, 0.3),
         0 6px 10px rgba(0, 0, 0, 0.15);
     background: linear-gradient(135deg, #7d6cf5, #6c5ce7);

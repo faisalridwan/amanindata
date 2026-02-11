@@ -65,6 +65,22 @@ export default function QRCodePage() {
 
     // Advanced Shapes Constants
     const EYE_SHAPE_PATHS = {
+        square: {
+            frame: "M 0 0 H 7 V 7 H 0 Z M 1 1 V 6 H 6 V 1 H 1 Z",
+            ball: "M 2 2 H 5 V 5 H 2 Z"
+        },
+        dot: {
+            frame: "M 3.5 0 C 1.5 0 0 1.5 0 3.5 C 0 5.5 1.5 7 3.5 7 C 5.5 7 7 5.5 7 3.5 C 7 1.5 5.5 0 3.5 0 Z M 3.5 1 C 5 1 6 2 6 3.5 C 6 5 5 6 3.5 6 C 2 6 1 5 1 3.5 C 1 2 2 1 3.5 1 Z",
+            ball: "M 3.5 2 C 2.7 2 2 2.7 2 3.5 C 2 4.3 2.7 5 3.5 5 C 4.3 5 5 4.3 5 3.5 C 5 2.7 4.3 2 3.5 2 Z"
+        },
+        rounded: {
+            frame: "M 2 0 H 5 Q 7 0 7 2 V 5 Q 7 7 5 7 H 2 Q 0 7 0 5 V 2 Q 0 0 2 0 Z M 1 1 V 6 H 6 V 1 Z",
+            ball: "M 3.5 2 C 4.3 2 5 2.7 5 3.5 C 5 4.3 4.3 5 3.5 5 C 2.7 5 2 4.3 2 3.5 C 2 2.7 2.7 2 3.5 2 Z"
+        },
+        'extra-rounded': {
+            frame: "M 3.5 0 C 1.5 0 0 1.5 0 3.5 C 0 5.5 1.5 7 3.5 7 C 5.5 7 7 5.5 7 3.5 C 7 1.5 5.5 0 3.5 0 Z M 1 1 V 6 H 6 V 1 Z",
+            ball: "M 3.5 2 C 2.5 2 2 2.5 2 3.5 C 2 4.5 2.5 5 3.5 5 C 4.5 5 5 4.5 5 3.5 C 5 2.5 4.5 2 3.5 2 Z"
+        },
         leaf: {
             frame: "M 0 0 C 7 0 7 7 7 7 C 0 7 0 0 0 0 Z M 1 1 Q 6 1 6 6 Q 1 6 1 1 Z",
             ball: "M 3.5 1.5 C 5 1.5 5.5 2 5.5 3.5 C 5.5 5 5 5.5 3.5 5.5 C 2 5.5 1.5 5 1.5 3.5 C 1.5 2 2 1.5 3.5 1.5 Z"
@@ -78,7 +94,7 @@ export default function QRCodePage() {
             ball: "M 3.5 2.5 L 4 3.5 H 5 L 4.2 4 L 4.5 5 L 3.5 4.3 L 2.5 5 L 2.8 4 L 2 3.5 H 3 Z"
         },
         heart: {
-            frame: "M 3.5 7 L 3.1 6.6 C 1.2 4.9 0 3.8 0 2.5 C 0 1.1 1.1 0 2.5 0 C 3.3 0 4.1 0.4 4.5 1 C 4.9 0.4 5.7 0 6.5 0 C 7.9 0 9 1.1 9 2.5 C 9 3.8 7.8 4.9 5.9 6.6 L 5.5 7 Z", // Simplified
+            frame: "M 3.5 7 L 3.1 6.6 C 1.2 4.9 0 3.8 0 2.5 C 0 1.1 1.1 0 2.5 0 C 3.3 0 4.1 0.4 4.5 1 C 4.9 0.4 5.7 0 6.5 0 C 7.9 0 9 1.1 9 2.5 C 9 3.8 7.8 4.9 5.9 6.6 L 5.5 7 Z",
             ball: "M 3.5 5 L 3.3 4.8 C 2.5 4.1 2 3.6 2 3 C 2 2.5 2.5 2 3 2 C 3.3 2 3.6 2.2 3.8 2.5 C 4 2.2 4.3 2 4.6 2 C 5.1 2 5.6 2.5 5.6 3 C 5.6 3.6 5.1 4.1 4.3 4.8 L 4.1 5 Z"
         },
         diamond: {
@@ -193,8 +209,36 @@ export default function QRCodePage() {
         const size_mod = options.width / count;
         const margin = options.margin;
 
+        const createSvgGradient = (id, grad) => {
+            const defs = content.querySelector('defs') || document.createElementNS("http://www.w3.org/2000/svg", "defs");
+            if (!content.querySelector('defs')) content.insertBefore(defs, content.firstChild);
+
+            let gradient = document.getElementById(id);
+            if (!gradient) {
+                gradient = document.createElementNS("http://www.w3.org/2000/svg", "linearGradient");
+                gradient.setAttribute("id", id);
+                gradient.setAttribute("x1", "0%");
+                gradient.setAttribute("y1", "0%");
+                gradient.setAttribute("x2", "100%");
+                gradient.setAttribute("y2", "0%");
+                gradient.setAttribute("gradientTransform", `rotate(${grad.rotation})`);
+
+                const stop1 = document.createElementNS("http://www.w3.org/2000/svg", "stop");
+                stop1.setAttribute("offset", "0%");
+                stop1.setAttribute("stop-color", grad.color1);
+
+                const stop2 = document.createElementNS("http://www.w3.org/2000/svg", "stop");
+                stop2.setAttribute("offset", "100%");
+                stop2.setAttribute("stop-color", grad.color2);
+
+                gradient.appendChild(stop1);
+                gradient.appendChild(stop2);
+                defs.appendChild(gradient);
+            }
+            return `url(#${id})`;
+        };
+
         const drawEye = (x, y, rotation) => {
-            // Adjust for spacing (margin within the eye area)
             const eyeSize = 7 * size_mod;
             const innerSpacing = (eyeSpacing / 10) * size_mod;
             const effectiveSize = eyeSize - (innerSpacing * 2);
@@ -202,7 +246,6 @@ export default function QRCodePage() {
 
             if (isSvg) {
                 const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
-                // Center-based translate for spacing
                 const xPos = margin + x * size_mod + innerSpacing;
                 const yPos = margin + y * size_mod + innerSpacing;
 
@@ -211,10 +254,16 @@ export default function QRCodePage() {
                 if (EYE_SHAPE_PATHS[cornerType]) {
                     const frame = document.createElementNS("http://www.w3.org/2000/svg", "path");
                     frame.setAttribute("d", EYE_SHAPE_PATHS[cornerType].frame);
-                    frame.setAttribute("fill", cornerColor);
+
+                    if (cornerGradient.enabled) {
+                        frame.setAttribute("fill", createSvgGradient('eye-frame-grad-' + x + y, cornerGradient));
+                    } else {
+                        frame.setAttribute("fill", cornerColor);
+                    }
+
                     if (eyeBorderThickness > 1) {
-                        frame.setAttribute("stroke", cornerColor);
-                        frame.setAttribute("stroke-width", (eyeBorderThickness - 1).toString());
+                        frame.setAttribute("stroke", cornerGradient.enabled ? cornerGradient.color1 : cornerColor);
+                        frame.setAttribute("stroke-width", ((eyeBorderThickness - 1) * 0.1).toString());
                     }
                     group.appendChild(frame);
                 }
@@ -222,34 +271,51 @@ export default function QRCodePage() {
                 if (EYE_SHAPE_PATHS[cornerDotType]) {
                     const ball = document.createElementNS("http://www.w3.org/2000/svg", "path");
                     ball.setAttribute("d", EYE_SHAPE_PATHS[cornerDotType].ball);
-                    ball.setAttribute("fill", cornerDotColor);
+
+                    if (cornerDotGradient.enabled) {
+                        ball.setAttribute("fill", createSvgGradient('eye-ball-grad-' + x + y, cornerDotGradient));
+                    } else {
+                        ball.setAttribute("fill", cornerDotColor);
+                    }
                     group.appendChild(ball);
                 }
 
                 content.appendChild(group);
             } else {
-                // Canvas support
                 const ctx = content;
                 ctx.save();
                 ctx.translate(margin + x * size_mod + 3.5 * size_mod, margin + y * size_mod + 3.5 * size_mod);
                 ctx.rotate((rotation * Math.PI) / 180);
-
-                // Adjust for scale
                 ctx.scale(scaleFactor, scaleFactor);
                 ctx.translate(-3.5, -3.5);
 
                 if (EYE_SHAPE_PATHS[cornerType]) {
-                    ctx.fillStyle = cornerColor;
+                    if (cornerGradient.enabled) {
+                        const grad = ctx.createLinearGradient(0, 0, 7, 7);
+                        grad.addColorStop(0, cornerGradient.color1);
+                        grad.addColorStop(1, cornerGradient.color2);
+                        ctx.fillStyle = grad;
+                    } else {
+                        ctx.fillStyle = cornerColor;
+                    }
+
                     const p = new Path2D(EYE_SHAPE_PATHS[cornerType].frame);
                     ctx.fill(p);
                     if (eyeBorderThickness > 1) {
-                        ctx.strokeStyle = cornerColor;
-                        ctx.lineWidth = eyeBorderThickness - 1;
+                        ctx.strokeStyle = cornerGradient.enabled ? cornerGradient.color1 : cornerColor;
+                        ctx.lineWidth = (eyeBorderThickness - 1) * 0.1;
                         ctx.stroke(p);
                     }
                 }
                 if (EYE_SHAPE_PATHS[cornerDotType]) {
-                    ctx.fillStyle = cornerDotColor;
+                    if (cornerDotGradient.enabled) {
+                        const grad = ctx.createLinearGradient(1.5, 1.5, 5.5, 5.5);
+                        grad.addColorStop(0, cornerDotGradient.color1);
+                        grad.addColorStop(1, cornerDotGradient.color2);
+                        ctx.fillStyle = grad;
+                    } else {
+                        ctx.fillStyle = cornerDotColor;
+                    }
                     const p = new Path2D(EYE_SHAPE_PATHS[cornerDotType].ball);
                     ctx.fill(p);
                 }
