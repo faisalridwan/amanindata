@@ -6,7 +6,7 @@ import {
     Wifi, Shield, User, CreditCard, Image as ImageIcon, Palette,
     Settings, Share2, Type, Smartphone, Globe, Zap, History,
     Mail, MessageSquare, MapPin, Facebook, Youtube, Calendar,
-    ChevronDown, ChevronUp, Eraser
+    ChevronDown, ChevronUp, Eraser, Layout
 } from 'lucide-react'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
@@ -161,11 +161,50 @@ export default function QRCodePage() {
     const [qrVersion, setQrVersion] = useState(0)
     const [activeTab, setActiveTab] = useState('content') // content, style, technical
 
+    // Advanced shapes mapping for dots options
+    const getSafeDotType = (type) => {
+        const supported = ['square', 'dots', 'rounded', 'extra-rounded', 'classy', 'classy-rounded'];
+        if (supported.includes(type)) return type;
+        const mapping = {
+            'mosaic': 'square',
+            'dot': 'dots',
+            'circle': 'dots',
+            'circle-zebra': 'dots',
+            'circle-zebra-vertical': 'dots',
+            'circular': 'rounded',
+            'edge-cut': 'square',
+            'edge-cut-smooth': 'rounded',
+            'japanese': 'classy',
+            'leaf': 'classy-rounded',
+            'pointed': 'classy',
+            'pointed-edge-cut': 'square',
+            'pointed-in': 'classy',
+            'pointed-in-smooth': 'classy-rounded',
+            'pointed-smooth': 'classy-rounded',
+            'round': 'rounded',
+            'rounded-in': 'rounded',
+            'rounded-in-smooth': 'rounded',
+            'rounded-pointed': 'classy-rounded',
+            'star': 'classy',
+            'diamond': 'square'
+        };
+        return mapping[type] || 'square';
+    };
+
+    // Frame/Border State
+    const [frameEnabled, setFrameEnabled] = useState(false)
+    const [frameStyle, setFrameStyle] = useState('solid') // solid, dashed
+    const [frameColor, setFrameColor] = useState('#000000')
+    const [frameThickness, setFrameThickness] = useState(10)
+    const [frameMargin, setFrameMargin] = useState(0)
+    const [frameRadius, setFrameRadius] = useState(0)
+
     // UI States
     const [sections, setSections] = useState({
         logo: true,
         design: true,
         eyes: true,
+        frame: false, // New section
         technical: false
     })
     const [copied, setCopied] = useState(false)
@@ -200,12 +239,12 @@ export default function QRCodePage() {
             height: size,
             type: 'svg',
             data: getQRData(),
-            margin: margin,
+            margin: margin + (frameEnabled ? frameThickness + frameMargin : 0),
             qrOptions: { typeNumber: qrVersion, mode: 'Byte', errorCorrectionLevel: errorCorrection },
             imageOptions: { hideBackgroundDots: removeLogoBackground, imageSize: logoSize, margin: logoMargin },
             dotsOptions: {
                 color: dotsColor,
-                type: dotsType,
+                type: getSafeDotType(dotsType),
                 gradient: dotsGradient.enabled ? {
                     type: dotsGradient.type,
                     rotation: (dotsGradient.rotation * Math.PI) / 180,
@@ -222,7 +261,7 @@ export default function QRCodePage() {
             },
             cornersSquareOptions: {
                 color: EYE_SHAPE_PATHS[cornerType] ? 'transparent' : cornerColor,
-                type: EYE_SHAPE_PATHS[cornerType] ? undefined : cornerType,
+                type: EYE_SHAPE_PATHS[cornerType] ? undefined : (getSafeDotType(cornerType) === 'square' ? 'square' : 'extra-rounded'),
                 gradient: (!EYE_SHAPE_PATHS[cornerType] && cornerGradient.enabled) ? {
                     type: cornerGradient.type,
                     rotation: (cornerGradient.rotation * Math.PI) / 180,
@@ -231,7 +270,7 @@ export default function QRCodePage() {
             },
             cornersDotOptions: {
                 color: EYE_SHAPE_PATHS[cornerDotType] ? 'transparent' : cornerDotColor,
-                type: EYE_SHAPE_PATHS[cornerDotType] ? undefined : cornerDotType,
+                type: EYE_SHAPE_PATHS[cornerDotType] ? undefined : 'dot',
                 gradient: (!EYE_SHAPE_PATHS[cornerDotType] && cornerDotGradient.enabled) ? {
                     type: cornerDotGradient.type,
                     rotation: (cornerDotGradient.rotation * Math.PI) / 180,
@@ -246,6 +285,50 @@ export default function QRCodePage() {
         const isSvg = content instanceof SVGElement;
         const count = qrCode._qr.getModuleCount();
         const size_mod = options.width / count;
+
+        // FRAME LOGIC
+        if (frameEnabled) {
+            const totalSize = size;
+            const borderW = frameThickness;
+            const radius = frameRadius;
+
+            if (isSvg) {
+                const defs = content.querySelector('defs') || document.createElementNS("http://www.w3.org/2000/svg", "defs");
+                if (!content.querySelector('defs')) content.insertBefore(defs, content.firstChild);
+
+                const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                rect.setAttribute("x", (borderW / 2));
+                rect.setAttribute("y", (borderW / 2));
+                rect.setAttribute("width", totalSize - borderW);
+                rect.setAttribute("height", totalSize - borderW);
+                rect.setAttribute("rx", radius);
+                rect.setAttribute("ry", radius);
+                rect.setAttribute("fill", "none");
+                rect.setAttribute("stroke", frameColor);
+                rect.setAttribute("stroke-width", borderW);
+                if (frameStyle === 'dashed') {
+                    rect.setAttribute("stroke-dasharray", `${borderW * 2} ${borderW}`);
+                }
+                content.insertBefore(rect, content.firstChild);
+            } else {
+                const ctx = content;
+                ctx.save();
+                ctx.strokeStyle = frameColor;
+                ctx.lineWidth = borderW;
+                if (frameStyle === 'dashed') {
+                    ctx.setLineDash([borderW * 2, borderW]);
+                }
+                ctx.beginPath();
+                if (ctx.roundRect) {
+                    ctx.roundRect(borderW / 2, borderW / 2, totalSize - borderW, totalSize - borderW, radius);
+                } else {
+                    ctx.rect(borderW / 2, borderW / 2, totalSize - borderW, totalSize - borderW);
+                }
+                ctx.stroke();
+                ctx.restore();
+            }
+        }
+
         const margin = options.margin;
 
         const createSvgGradient = (id, grad) => {
@@ -365,9 +448,9 @@ export default function QRCodePage() {
         // Top Left
         drawEye(0, 0, 0);
         // Top Right
-        drawEye(count - 7, 0, 0);
+        drawEye(count - 7, 0, 90);
         // Bottom Left
-        drawEye(0, count - 7, 0);
+        drawEye(0, count - 7, -90);
     };
 
     function getQRData() {
@@ -931,6 +1014,53 @@ export default function QRCodePage() {
                                                                 </div>
                                                             </div>
                                                         </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className={`${styles.accordionSection} ${sections.frame ? styles.expanded : ''}`}>
+                                                <button className={styles.accordionHeader} onClick={() => toggleSection('frame')}>
+                                                    <div className={styles.headerLeft}><Layout size={20} /> <span>Bingkai (Frame)</span></div>
+                                                    {sections.frame ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                                                </button>
+                                                <div className={styles.accordionContent}>
+                                                    <div className={styles.customCardBody}>
+                                                        <div className={styles.checkboxGroupInline}>
+                                                            <input type="checkbox" id="frame-enable" checked={frameEnabled} onChange={(e) => setFrameEnabled(e.target.checked)} />
+                                                            <label htmlFor="frame-enable">Aktifkan Bingkai</label>
+                                                        </div>
+                                                        {frameEnabled && (
+                                                            <div className={styles.designBlock}>
+                                                                <div className={styles.inputGroup}>
+                                                                    <label>Warna Bingkai</label>
+                                                                    <div className={styles.colorInputWrapper}>
+                                                                        <input type="color" value={frameColor} onChange={(e) => setFrameColor(e.target.value)} />
+                                                                        <span className={styles.colorHex}>{frameColor.toUpperCase()}</span>
+                                                                    </div>
+                                                                </div>
+                                                                <div className={styles.inputGroup}>
+                                                                    <label>Gaya Bingkai</label>
+                                                                    <div className={styles.typeSelector}>
+                                                                        <button className={frameStyle === 'solid' ? styles.typeActive : ''} onClick={() => setFrameStyle('solid')}>Solid</button>
+                                                                        <button className={frameStyle === 'dashed' ? styles.typeActive : ''} onClick={() => setFrameStyle('dashed')}>Dashed</button>
+                                                                    </div>
+                                                                </div>
+                                                                <div className={styles.fieldsGrid}>
+                                                                    <div className={styles.inputGroupSmall}>
+                                                                        <label>Tebal: {frameThickness}</label>
+                                                                        <input type="range" min="1" max="50" value={frameThickness} onChange={(e) => setFrameThickness(parseInt(e.target.value))} />
+                                                                    </div>
+                                                                    <div className={styles.inputGroupSmall}>
+                                                                        <label>Radius: {frameRadius}</label>
+                                                                        <input type="range" min="0" max="200" value={frameRadius} onChange={(e) => setFrameRadius(parseInt(e.target.value))} />
+                                                                    </div>
+                                                                </div>
+                                                                <div className={styles.inputGroup}>
+                                                                    <label>Jarak Margin: {frameMargin}</label>
+                                                                    <input type="range" min="0" max="100" value={frameMargin} onChange={(e) => setFrameMargin(parseInt(e.target.value))} />
+                                                                </div>
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 </div>
                                             </div>

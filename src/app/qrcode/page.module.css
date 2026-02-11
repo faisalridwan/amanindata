@@ -658,7 +658,7 @@
 /* Shape Icons - Sprite System */
 .sprite {
     display: inline-block;
-    background-image: url('/assets/spritesheet.png');
+    background-image: url('/spritesheet.png');
     background-repeat: no-repeat;
     overflow: hidden;
 }
