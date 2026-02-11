@@ -132,9 +132,7 @@ export default function RearrangePDFPage() {
                     <p className={styles.heroSubtitle}>
                         Ubah urutan halaman PDF Anda dengan drag-and-drop visual yang mudah dan aman.
                     </p>
-                    <div className={styles.trustBadge}>
-                        <Shield size={16} /> 100% Client-Side
-                    </div>
+
                 </header>
 
                 {!file ? (

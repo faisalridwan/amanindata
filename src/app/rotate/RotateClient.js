@@ -130,9 +130,7 @@ export default function RotatePDFPage() {
                     <p className={styles.heroSubtitle}>
                         Putar halaman PDF yang terbalik atau miring secara permanen dan aman di browser.
                     </p>
-                    <div className={styles.trustBadge}>
-                        <Shield size={16} /> 100% Client-Side
-                    </div>
+
                 </header>
 
                 {!file ? (

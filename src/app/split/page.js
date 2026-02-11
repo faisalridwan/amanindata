@@ -119,9 +119,7 @@ export default function SplitPDFPage() {
                     <p className={styles.heroSubtitle}>
                         Pisahkan halaman PDF menjadi dokumen baru secara instan dan aman di browser Anda.
                     </p>
-                    <div className={styles.trustBadge}>
-                        <Shield size={16} /> 100% Client-Side
-                    </div>
+
                 </header>
 
                 {!file ? (
