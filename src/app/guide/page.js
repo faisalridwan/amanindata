@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { BookOpen, AlertTriangle, Lightbulb, MousePointer, Info, Shield, CheckCircle, ChevronDown, Camera, FileStack, Search, Eraser, Minimize2, Scissors } from 'lucide-react'
+import { BookOpen, AlertTriangle, Lightbulb, MousePointer, Info, Shield, CheckCircle, ChevronDown, Camera, FileStack, Search, Eraser, Minimize2, Scissors, ScissorsLineDashed, Move, RotateCw } from 'lucide-react'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import styles from './page.module.css'
@@ -140,20 +140,24 @@ export default function GuidePage() {
 
     const redactSteps = [
         {
-            title: 'Upload Gambar',
-            desc: <>Upload foto KTP, dokumen, atau tangkapan layar yang mengandung data sensitif.</>
+            title: 'Multi-Upload Dokumen',
+            desc: <>Upload satu atau banyak file sekaligus (PDF & Gambar). File akan muncul di list sebelah kiri. Klik nama file untuk mulai mengeditnya.</>
         },
         {
-            title: 'Pilih Area',
-            desc: <>Gunakan mouse untuk menyeleksi area yang ingin disensor (blok kotak).</>
+            title: 'Buat Sensor Baru',
+            desc: <>Klik dan tarik (drag) mouse di area yang ingin disensor. Kotak sensor akan muncul secara otomatis.</>
         },
         {
-            title: 'Pilih Efek Sensor',
-            desc: <>Pilih mode sensor: <strong>Blur</strong>, <strong>Pixelate</strong>, atau <strong>Solid Color</strong> (blok hitam/putih).</>
+            title: 'Edit & Hapus Sensor',
+            desc: <>Klik pada kotak sensor untuk memilihnya (muncul garis biru). Anda bisa <strong>menggeser</strong> posisinya atau menekan tombol <strong>Delete/Backspace</strong> untuk menghapus.</>
         },
         {
-            title: 'Download Aman',
-            desc: <>Download gambar yang sudah disensor. Data asli tertutup permanen di gambar baru.</>
+            title: 'Kustomisasi Tampilan',
+            desc: <>Pilih mode <strong>Block</strong> (Warna Solid) atau <strong>Blur</strong>. Anda juga bisa mengganti warna sensor (Hitam, Putih, Merah) sesuai kebutuhan dokumen.</>
+        },
+        {
+            title: 'Download Hasil',
+            desc: <>Klik tombol <strong>Download</strong>. Dokumen akan diproses ulang (flatten) sehingga sensor menyatu permanen dengan gambar/PDF dan tidak bisa dilepas kembali.</>
         }
     ]
 
@@ -192,6 +196,59 @@ export default function GuidePage() {
         {
             title: 'Download',
             desc: <>Download file dalam format PNG (transparan) untuk digunakan di desain lain.</>
+        }
+    ]
+
+    const splitSteps = [
+        {
+            title: 'Upload PDF',
+            desc: <>Upload file PDF yang ingin Anda pecah menjadi beberapa bagian.</>
+        },
+        {
+            title: 'Pilih Mode Split',
+            desc: <>Pilih <strong>"Extract Pages"</strong> untuk mengambil halaman tertentu, atau <strong>"Split by Range"</strong> untuk memotong berdasarkan rentang halaman.</>
+        },
+        {
+            title: 'Tentukan Halaman',
+            desc: <>Klik halaman yang ingin diekstrak atau masukkan nomor halaman secara manual.</>
+        },
+        {
+            title: 'Download Limitless',
+            desc: <>Download file PDF baru yang berisi halaman-halaman pilihan Anda.</>
+        }
+    ]
+
+    const rearrangeSteps = [
+        {
+            title: 'Upload PDF',
+            desc: <>Upload file PDF yang halaman-halamannya ingin Anda urutkan ulang.</>
+        },
+        {
+            title: 'Drag & Drop',
+            desc: <>Klik dan tahan halaman, lalu geser ke posisi urutan baru yang diinginkan.</>
+        },
+        {
+            title: 'Hapus Halaman',
+            desc: <>Jika ada halaman yang tidak diinginkan, klik ikon <strong>Hapus (Trash)</strong> pada halaman tersebut.</>
+        },
+        {
+            title: 'Simpan Dokumen',
+            desc: <>Klik <strong>Download PDF</strong> untuk menyimpan dokumen dengan urutan baru.</>
+        }
+    ]
+
+    const rotateSteps = [
+        {
+            title: 'Upload PDF',
+            desc: <>Upload file PDF yang memiliki halaman miring atau terbalik.</>
+        },
+        {
+            title: 'Putar Halaman',
+            desc: <>Klik tombol putar pada halaman tertentu, atau gunakan tombol <strong>"Rotate All"</strong> untuk memutar semua halaman sekaligus.</>
+        },
+        {
+            title: 'Simpan',
+            desc: <>Setelah orientasi benar, klik <strong>Download PDF</strong> untuk menyimpan perubahan.</>
         }
     ]
 
@@ -250,6 +307,21 @@ export default function GuidePage() {
                                 <li>
                                     <a href="#compress">
                                         <Minimize2 size={16} /> Kompres File
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#split">
+                                        <ScissorsLineDashed size={16} /> Split Dokumen
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#rearrange">
+                                        <Move size={16} /> Rearrange Dokumen
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#rotate">
+                                        <RotateCw size={16} /> Rotate Dokumen
                                     </a>
                                 </li>
                                 <li>
@@ -448,6 +520,72 @@ export default function GuidePage() {
                                 </div>
                                 <div className={styles.cardFooter}>
                                     <a href="/remove-background" className={`${styles.actionBtn} ${styles.btnAlt}`}>Hapus Background Sekarang</a>
+                                </div>
+                            </div>
+
+                            {/* Split PDF Guide */}
+                            <div id="split" className={`neu-card no-hover ${styles.guideCard}`}>
+                                <div className={styles.cardHeader}>
+                                    <ScissorsLineDashed size={24} className={styles.iconBlue} />
+                                    <h2>Panduan Split Dokumen</h2>
+                                </div>
+                                <div className={styles.stepList}>
+                                    {splitSteps.map((step, index) => (
+                                        <div key={index} className={styles.stepItem}>
+                                            <div className={styles.stepNumber}>{index + 1}</div>
+                                            <div className={styles.stepContent}>
+                                                <h3>{step.title}</h3>
+                                                <p>{step.desc}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className={styles.cardFooter}>
+                                    <a href="/split" className={`${styles.actionBtn} ${styles.btnAlt}`}>Split Dokumen</a>
+                                </div>
+                            </div>
+
+                            {/* Rearrange PDF Guide */}
+                            <div id="rearrange" className={`neu-card no-hover ${styles.guideCard}`}>
+                                <div className={styles.cardHeader}>
+                                    <Move size={24} className={styles.iconBlue} />
+                                    <h2>Panduan Rearrange Dokumen</h2>
+                                </div>
+                                <div className={styles.stepList}>
+                                    {rearrangeSteps.map((step, index) => (
+                                        <div key={index} className={styles.stepItem}>
+                                            <div className={styles.stepNumber}>{index + 1}</div>
+                                            <div className={styles.stepContent}>
+                                                <h3>{step.title}</h3>
+                                                <p>{step.desc}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className={styles.cardFooter}>
+                                    <a href="/rearrange" className={`${styles.actionBtn} ${styles.btnAlt}`}>Rearrange Dokumen</a>
+                                </div>
+                            </div>
+
+                            {/* Rotate PDF Guide */}
+                            <div id="rotate" className={`neu-card no-hover ${styles.guideCard}`}>
+                                <div className={styles.cardHeader}>
+                                    <RotateCw size={24} className={styles.iconBlue} />
+                                    <h2>Panduan Rotate Dokumen</h2>
+                                </div>
+                                <div className={styles.stepList}>
+                                    {rotateSteps.map((step, index) => (
+                                        <div key={index} className={styles.stepItem}>
+                                            <div className={styles.stepNumber}>{index + 1}</div>
+                                            <div className={styles.stepContent}>
+                                                <h3>{step.title}</h3>
+                                                <p>{step.desc}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className={styles.cardFooter}>
+                                    <a href="/rotate" className={`${styles.actionBtn} ${styles.btnAlt}`}>Rotate Dokumen</a>
                                 </div>
                             </div>
                         </div>

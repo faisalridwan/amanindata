@@ -1,10 +1,40 @@
 'use client'
 
+import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
-import { FileImage, PenTool, BookOpen, Info, HelpCircle, FileStack, Shield, Library, Mail, Heart, FileText, Github, GitBranch, Minimize2, EyeOff, User, Scissors, QrCode, Move, RotateCw, ScissorsLineDashed } from 'lucide-react'
+import { FileImage, PenTool, BookOpen, Info, HelpCircle, FileStack, Shield, Library, Mail, Heart, FileText, Github, GitBranch, Minimize2, EyeOff, User, Scissors, QrCode, Move, RotateCw, ScissorsLineDashed, ChevronUp, Grid } from 'lucide-react'
 import styles from './Footer.module.css'
 
 export default function Footer() {
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+    const dropdownRef = useRef(null)
+
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setIsDropdownOpen(false)
+            }
+        }
+        document.addEventListener('mousedown', handleClickOutside)
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside)
+        }
+    }, [])
+
+    const otherProducts = [
+        { href: '/redact', label: 'Sensor Data', icon: EyeOff },
+        { href: '/compress', label: 'Kompres Foto', icon: Minimize2 },
+        { href: '/remove-background', label: 'Hapus Background', icon: Scissors },
+        { href: '/photo-generator', label: 'Photo Generator', icon: FileImage },
+        { href: '/merge', label: 'Gabung Dokumen', icon: FileStack },
+        { href: '/nik-parser', label: 'Cek NIK', icon: User },
+        { href: '/qrcode', label: 'QR Generator', icon: QrCode },
+        { href: '/split', label: 'Split Dokumen', icon: ScissorsLineDashed },
+        { href: '/rearrange', label: 'Rearrange Dokumen', icon: Move },
+        { href: '/rotate', label: 'Rotate Dokumen', icon: RotateCw },
+    ]
+
     return (
         <footer className={styles.footer}>
             {/* CTA Section */}
@@ -39,45 +69,33 @@ export default function Footer() {
 
                 {/* Links Grid */}
                 <div className={styles.linksGrid}>
-                    {/* Produk */}
+                    {/* Produk Utama */}
                     <div className={styles.linkSection}>
                         <h4>Produk</h4>
                         <ul>
                             <li>
-                                <Link href="/"><FileImage size={14} /> Watermark Dokumen</Link>
+                                <Link href="/"><FileImage size={14} /> Watermark</Link>
                             </li>
                             <li>
                                 <Link href="/signature"><PenTool size={14} /> Tanda Tangan</Link>
                             </li>
-                            <li>
-                                <Link href="/compress"><Minimize2 size={14} /> Kompres Foto</Link>
-                            </li>
-                            <li>
-                                <Link href="/redact"><EyeOff size={14} /> Sensor Data</Link>
-                            </li>
-                            <li>
-                                <Link href="/merge"><FileStack size={14} /> Gabung Dokumen</Link>
-                            </li>
-                            <li>
-                                <Link href="/nik-parser"><User size={14} /> Cek NIK</Link>
-                            </li>
-                            <li>
-                                <Link href="/photo-generator"><FileImage size={14} /> Pas Foto</Link>
-                            </li>
-                            <li>
-                                <Link href="/remove-background"><Scissors size={14} /> Hapus Background</Link>
-                            </li>
-                            <li>
-                                <Link href="/qrcode"><QrCode size={14} /> QR Code Generator</Link>
-                            </li>
-                            <li>
-                                <Link href="/split"><ScissorsLineDashed size={14} /> Split PDF</Link>
-                            </li>
-                            <li>
-                                <Link href="/rearrange"><Move size={14} /> Rearrange PDF</Link>
-                            </li>
-                            <li>
-                                <Link href="/rotate"><RotateCw size={14} /> Rotate PDF Pages</Link>
+                            <li className={styles.footerDropdown} ref={dropdownRef}>
+                                <button
+                                    className={styles.dropdownBtn}
+                                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                                >
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        <Grid size={16} /> Produk Lainnya
+                                    </div>
+                                    <ChevronUp size={14} style={{ transform: isDropdownOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
+                                </button>
+                                <div className={`${styles.dropdownMenu} ${isDropdownOpen ? styles.show : ''}`}>
+                                    {otherProducts.map((item) => (
+                                        <Link key={item.href} href={item.href} className={styles.menuItem}>
+                                            <item.icon size={16} /> {item.label}
+                                        </Link>
+                                    ))}
+                                </div>
                             </li>
                         </ul>
                     </div>

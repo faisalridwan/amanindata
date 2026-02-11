@@ -30,9 +30,9 @@ export default function Navbar() {
         { href: '/photo-generator', label: 'Photo Generator', icon: Camera, desc: 'Ubah ukuran, format photo, dan atur DPI foto.' },
         { href: '/remove-background', label: 'Hapus Background', icon: Scissors, desc: 'Hapus background foto otomatis dengan AI.' },
         { href: '/qrcode', label: 'QR Generator', icon: QrCode, desc: 'Buat kode QR kustom instan & aman.' },
-        { href: '/split', label: 'Split PDF', icon: ScissorsLineDashed, desc: 'Pisahkan halaman PDF jadi dokumen baru.' },
-        { href: '/rearrange', label: 'Rearrange PDF', icon: Move, desc: 'Atur ulang urutan halaman PDF secara visual.' },
-        { href: '/rotate', label: 'Rotate PDF', icon: RotateCw, desc: 'Putar halaman PDF yang miring permanen.' },
+        { href: '/split', label: 'Split Dokumen', icon: ScissorsLineDashed, desc: 'Pisahkan halaman PDF jadi dokumen baru.' },
+        { href: '/rearrange', label: 'Rearrange Dokumen', icon: Move, desc: 'Atur ulang urutan halaman PDF secara visual.' },
+        { href: '/rotate', label: 'Rotate Dokumen', icon: RotateCw, desc: 'Putar halaman PDF yang miring permanen.' },
     ]
 
     // Info/Footer Items in Dropdown

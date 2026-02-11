@@ -71,19 +71,19 @@ export default function AboutPage() {
         },
         {
             icon: ScissorsLineDashed,
-            title: 'Split PDF',
+            title: 'Split Dokumen',
             desc: 'Pisahkan halaman PDF menjadi dokumen baru secara mandiri di browser.',
             href: '/split'
         },
         {
             icon: Move,
-            title: 'Rearrange PDF',
+            title: 'Rearrange Dokumen',
             desc: 'Ubah urutan halaman PDF dengan mudah melalui antarmuka visual.',
             href: '/rearrange'
         },
         {
             icon: RotateCw,
-            title: 'Rotate PDF',
+            title: 'Rotate Dokumen',
             desc: 'Putar halaman PDF yang miring atau terbalik secara permanen & aman.',
             href: '/rotate'
         }
