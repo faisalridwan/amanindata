@@ -11,112 +11,59 @@ import Footer from '@/components/Footer'
 import TrustSection from '@/components/TrustSection'
 import GuideSection from '@/components/GuideSection'
 import styles from './page.module.css'
+import * as htmlToImage from 'html-to-image'
 
 // --- Device Definitions ---
-// Dimensions based on real specs (approximate pixels)
+// Uses @devmansam/device-mockup types
 const DEVICES = {
-    iphone15: {
-        id: 'iphone15',
-        name: 'iPhone 15 Pro',
-        type: 'phone',
-        width: 1179,
-        height: 2556,
-        cornerRadius: 50,
-        bezel: 12,
-        frameColor: '#53504C', // Natural Titanium
-        features: { dynamicIsland: true, sideButtons: true }
-    },
     iphone14: {
         id: 'iphone14',
         name: 'iPhone 14',
         type: 'phone',
-        width: 1170,
-        height: 2532,
-        cornerRadius: 40,
-        bezel: 14,
-        frameColor: '#1c1c1e',
-        features: { notch: true, sideButtons: true }
+        deviceType: 'iphone-14',
+        color: 'black'
     },
-    pixel8: {
-        id: 'pixel8',
-        name: 'Pixel 8 Pro',
+    pixel6: {
+        id: 'pixel6',
+        name: 'Pixel 6 Pro',
         type: 'phone',
-        width: 1344,
-        height: 2992,
-        cornerRadius: 28,
-        bezel: 10,
-        frameColor: '#3c4043',
-        features: { punchHole: true, sideButtons: true, squareCorners: true }
+        deviceType: 'pixel-6-pro',
+        color: 'cloudy-white'
     },
-    s24ultra: {
-        id: 's24ultra',
-        name: 'Galaxy S24 Ultra',
+    s21ultra: {
+        id: 's21ultra',
+        name: 'Galaxy S21 Ultra',
         type: 'phone',
-        width: 1440,
-        height: 3120,
-        cornerRadius: 4, // Sharp corners
-        bezel: 8,
-        frameColor: '#2C2C2C',
-        features: { punchHole: true, sideButtons: true }
+        deviceType: 's21-ultra', // Fallback orcheck support
+        color: 'phantom-black'
     },
     ipad: {
         id: 'ipad',
         name: 'iPad Pro',
         type: 'tablet',
-        width: 2048,
-        height: 2732,
-        cornerRadius: 24,
-        bezel: 20,
-        frameColor: '#282828',
-        features: { cameraIndicator: true }
+        deviceType: 'ipad-pro',
+        color: 'space-gray'
     },
     macbook: {
         id: 'macbook',
         name: 'MacBook Pro',
         type: 'laptop',
-        width: 3024,
-        height: 1964,
-        cornerRadius: 16,
-        bezel: 16, // Screen bezel
-        frameColor: '#000000', // Screen border is black
-        features: { notch: true, keyboardHint: true }
-    },
-    browser: {
-        id: 'browser',
-        name: 'Safari Browser',
-        type: 'browser',
-        // Dynamic stats
-        aspectRatio: 16 / 9,
-        cornerRadius: 12,
-        bezel: 0,
-        frameColor: '#1e1e1e', // Dark mode header
-        features: { trafficLights: true }
-    },
-    simple: {
-        id: 'simple',
-        name: 'Simple Frame',
-        type: 'simple',
-        // Dynamic
-        aspectRatio: null,
-        cornerRadius: 12,
-        bezel: 0,
-        frameColor: 'transparent',
-        features: {}
+        deviceType: 'macbook-pro',
+        color: 'space-gray'
     }
 }
 
 export default function MockupGeneratorPage() {
     const [image, setImage] = useState(null)
-    const [selectedDevice, setSelectedDevice] = useState('iphone15')
+    const [selectedDevice, setSelectedDevice] = useState('iphone14')
 
     // Customization State
     const [bgColor, setBgColor] = useState('#f3f4f6')
-    const [frameColor, setFrameColor] = useState('') // Overrides device default if set
+    const [frameColor, setFrameColor] = useState('#000000')
     const [padding, setPadding] = useState(50)
-    const [borderRadius, setBorderRadius] = useState(12) // For simple frame
 
-    // Scale / Resolution
-    const [scale, setScale] = useState(2) // 1x, 2x, 3x, 4x
+    // Scale / Resolution (Quality)
+    const [scale, setScale] = useState(2)
 
     // Fit Mode: 'cover' (Crop to fill) or 'contain' (Fit whole image)
     const [fitMode, setFitMode] = useState('cover')
@@ -127,18 +74,13 @@ export default function MockupGeneratorPage() {
     const [isPanning, setIsPanning] = useState(false)
     const [startPan, setStartPan] = useState({ x: 0, y: 0 })
 
-    // Shadow
-    const [shadowBlur, setShadowBlur] = useState(40)
-    const [shadowOpacity, setShadowOpacity] = useState(0.3)
-    const [shadowOffsetY, setShadowOffsetY] = useState(20)
-
     const [isDragging, setIsDragging] = useState(false)
-    const canvasRef = useRef(null)
+    const containerRef = useRef(null)
 
-    // Set initial frame color when device changes
+    // Load the web component
     useEffect(() => {
-        setFrameColor(DEVICES[selectedDevice].frameColor)
-    }, [selectedDevice])
+        import('@devmansam/device-mockup')
+    }, [])
 
     // Reset panning/zooming when image or device changes
     useEffect(() => {
@@ -192,15 +134,9 @@ export default function MockupGeneratorPage() {
         const dy = e.clientY - startPan.y
         setStartPan({ x: e.clientX, y: e.clientY })
 
-        // Adjust sensitivity based on canvas display size vs internal size??
-        // Ideally mapped 1:1 visually but canvas is high res. 
-        // For now, raw pixels is okay, user can just drag more.
-        // Actually, we should probably scale delta by `scale` to match canvas pixels.
-        const deltaMult = scale
-
         setImageOffset(prev => ({
-            x: prev.x + (dx * deltaMult),
-            y: prev.y + (dy * deltaMult)
+            x: prev.x + dx,
+            y: prev.y + dy
         }))
     }
 
@@ -208,329 +144,24 @@ export default function MockupGeneratorPage() {
         setIsPanning(false)
     }
 
-    useEffect(() => {
-        if (image) {
-            drawMockup()
-        }
-    }, [image, selectedDevice, bgColor, padding, borderRadius, shadowBlur, shadowOpacity, shadowOffsetY, frameColor, scale, fitMode, imageScale, imageOffset])
+    // Download action
+    const downloadMockup = async () => {
+        if (!containerRef.current) return
 
-    const drawMockup = () => {
-        const canvas = canvasRef.current
-        const ctx = canvas.getContext('2d')
-        if (!canvas || !ctx || !image) return
-
-        const device = DEVICES[selectedDevice]
-        // Use user selected scale. For retina devices like iPhone, 1x here means their logical resolution? 
-        // Actually typical approach: Base dimensions are high res (e.g. 1179px width), so scale=1 is already high res.
-        // User scale adds multiplier on top of that. 
-        // Let's treat DEVICES dimensions as the "Base 1x" canvas units.
-        const pixelRatio = scale
-
-        // 1. Calculate Content Size & Canvas Size
-        let screenW, screenH
-        let frameW, frameH, screenX, screenY
-
-        if (device.width && device.height) {
-            // FIXED Dimensions (Phone/Tablet/Laptop)
-            screenW = device.width * pixelRatio
-            screenH = device.height * pixelRatio
-        } else if (device.type === 'browser') {
-            const BASE_WIDTH = 1920 // Full HD Base
-            screenW = BASE_WIDTH * pixelRatio
-            screenH = (BASE_WIDTH / device.aspectRatio) * pixelRatio
-        } else {
-            // Simple / Dynamic based on Image
-            const BASE_WIDTH = 1200
-            let contentW = image.width
-            let contentH = image.height
-            if (contentW > BASE_WIDTH) {
-                contentH = contentH * (BASE_WIDTH / contentW)
-                contentW = BASE_WIDTH
-            }
-            screenW = contentW * pixelRatio
-            screenH = contentH * pixelRatio
-        }
-
-        // Calculate Frame Dimensions
-        if (device.type === 'phone' || device.type === 'tablet') {
-            frameW = screenW + (device.bezel * pixelRatio * 2)
-            frameH = screenH + (device.bezel * pixelRatio * 2)
-            screenX = device.bezel * pixelRatio
-            screenY = device.bezel * pixelRatio
-        } else if (device.type === 'laptop') {
-            const topBezel = device.bezel * pixelRatio
-            const sideBezel = device.bezel * pixelRatio
-            const bottomBezel = device.bezel * 1.5 * pixelRatio
-
-            frameW = screenW + (sideBezel * 2)
-            frameH = screenH + topBezel + bottomBezel
-            screenX = sideBezel
-            screenY = topBezel
-        } else if (device.type === 'browser') {
-            const headerH = 40 * pixelRatio
-            frameW = screenW
-            frameH = screenH + headerH
-            screenX = 0
-            screenY = headerH
-        } else { // simple
-            frameW = screenW
-            frameH = screenH
-            screenX = 0
-            screenY = 0
-        }
-
-        const viewPadding = parseInt(padding) * pixelRatio
-        const totalW = frameW + (viewPadding * 2)
-        const totalH = frameH + (viewPadding * 2)
-
-        let baseH = 0
-        if (device.type === 'laptop') {
-            baseH = 16 * pixelRatio
-        }
-
-        canvas.width = totalW
-        canvas.height = totalH + (baseH * 2)
-
-        // 2. Background
-        if (bgColor === 'transparent') {
-            ctx.clearRect(0, 0, canvas.width, canvas.height)
-        } else {
-            ctx.fillStyle = bgColor
-            ctx.fillRect(0, 0, canvas.width, canvas.height)
-        }
-
-        // Translate to Frame Start
-        ctx.translate(viewPadding, viewPadding)
-
-        // 3. Draw Shadow
-        const cornerRadius = device.cornerRadius * pixelRatio
-
-        ctx.save()
-        if (device.type !== 'simple' || shadowOpacity > 0) {
-            ctx.shadowColor = `rgba(0, 0, 0, ${shadowOpacity})`
-            ctx.shadowBlur = parseInt(shadowBlur) * pixelRatio
-            ctx.shadowOffsetY = parseInt(shadowOffsetY) * pixelRatio
-
-            ctx.fillStyle = frameColor || device.frameColor
-            roundRect(ctx, 0, 0, frameW, frameH, cornerRadius)
-            ctx.fill()
-        }
-        ctx.restore()
-
-        // 4. Draw Device Frame
-        ctx.fillStyle = frameColor || device.frameColor
-        if (device.type === 'laptop') {
-            // Screen Body
-            roundRect(ctx, 0, 0, frameW, frameH, cornerRadius)
-            ctx.fill()
-
-            // Base
-            const baseDepth = 12 * pixelRatio
-            const baseX = -20 * pixelRatio
-            const baseWNew = frameW + (40 * pixelRatio)
-            const hingeH = 10 * pixelRatio
-
-            ctx.fillStyle = adjustColor(frameColor || device.frameColor, -20)
-
-            ctx.beginPath()
-            ctx.moveTo(0, frameH - hingeH)
-            ctx.lineTo(frameW, frameH - hingeH)
-            ctx.lineTo(baseX + baseWNew, frameH + baseDepth)
-            ctx.lineTo(baseX, frameH + baseDepth)
-            ctx.fill()
-
-            ctx.fillStyle = adjustColor(frameColor || device.frameColor, -40)
-            ctx.fillRect(baseX, frameH + baseDepth, baseWNew, 4 * pixelRatio)
-            ctx.fillStyle = frameColor || device.frameColor
-
-        } else {
-            roundRect(ctx, 0, 0, frameW, frameH, cornerRadius)
-            ctx.fill()
-        }
-
-        // 5. Side Buttons
-        if (device.features.sideButtons) {
-            // Simplified side buttons logic if needed
-        }
-
-        // 6. Draw Content (Screen)
-        ctx.save()
-        ctx.beginPath()
-
-        if (device.type === 'browser') {
-            const headerH = 40 * pixelRatio
-            ctx.fillStyle = '#1e1e1e'
-            roundRect(ctx, 0, 0, frameW, headerH, cornerRadius, true, false)
-            ctx.fill()
-            drawTrafficLights(ctx, 20 * pixelRatio, 20 * pixelRatio, pixelRatio)
-            roundRect(ctx, 0, headerH, screenW, screenH, cornerRadius, false, true)
-            ctx.clip()
-        } else if (device.type === 'simple') {
-            const r = parseInt(borderRadius) * pixelRatio
-            roundRect(ctx, 0, 0, screenW, screenH, r)
-            ctx.clip()
-        } else {
-            const innerRadius = Math.max(0, cornerRadius - (device.bezel * pixelRatio) + 2)
-            roundRect(ctx, screenX, screenY, screenW, screenH, innerRadius)
-            ctx.clip()
-        }
-
-        // Draw Image - Object Fit & Position Logic
-        // Destination: screenX, screenY, screenW, screenH
-
-        let sX = 0, sY = 0, sW = image.width, sH = image.height
-        let dX = screenX, dY = screenY, dW = screenW, dH = screenH
-
-        if (fitMode === 'cover') {
-            // 1. Calculate base scale to COVER the area
-            const scaleW = screenW / image.width
-            const scaleH = screenH / image.height
-            const baseScale = Math.max(scaleW, scaleH)
-
-            // 2. Apply User Zoom
-            const finalScale = baseScale * imageScale
-
-            // 3. Calculate Dimensions
-            dW = image.width * finalScale
-            dH = image.height * finalScale
-
-            // 4. Calculate Position (Center Default changed to TOP Default)
-            // Default X: Center
-            const defaultX = screenX + (screenW - dW) / 2
-            // Default Y: Top (0 relative to screen)
-            const defaultY = screenY // TOP ALIGN
-
-            // 5. Apply User Offset
-            dX = defaultX + imageOffset.x
-            dY = defaultY + imageOffset.y
-
-            ctx.drawImage(image, 0, 0, image.width, image.height, dX, dY, dW, dH)
-
-        } else {
-            // Contain
-            ctx.fillStyle = '#000'
-            ctx.fillRect(screenX, screenY, screenW, screenH)
-
-            const scaleW = screenW / image.width
-            const scaleH = screenH / image.height
-            const baseScale = Math.min(scaleW, scaleH)
-
-            const finalScale = baseScale * imageScale
-
-            dW = image.width * finalScale
-            dH = image.height * finalScale
-
-            const defaultX = screenX + (screenW - dW) / 2
-            const defaultY = screenY + (screenH - dH) / 2
-
-            dX = defaultX + imageOffset.x
-            dY = defaultY + imageOffset.y
-
-            ctx.drawImage(image, 0, 0, image.width, image.height, dX, dY, dW, dH)
-        }
-
-        ctx.restore()
-
-        // 7. Post-Pro Features
-        const cx = frameW / 2
-        if (device.features.dynamicIsland) {
-            drawDynamicIsland(ctx, cx, (device.bezel * pixelRatio) + (10 * pixelRatio), pixelRatio)
-        } else if (device.features.notch) {
-            drawNotch(ctx, cx, device.bezel * pixelRatio, pixelRatio)
-        } else if (device.features.punchHole) {
-            drawPunchHole(ctx, cx, (device.bezel * pixelRatio) + (15 * pixelRatio), pixelRatio)
-        }
-
-        // 8. Gloss
-        if (device.type === 'phone' || device.type === 'tablet') {
-            const grad = ctx.createLinearGradient(0, 0, frameW, frameH)
-            grad.addColorStop(0, 'rgba(255,255,255,0.05)')
-            grad.addColorStop(0.5, 'rgba(255,255,255,0)')
-            grad.addColorStop(1, 'rgba(255,255,255,0.02)')
-            ctx.fillStyle = grad
-            ctx.beginPath()
-            roundRect(ctx, 0, 0, frameW, frameH, cornerRadius)
-            ctx.fill()
+        try {
+            const dataUrl = await htmlToImage.toPng(containerRef.current, {
+                pixelRatio: scale,
+                backgroundColor: bgColor === 'transparent' ? null : bgColor,
+            })
+            const link = document.createElement('a')
+            link.download = `mockup-${selectedDevice}-${Date.now()}.png`
+            link.href = dataUrl
+            link.click()
+        } catch (error) {
+            console.error('Download failed', error)
         }
     }
 
-    // --- Helpers ---
-    const roundRect = (ctx, x, y, w, h, r, top = true, bottom = true) => {
-        if (r < 0) r = 0
-        const tl = top ? r : 0
-        const tr = top ? r : 0
-        const br = bottom ? r : 0
-        const bl = bottom ? r : 0
-
-        ctx.beginPath()
-        ctx.moveTo(x + tl, y)
-        ctx.lineTo(x + w - tr, y)
-        ctx.quadraticCurveTo(x + w, y, x + w, y + tr)
-        ctx.lineTo(x + w, y + h - br)
-        ctx.quadraticCurveTo(x + w, y + h, x + w - br, y + h)
-        ctx.lineTo(x + bl, y + h)
-        ctx.quadraticCurveTo(x, y + h, x, y + h - bl)
-        ctx.lineTo(x, y + tl)
-        ctx.quadraticCurveTo(x, y, x + tl, y)
-        ctx.closePath()
-    }
-
-    const drawTrafficLights = (ctx, x, y, scale = 1) => {
-        const colors = ['#ff5f56', '#ffbd2e', '#27c93f']
-        const r = 6 * scale
-        const gap = 20 * scale
-        colors.forEach((c, i) => {
-            ctx.beginPath()
-            ctx.fillStyle = c
-            ctx.arc(x + (i * gap), y, r, 0, Math.PI * 2)
-            ctx.fill()
-        })
-    }
-
-    const drawDynamicIsland = (ctx, x, y, scale = 1) => {
-        ctx.fillStyle = '#000'
-        ctx.beginPath()
-        ctx.roundRect(x - (60 * scale), y, 120 * scale, 36 * scale, 18 * scale)
-        ctx.fill()
-    }
-
-    const drawNotch = (ctx, x, y, scale = 1) => {
-        ctx.fillStyle = '#000'
-        ctx.beginPath()
-        const w = 60 * scale
-        const h = 25 * scale
-
-        ctx.moveTo(x - w, 0)
-        ctx.lineTo(x - (w - 10 * scale), y + h)
-        ctx.lineTo(x + (w - 10 * scale), y + h)
-        ctx.lineTo(x + w, 0)
-        ctx.fill()
-    }
-
-    const drawPunchHole = (ctx, x, y, scale = 1) => {
-        ctx.fillStyle = '#000'
-        ctx.beginPath()
-        ctx.arc(x, y, 10 * scale, 0, Math.PI * 2)
-        ctx.fill()
-    }
-
-    const adjustColor = (color, amount) => {
-        // Simple Hex Darken/Lighten
-        // For production, use utility lib.
-        // Hacky implementation for "darker version":
-        return color === '#53504C' ? '#3e3c39' : '#111'
-    }
-
-    const downloadMockup = () => {
-        const canvas = canvasRef.current
-        if (!canvas) return
-        const link = document.createElement('a')
-        link.download = `mockup-${selectedDevice}-${scale}x-${Date.now()}.png`
-        link.href = canvas.toDataURL('image/png', 1.0)
-        link.click()
-    }
-
-    // Helper to get device icon
     const getDeviceIcon = (type) => {
         switch (type) {
             case 'phone': return <Smartphone size={20} />
@@ -540,6 +171,8 @@ export default function MockupGeneratorPage() {
             default: return <Maximize size={20} />
         }
     }
+
+    const currentDevice = DEVICES[selectedDevice]
 
     return (
         <>
@@ -561,33 +194,53 @@ export default function MockupGeneratorPage() {
                     <div className={styles.grid}>
                         {/* Preview Area */}
                         <div className={styles.previewContainer}>
-                            {!image ? (
-                                <div
-                                    className={`${styles.dropzone} ${isDragging ? styles.dropzoneActive : ''}`}
-                                    onDragOver={handleDragOver}
-                                    onDragLeave={handleDragLeave}
-                                    onDrop={handleDrop}
-                                    onClick={() => document.getElementById('image-upload').click()}
-                                >
-                                    <Upload size={48} className={styles.dropIcon} />
-                                    <h3 className={styles.dropText}>Klik atau Drag screenshot</h3>
-                                    <p className={styles.dropSubtext}>JPG, PNG, WebP</p>
-                                    <input type="file" id="image-upload" accept="image/*" onChange={handleFileSelect} hidden />
-                                </div>
-                            ) : (
-                                <canvas
-                                    ref={canvasRef}
-                                    className={styles.previewCanvas}
-                                    style={{
-                                        cursor: isPanning ? 'grabbing' : 'grab',
-                                        touchAction: 'none'
-                                    }}
-                                    onMouseDown={handleMouseDown}
-                                    onMouseMove={handleMouseMove}
-                                    onMouseUp={handleMouseUp}
-                                    onMouseLeave={handleMouseUp}
-                                />
-                            )}
+                            <div
+                                id="capture-container"
+                                ref={containerRef}
+                                className={styles.captureArea}
+                                style={{
+                                    padding: `${padding}px`,
+                                    background: bgColor === 'transparent' ? 'transparent' : bgColor
+                                }}
+                            >
+                                {!image ? (
+                                    <div
+                                        className={`${styles.dropzone} ${isDragging ? styles.dropzoneActive : ''}`}
+                                        onDragOver={handleDragOver}
+                                        onDragLeave={handleDragLeave}
+                                        onDrop={handleDrop}
+                                        onClick={() => document.getElementById('image-upload').click()}
+                                    >
+                                        <Upload size={48} className={styles.dropIcon} />
+                                        <h3 className={styles.dropText}>Klik atau Drag screenshot</h3>
+                                        <p className={styles.dropSubtext}>JPG, PNG, WebP</p>
+                                        <input type="file" id="image-upload" accept="image/*" onChange={handleFileSelect} hidden />
+                                    </div>
+                                ) : (
+                                    <device-mockup
+                                        device={currentDevice.deviceType}
+                                        color={frameColor} // Some devices support custom color via props or css
+                                        scale="1"
+                                    >
+                                        <div
+                                            className={styles.screenContent}
+                                            style={{
+                                                backgroundImage: `url(${image.src})`,
+                                                backgroundSize: fitMode === 'cover' ? 'cover' : 'contain',
+                                                backgroundPosition: 'top center',
+                                                backgroundRepeat: 'no-repeat',
+                                                transform: `scale(${imageScale}) translate(${imageOffset.x}px, ${imageOffset.y}px)`,
+                                                cursor: isPanning ? 'grabbing' : 'grab',
+                                                transformOrigin: 'top center'
+                                            }}
+                                            onMouseDown={handleMouseDown}
+                                            onMouseMove={handleMouseMove}
+                                            onMouseUp={handleMouseUp}
+                                            onMouseLeave={handleMouseUp}
+                                        />
+                                    </device-mockup>
+                                )}
+                            </div>
                         </div>
 
                         {/* Controls Sidebar */}
@@ -630,7 +283,7 @@ export default function MockupGeneratorPage() {
                                         />
                                     </div>
 
-                                    {(DEVICES[selectedDevice].width) && (
+                                    {image && (
                                         <div className={styles.controlGroup}>
                                             <label className={styles.label}>Posisi Gambar</label>
 
@@ -664,33 +317,17 @@ export default function MockupGeneratorPage() {
                                         </div>
                                     )}
 
-                                    {selectedDevice === 'simple' && (
-                                        <div className={styles.controlGroup}>
-                                            <div className={styles.sliderHeader}>
-                                                <span className={styles.sliderLabel}>Radius Sudut</span>
-                                                <span className={styles.sliderValue}>{borderRadius}px</span>
-                                            </div>
-                                            <input
-                                                type="range"
-                                                min="0" max="100"
-                                                value={borderRadius}
-                                                onChange={(e) => setBorderRadius(e.target.value)}
-                                                className={styles.slider}
-                                            />
-                                        </div>
-                                    )}
-
                                     {/* 3. Style Controls */}
                                     <div className={styles.controlGroup}>
                                         <label className={styles.label}>Warna Frame</label>
                                         <div className={styles.colorRow}>
                                             <input
                                                 type="color"
-                                                value={frameColor || '#000000'}
+                                                value={frameColor}
                                                 onChange={(e) => setFrameColor(e.target.value)}
                                                 className={styles.colorInput}
                                             />
-                                            <span className={styles.colorHex}>{frameColor || 'Default'}</span>
+                                            <span className={styles.colorHex}>{frameColor}</span>
                                         </div>
                                     </div>
 
@@ -719,38 +356,10 @@ export default function MockupGeneratorPage() {
                                         </div>
                                     </div>
 
-                                    <div className={styles.controlGroup}>
-                                        <div className={styles.sliderHeader}>
-                                            <span className={styles.sliderLabel}>Bayangan (Blur)</span>
-                                            <span className={styles.sliderValue}>{shadowBlur}px</span>
-                                        </div>
-                                        <input
-                                            type="range"
-                                            min="0" max="100"
-                                            value={shadowBlur}
-                                            onChange={(e) => setShadowBlur(e.target.value)}
-                                            className={styles.slider}
-                                        />
-                                    </div>
-
-                                    <div className={styles.controlGroup}>
-                                        <div className={styles.sliderHeader}>
-                                            <span className={styles.sliderLabel}>Opacity Bayangan</span>
-                                            <span className={styles.sliderValue}>{Math.round(shadowOpacity * 100)}%</span>
-                                        </div>
-                                        <input
-                                            type="range"
-                                            min="0" max="1" step="0.05"
-                                            value={shadowOpacity}
-                                            onChange={(e) => setShadowOpacity(e.target.value)}
-                                            className={styles.slider}
-                                        />
-                                    </div>
-
                                     {/* 4. Export Settings */}
                                     <div className={styles.controlGroup}>
                                         <div className={styles.sliderHeader}>
-                                            <span className={styles.sliderLabel}>Kualitas (Scale)</span>
+                                            <span className={styles.sliderLabel}>Kualitas (Output)</span>
                                             <span className={styles.sliderValue}>{scale}x</span>
                                         </div>
                                         <div className={styles.scaleButtons}>
@@ -763,11 +372,7 @@ export default function MockupGeneratorPage() {
                                                     {s}x
                                                 </button>
                                             ))}
-                                            <span className={styles.resolutionHint}>
-                                                {(1200 * scale)}px wide
-                                            </span>
                                         </div>
-
                                     </div>
                                 </div>
 
@@ -778,9 +383,8 @@ export default function MockupGeneratorPage() {
                                         onClick={downloadMockup}
                                         disabled={!image}
                                         style={{
-                                            backgroundColor: frameColor && frameColor !== 'transparent' ? frameColor : 'var(--primary-dark)',
+                                            backgroundColor: 'var(--primary-dark)',
                                             color: 'white',
-                                            textShadow: '0 1px 2px rgba(0,0,0,0.3)'
                                         }}
                                     >
                                         <Download size={20} /> Download PNG
@@ -789,7 +393,12 @@ export default function MockupGeneratorPage() {
                                     {image && (
                                         <button
                                             className={styles.resetBtn}
-                                            onClick={() => setImage(null)}
+                                            onClick={() => {
+                                                setImage(null)
+                                                // Reset file input
+                                                const fileInput = document.getElementById('image-upload')
+                                                if (fileInput) fileInput.value = ''
+                                            }}
                                         >
                                             Reset Gambar
                                         </button>
