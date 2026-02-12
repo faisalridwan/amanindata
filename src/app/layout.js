@@ -19,9 +19,7 @@ export const metadata = {
     creator: 'Faisal Ridwan',
     publisher: 'Amanin Data',
     metadataBase: new URL('https://amanindata.qreatip.com'),
-    alternates: {
-        canonical: '/',
-    },
+
     openGraph: {
         title: 'Watermark Dokumen Online & TTD Digital – Aman & Lokal',
         description: 'Cara aman buat Watermark Dokumen dan tanda tangan digital langsung di browser tanpa upload data.',

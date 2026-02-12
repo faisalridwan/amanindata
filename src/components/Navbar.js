@@ -7,7 +7,7 @@ import {
     FileImage, PenTool, BookOpen, Shield, Info, Heart, Menu, X, Minimize2,
     EyeOff, User, Camera, ChevronDown, FileStack, Grid, Scissors, QrCode,
     Move, RotateCw, ScissorsLineDashed, Lock, Globe, RefreshCw, Trash2,
-    Palette, Smartphone, FileDiff, Zap
+    Palette, Smartphone, FileDiff, Zap, ScanText
 } from 'lucide-react'
 import styles from './Navbar.module.css'
 import ThemeToggle from './ThemeToggle'
@@ -28,23 +28,24 @@ export default function Navbar() {
     const productItems = [
         { href: '/', label: 'Watermark Dokumen', icon: FileImage, desc: 'Tambahkan watermark pada scan dokumen agar aman.' },
         { href: '/signature', label: 'Tanda Tangan', icon: PenTool, desc: 'Buat tanda tangan digital transparan.' },
-        { href: '/password-generator', label: 'Password Generator', icon: Lock, desc: 'Buat password super kuat & aman.' },
-        { href: '/encrypt', label: 'File Encryptor', icon: Shield, desc: 'Enkripsi file rahasia dengan AES-GCM.' },
         { href: '/compress', label: 'Kompres Foto', icon: Minimize2, desc: 'Perkecil ukuran foto tanpa kurangi kualitas.' },
+        { href: '/ocr', label: 'OCR (Image to Text)', icon: ScanText, desc: 'Ekstrak teks dari gambar secara instan.' },
         { href: '/image-converter', label: 'Image Converter', icon: RefreshCw, desc: 'Ubah format HEIC/WebP ke JPG/PNG.' },
-        { href: '/mockup-generator', label: 'Device Mockup', icon: Smartphone, desc: 'Bingkai screenshot dengan frame HP/Laptop.' },
         { href: '/remove-background', label: 'Hapus Background', icon: Scissors, desc: 'Hapus background foto otomatis dengan AI.' },
-        { href: '/color-picker', label: 'Color Picker', icon: Palette, desc: 'Ambil kode warna dari gambar.' },
-        { href: '/exif-remover', label: 'Hapus EXIF', icon: Trash2, desc: 'Hapus metadata lokasi & kamera dari foto.' },
-        { href: '/diff-checker', label: 'Diff Checker', icon: FileDiff, desc: 'Bandingkan perbedaan dua teks.' },
-        { href: '/speed-test', label: 'Speed Test', icon: Zap, desc: 'Cek kecepatan internet & ping.' },
-        { href: '/ip-check', label: 'Cek IP Saya', icon: Globe, desc: 'Lihat public IP & info perangkat.' },
         { href: '/qrcode', label: 'QR Generator', icon: QrCode, desc: 'Buat kode QR kustom instan & aman.' },
         { href: '/nik-parser', label: 'Cek NIK', icon: User, desc: 'Cek informasi daerah & lahir dari NIK.' },
         { href: '/redact', label: 'Sensor Data', icon: EyeOff, desc: 'Sensor & blur data pribadi di dokumen.' },
         { href: '/merge', label: 'Gabung Dokumen', icon: FileStack, desc: 'Satukan banyak file PDF jadi satu.' },
+        { href: '/mockup-generator', label: 'Device Mockup', icon: Smartphone, desc: 'Bingkai screenshot dengan frame HP/Laptop.' },
         { href: '/split', label: 'Split Dokumen', icon: ScissorsLineDashed, desc: 'Pisahkan halaman PDF jadi dokumen baru.' },
         { href: '/photo-generator', label: 'Photo Generator', icon: Camera, desc: 'Ubah ukuran & atur DPI pasfoto.' },
+        { href: '/password-generator', label: 'Password Generator', icon: Lock, desc: 'Buat password super kuat & aman.' },
+        { href: '/encrypt', label: 'File Encryptor', icon: Shield, desc: 'Enkripsi file rahasia dengan AES-GCM.' },
+        { href: '/color-picker', label: 'Color Picker', icon: Palette, desc: 'Ambil kode warna dari gambar.' },
+        { href: '/exif-remover', label: 'Hapus EXIF', icon: Trash2, desc: 'Hapus metadata lokasi & kamera dari foto.' },
+        { href: '/diff-checker', label: 'Diff Checker', icon: FileDiff, desc: 'Bandingkan perbedaan dua teks.' },
+        { href: '/speed-test', label: 'Speed Test', icon: Zap, desc: 'Cek kecepatan internet & ping.' },
+        { href: '/ip-check', label: 'Cek IP Saya', icon: Globe, desc: 'Lihat public IP & info perangkat.' }
     ]
 
     // Info/Footer Items in Dropdown

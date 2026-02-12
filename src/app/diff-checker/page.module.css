@@ -56,12 +56,13 @@
 }
 
 .inputCard {
-    background: var(--bg-secondary);
+    background: var(--bg-card);
     border-radius: 16px;
     border: 1px solid var(--border-color);
     padding: 20px;
     display: flex;
     flex-direction: column;
+    box-shadow: var(--shadow-dark), var(--shadow-light);
 }
 
 .cardHeader {
@@ -141,12 +142,13 @@
 }
 
 .resultContainer {
-    background: var(--bg-secondary);
+    background: var(--bg-card);
     border-radius: 20px;
     border: 1px solid var(--border-color);
     padding: 30px;
     position: relative;
     min-height: 100px;
+    box-shadow: var(--shadow-dark), var(--shadow-light);
 }
 
 .resultContent {

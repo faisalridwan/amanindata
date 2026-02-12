@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { BookOpen, AlertTriangle, Lightbulb, MousePointer, Info, Shield, CheckCircle, ChevronDown, Camera, FileStack, Search, Eraser, Minimize2, Scissors, ScissorsLineDashed, Move, RotateCw } from 'lucide-react'
+import { BookOpen, AlertTriangle, Lightbulb, MousePointer, Info, Shield, CheckCircle, ChevronDown, Camera, FileStack, Search, Eraser, Minimize2, Scissors, ScissorsLineDashed, Move, RotateCw, Lock, RefreshCw, Smartphone, Palette, Trash2, FileDiff, Zap, Globe, Type } from 'lucide-react'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import styles from './page.module.css'
@@ -252,6 +252,176 @@ export default function GuidePage() {
         }
     ]
 
+    const passwordSteps = [
+        {
+            title: 'Atur Kriteria',
+            desc: <>Pilih panjang password (e.g. 16 karakter) dan opsi karakter (Huruf Besar, Angka, Simbol) sesuai kebutuhan keamanan.</>
+        },
+        {
+            title: 'Generate',
+            desc: <>Klik tombol <strong>Generate Password</strong>. Sistem akan membuat password acak yang kuat secara instan.</>
+        },
+        {
+            title: 'Salin',
+            desc: <>Klik tombol <strong>Copy</strong> untuk menyalin password. Password ini dibuat di browser dan tidak dikirim ke server kami.</>
+        }
+    ]
+
+    const encryptSteps = [
+        {
+            title: 'Pilih File',
+            desc: <>Upload file rahasia yang ingin diamankan. Bisa berupa dokumen, gambar, atau video.</>
+        },
+        {
+            title: 'Buat Password',
+            desc: <>Masukkan password enkripsi. <strong>PENTING:</strong> Ingat baik-baik password ini, karena jika lupa, file tidak bisa dibuka selamanya.</>
+        },
+        {
+            title: 'Enkripsi & Download',
+            desc: <>Klik <strong>"Enkripsi File"</strong>. File akan diubah menjadi format <em>.enc</em> yang tidak bisa dibaca tanpa password. Simpan file ini dengan aman.</>
+        },
+        {
+            title: 'Dekripsi (Buka Kunci)',
+            desc: <>Untuk membuka kembali, upload file <em>.enc</em> di menu yang sama, masukkan password, lalu klik <strong>"Dekripsi"</strong>.</>
+        }
+    ]
+
+    const ocrSteps = [
+        {
+            title: 'Upload Gambar',
+            desc: <>Upload gambar (JPG, PNG) yang berisi teks yang ingin Anda salin.</>
+        },
+        {
+            title: 'Pilih Bahasa',
+            desc: <>Pilih bahasa teks dalam gambar (Inggris atau Indonesia) agar hasil scan lebih akurat.</>
+        },
+        {
+            title: 'Scan Text',
+            desc: <>Klik tombol <strong>"Mulai Scan"</strong>. AI Tesseract akan membaca teks dari gambar tersebut dalam beberapa detik.</>
+        },
+        {
+            title: 'Salin Hasil',
+            desc: <>Teks hasil scan akan muncul di kolom sebelah kanan. Anda bisa mengeditnya atau langsung klik tombol <strong>Copy Text</strong>.</>
+        }
+    ]
+
+    const imageConverterSteps = [
+        {
+            title: 'Upload Gambar',
+            desc: <>Upload gambar format <em>HEIC</em> (iPhone), <em>WebP</em>, atau format lain yang ingin diubah.</>
+        },
+        {
+            title: 'Pilih Format Output',
+            desc: <>Pilih format tujuan: <strong>JPG</strong> (untuk foto standar) atau <strong>PNG</strong> (untuk gambar berkualitas tinggi/transparan).</>
+        },
+        {
+            title: 'Konversi',
+            desc: <>Klik tombol <strong>Convert</strong>. Proses perubahan format dilakukan di browser Anda.</>
+        },
+        {
+            title: 'Download',
+            desc: <>Download gambar hasil konversi satu per satu atau sekaligus (ZIP).</>
+        }
+    ]
+
+    const mockupSteps = [
+        {
+            title: 'Upload Screenshot',
+            desc: <>Upload gambar tangkapan layar (screenshot) aplikasi atau website Anda.</>
+        },
+        {
+            title: 'Pilih Device Frame',
+            desc: <>Pilih bingkai perangkat yang sesuai: <strong>iPhone 14 Pro, MacBook Air, iPad Pro,</strong> atau <strong>Android</strong>.</>
+        },
+        {
+            title: 'Kustomisasi',
+            desc: <>Atur warna background, rotasi 3D, dan bayangan untuk membuat tampilan lebih estetik.</>
+        },
+        {
+            title: 'Download',
+            desc: <>Simpan hasil mockup dalam format PNG resolusi tinggi untuk keperluan presentasi atau portofolio.</>
+        }
+    ]
+
+    const colorPickerSteps = [
+        {
+            title: 'Upload / EyeDropper',
+            desc: <>Upload gambar referensi, atau gunakan fitur <strong>EyeDropper</strong> untuk mengambil warna dari area manapun di layar Anda.</>
+        },
+        {
+            title: 'Pilih Warna',
+            desc: <>Arahkan kursor ke bagian gambar yang ingin diambil warnanya. Kaca pembesar akan membantu akurasi.</>
+        },
+        {
+            title: 'Salin Kode',
+            desc: <>Dapatkan kode warna dalam format <strong>HEX, RGB,</strong> dan <strong>HSL</strong>. Klik untuk menyalin ke clipboard.</>
+        }
+    ]
+
+    const exifSteps = [
+        {
+            title: 'Upload Foto',
+            desc: <>Upload foto yang ingin dibersihkan metadatanya. Foto dari kamera/HP biasanya mengandung info lokasi GPS dan jenis perangkat.</>
+        },
+        {
+            title: 'Lihat Info',
+            desc: <>Sistem akan menampilkan data EXIF yang terdeteksi (jika ada), seperti Lokasi, Tanggal, dan Model Kamera.</>
+        },
+        {
+            title: 'Hapus EXIF',
+            desc: <>Klik <strong>"Hapus EXIF"</strong> untuk membersihkan semua data metadata tersebut.</>
+        },
+        {
+            title: 'Download Aman',
+            desc: <>Download foto versi bersih yang aman untuk dibagikan ke media sosial tanpa membocorkan privasi lokasi Anda.</>
+        }
+    ]
+
+    const diffSteps = [
+        {
+            title: 'Masukkan Teks',
+            desc: <>Tempelkan (Paste) teks asli di kolom kiri, dan teks versi baru/editan di kolom kanan.</>
+        },
+        {
+            title: 'Bandingkan',
+            desc: <>Klik tombol <strong>"Bandingkan Perbedaan"</strong>.</>
+        },
+        {
+            title: 'Lihat Hasil',
+            desc: <>Perbedaan akan di-highlight: Warna <strong>Merah</strong> untuk teks yang dihapus, dan <strong>Hijau</strong> untuk teks yang baru ditambahkan.</>
+        }
+    ]
+
+    const speedTestSteps = [
+        {
+            title: 'Mulai Test',
+            desc: <>Klik tombol <strong>"Mulai Test"</strong>. Pastikan tidak ada download besar yang sedang berjalan di background.</>
+        },
+        {
+            title: 'Tunggu Proses',
+            desc: <>Sistem akan mengukur <strong>Ping (Latency)</strong> dan kecepatan <strong>Download</strong> Anda menggunakan server terdekat.</>
+        },
+        {
+            title: 'Hasil Akurat',
+            desc: <>Lihat hasil kecepatan internet real-time Anda. Tes ini ringan dan tidak menghabiskan banyak kuota data.</>
+        }
+    ]
+
+    const ipCheckSteps = [
+        {
+            title: 'Buka Halaman',
+            desc: <>Cukup buka halaman <strong>Cek IP Saya</strong>. Sistem otomatis mendeteksi IP koneksi Anda.</>
+        },
+        {
+            title: 'Lihat Detail',
+            desc: <>Informasi lengkap akan muncul: <strong>Public IP Address</strong>, <strong>Lokasi (Negara/Kota)</strong>, <strong>ISP</strong>, dan info Perangkat/Browser yang Anda gunakan.</>
+        },
+        {
+            title: 'Salin Info',
+            desc: <>Gunakan tombol Copy untuk menyalin alamat IP jika diperlukan untuk konfigurasi jaringan atau whitelist akses.</>
+        }
+    ]
+
     return (
         <>
             <Navbar />
@@ -322,6 +492,56 @@ export default function GuidePage() {
                                 <li>
                                     <a href="#rotate">
                                         <RotateCw size={16} /> Rotate Dokumen
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#password-generator">
+                                        <Shield size={16} /> Password Gen
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#encrypt">
+                                        <Lock size={16} /> File Encryptor
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#ocr">
+                                        <Type size={16} /> OCR Image
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#image-converter">
+                                        <RefreshCw size={16} /> Image Converter
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#mockup-generator">
+                                        <Smartphone size={16} /> Device Mockup
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#color-picker">
+                                        <Palette size={16} /> Color Picker
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#exif-remover">
+                                        <Trash2 size={16} /> Hapus EXIF
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#diff-checker">
+                                        <FileDiff size={16} /> Diff Checker
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#speed-test">
+                                        <Zap size={16} /> Speed Test
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#ip-check">
+                                        <Globe size={16} /> Cek IP
                                     </a>
                                 </li>
                                 <li>
@@ -586,6 +806,226 @@ export default function GuidePage() {
                                 </div>
                                 <div className={styles.cardFooter}>
                                     <a href="/rotate" className={`${styles.actionBtn} ${styles.btnAlt}`}>Rotate Dokumen</a>
+                                </div>
+                            </div>
+
+                            {/* Password Generator Guide */}
+                            <div id="password-generator" className={`neu-card no-hover ${styles.guideCard}`}>
+                                <div className={styles.cardHeader}>
+                                    <Shield size={24} className={styles.iconBlue} />
+                                    <h2>Panduan Password Generator</h2>
+                                </div>
+                                <div className={styles.stepList}>
+                                    {passwordSteps.map((step, index) => (
+                                        <div key={index} className={styles.stepItem}>
+                                            <div className={styles.stepNumber}>{index + 1}</div>
+                                            <div className={styles.stepContent}>
+                                                <h3>{step.title}</h3>
+                                                <p>{step.desc}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className={styles.cardFooter}>
+                                    <a href="/password-generator" className={`${styles.actionBtn} ${styles.btnAlt}`}>Buat Password</a>
+                                </div>
+                            </div>
+
+                            {/* Encrypt Guide */}
+                            <div id="encrypt" className={`neu-card no-hover ${styles.guideCard}`}>
+                                <div className={styles.cardHeader}>
+                                    <Lock size={24} className={styles.iconBlue} />
+                                    <h2>Panduan File Encryptor</h2>
+                                </div>
+                                <div className={styles.stepList}>
+                                    {encryptSteps.map((step, index) => (
+                                        <div key={index} className={styles.stepItem}>
+                                            <div className={styles.stepNumber}>{index + 1}</div>
+                                            <div className={styles.stepContent}>
+                                                <h3>{step.title}</h3>
+                                                <p>{step.desc}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className={styles.cardFooter}>
+                                    <a href="/encrypt" className={`${styles.actionBtn} ${styles.btnAlt}`}>Enkripsi File</a>
+                                </div>
+                            </div>
+
+                            {/* OCR Guide */}
+                            <div id="ocr" className={`neu-card no-hover ${styles.guideCard}`}>
+                                <div className={styles.cardHeader}>
+                                    <Type size={24} className={styles.iconBlue} />
+                                    <h2>Panduan OCR (Image to Text)</h2>
+                                </div>
+                                <div className={styles.stepList}>
+                                    {ocrSteps.map((step, index) => (
+                                        <div key={index} className={styles.stepItem}>
+                                            <div className={styles.stepNumber}>{index + 1}</div>
+                                            <div className={styles.stepContent}>
+                                                <h3>{step.title}</h3>
+                                                <p>{step.desc}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className={styles.cardFooter}>
+                                    <a href="/ocr" className={`${styles.actionBtn} ${styles.btnAlt}`}>Scan Image to Text</a>
+                                </div>
+                            </div>
+
+                            {/* Image Converter Guide */}
+                            <div id="image-converter" className={`neu-card no-hover ${styles.guideCard}`}>
+                                <div className={styles.cardHeader}>
+                                    <RefreshCw size={24} className={styles.iconBlue} />
+                                    <h2>Panduan Image Converter</h2>
+                                </div>
+                                <div className={styles.stepList}>
+                                    {imageConverterSteps.map((step, index) => (
+                                        <div key={index} className={styles.stepItem}>
+                                            <div className={styles.stepNumber}>{index + 1}</div>
+                                            <div className={styles.stepContent}>
+                                                <h3>{step.title}</h3>
+                                                <p>{step.desc}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className={styles.cardFooter}>
+                                    <a href="/image-converter" className={`${styles.actionBtn} ${styles.btnAlt}`}>Convert Image</a>
+                                </div>
+                            </div>
+
+                            {/* Mockup Generator Guide */}
+                            <div id="mockup-generator" className={`neu-card no-hover ${styles.guideCard}`}>
+                                <div className={styles.cardHeader}>
+                                    <Smartphone size={24} className={styles.iconBlue} />
+                                    <h2>Panduan Device Mockup</h2>
+                                </div>
+                                <div className={styles.stepList}>
+                                    {mockupSteps.map((step, index) => (
+                                        <div key={index} className={styles.stepItem}>
+                                            <div className={styles.stepNumber}>{index + 1}</div>
+                                            <div className={styles.stepContent}>
+                                                <h3>{step.title}</h3>
+                                                <p>{step.desc}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className={styles.cardFooter}>
+                                    <a href="/mockup-generator" className={`${styles.actionBtn} ${styles.btnAlt}`}>Buat Mockup</a>
+                                </div>
+                            </div>
+
+                            {/* Color Picker Guide */}
+                            <div id="color-picker" className={`neu-card no-hover ${styles.guideCard}`}>
+                                <div className={styles.cardHeader}>
+                                    <Palette size={24} className={styles.iconBlue} />
+                                    <h2>Panduan Color Picker</h2>
+                                </div>
+                                <div className={styles.stepList}>
+                                    {colorPickerSteps.map((step, index) => (
+                                        <div key={index} className={styles.stepItem}>
+                                            <div className={styles.stepNumber}>{index + 1}</div>
+                                            <div className={styles.stepContent}>
+                                                <h3>{step.title}</h3>
+                                                <p>{step.desc}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className={styles.cardFooter}>
+                                    <a href="/color-picker" className={`${styles.actionBtn} ${styles.btnAlt}`}>Ambil Warna</a>
+                                </div>
+                            </div>
+
+                            {/* EXIF Remover Guide */}
+                            <div id="exif-remover" className={`neu-card no-hover ${styles.guideCard}`}>
+                                <div className={styles.cardHeader}>
+                                    <Trash2 size={24} className={styles.iconBlue} />
+                                    <h2>Panduan Hapus EXIF</h2>
+                                </div>
+                                <div className={styles.stepList}>
+                                    {exifSteps.map((step, index) => (
+                                        <div key={index} className={styles.stepItem}>
+                                            <div className={styles.stepNumber}>{index + 1}</div>
+                                            <div className={styles.stepContent}>
+                                                <h3>{step.title}</h3>
+                                                <p>{step.desc}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className={styles.cardFooter}>
+                                    <a href="/exif-remover" className={`${styles.actionBtn} ${styles.btnAlt}`}>Hapus Metadata</a>
+                                </div>
+                            </div>
+
+                            {/* Diff Checker Guide */}
+                            <div id="diff-checker" className={`neu-card no-hover ${styles.guideCard}`}>
+                                <div className={styles.cardHeader}>
+                                    <FileDiff size={24} className={styles.iconBlue} />
+                                    <h2>Panduan Diff Checker</h2>
+                                </div>
+                                <div className={styles.stepList}>
+                                    {diffSteps.map((step, index) => (
+                                        <div key={index} className={styles.stepItem}>
+                                            <div className={styles.stepNumber}>{index + 1}</div>
+                                            <div className={styles.stepContent}>
+                                                <h3>{step.title}</h3>
+                                                <p>{step.desc}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className={styles.cardFooter}>
+                                    <a href="/diff-checker" className={`${styles.actionBtn} ${styles.btnAlt}`}>Cek Perbedaan Teks</a>
+                                </div>
+                            </div>
+
+                            {/* Speed Test Guide */}
+                            <div id="speed-test" className={`neu-card no-hover ${styles.guideCard}`}>
+                                <div className={styles.cardHeader}>
+                                    <Zap size={24} className={styles.iconBlue} />
+                                    <h2 id="speed-test">Panduan Internet Speed Test</h2>
+                                </div>
+                                <div className={styles.stepList}>
+                                    {speedTestSteps.map((step, index) => (
+                                        <div key={index} className={styles.stepItem}>
+                                            <div className={styles.stepNumber}>{index + 1}</div>
+                                            <div className={styles.stepContent}>
+                                                <h3>{step.title}</h3>
+                                                <p>{step.desc}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className={styles.cardFooter}>
+                                    <a href="/speed-test" className={`${styles.actionBtn} ${styles.btnAlt}`}>Mulai Speed Test</a>
+                                </div>
+                            </div>
+
+                            {/* IP Check Guide */}
+                            <div id="ip-check" className={`neu-card no-hover ${styles.guideCard}`}>
+                                <div className={styles.cardHeader}>
+                                    <Globe size={24} className={styles.iconBlue} />
+                                    <h2>Panduan Cek IP</h2>
+                                </div>
+                                <div className={styles.stepList}>
+                                    {ipCheckSteps.map((step, index) => (
+                                        <div key={index} className={styles.stepItem}>
+                                            <div className={styles.stepNumber}>{index + 1}</div>
+                                            <div className={styles.stepContent}>
+                                                <h3>{step.title}</h3>
+                                                <p>{step.desc}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className={styles.cardFooter}>
+                                    <a href="/ip-check" className={`${styles.actionBtn} ${styles.btnAlt}`}>Cek IP Saya</a>
                                 </div>
                             </div>
                         </div>

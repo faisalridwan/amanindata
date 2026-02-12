@@ -2,7 +2,7 @@
 'use client'
 
 import Link from 'next/link'
-import { FileImage, Shield, CreditCard, Users, FileText, Building, File, Upload, Crop, Type, Palette, Download, Move, RotateCcw, PenTool, Eraser, Lock, Server, Zap, Trash2, Heart, Code, Camera, Scissors, FileStack, EyeOff, User, Minimize2, CheckCircle, Smartphone, Globe, QrCode, RotateCw, ScissorsLineDashed } from 'lucide-react'
+import { FileImage, Shield, CreditCard, Users, FileText, Building, File, Upload, Crop, Type, Palette, Download, Move, RotateCcw, PenTool, Eraser, Lock, Server, Zap, Trash2, Heart, Code, Camera, Scissors, FileStack, EyeOff, User, Minimize2, CheckCircle, Smartphone, Globe, QrCode, RotateCw, ScissorsLineDashed, RefreshCw, FileDiff } from 'lucide-react'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import styles from './page.module.css'
@@ -26,6 +26,60 @@ export default function AboutPage() {
             title: 'Tanda Tangan Digital',
             desc: 'Buat tanda tangan transparan profesional dan tempel langsung ke dokumen PDF/Gambar.',
             href: '/signature'
+        },
+        {
+            icon: Lock,
+            title: 'Password Generator',
+            desc: 'Buat password super kuat dengan kustomisasi panjang dan karakter.',
+            href: '/password-generator'
+        },
+        {
+            icon: Shield,
+            title: 'File Encryptor',
+            desc: 'Amankan file rahasia dengan enkripsi AES-GCM client-side.',
+            href: '/encrypt'
+        },
+        {
+            icon: RefreshCw,
+            title: 'Image Converter',
+            desc: 'Ubah format gambar HEIC/WebP ke JPG/PNG dengan mudah.',
+            href: '/image-converter'
+        },
+        {
+            icon: Smartphone,
+            title: 'Device Mockup',
+            desc: 'Bingkai screenshot Anda ke dalam frame HP atau Laptop estetik.',
+            href: '/mockup-generator'
+        },
+        {
+            icon: Palette,
+            title: 'Color Picker',
+            desc: 'Ambil sampel warna dari gambar atau layar (EyeDropper).',
+            href: '/color-picker'
+        },
+        {
+            icon: Trash2,
+            title: 'Hapus EXIF',
+            desc: 'Hapus metadata lokasi dan info kamera dari foto demi privasi.',
+            href: '/exif-remover'
+        },
+        {
+            icon: FileDiff,
+            title: 'Diff Checker',
+            desc: 'Bandingkan perbedaan antara dua teks secara visual side-by-side.',
+            href: '/diff-checker'
+        },
+        {
+            icon: Zap,
+            title: 'Speed Test',
+            desc: 'Ukur kecepatan internet dan latency Anda tanpa server pihak ketiga.',
+            href: '/speed-test'
+        },
+        {
+            icon: Globe,
+            title: 'Cek IP Saya',
+            desc: 'Lihat informasi public IP, lokasi, dan detail perangkat Anda.',
+            href: '/ip-check'
         },
         {
             icon: Camera,
@@ -56,6 +110,12 @@ export default function AboutPage() {
             title: 'Kompres File',
             desc: 'Kecilkan ukuran foto dan PDF hingga 90% tanpa mengurangi kualitas visual.',
             href: '/compress'
+        },
+        {
+            icon: Type,
+            title: 'OCR (Image to Text)',
+            desc: 'Salin teks dari gambar secara otomatis.',
+            href: '/ocr'
         },
         {
             icon: User,
@@ -147,7 +207,7 @@ export default function AboutPage() {
                 {/* All Tools Section */}
                 <section className={styles.featureSection}>
                     <h2 className={styles.sectionTitle}>
-                        <Zap size={24} /> 12 Tools dalam 1 Aplikasi
+                        <Zap size={24} /> 20 Tools dalam 1 Aplikasi - <span>Amanin Data</span>
                     </h2>
                     <p className={styles.sectionDesc}>
                         Tidak perlu install banyak aplikasi. Semua kebutuhan dokumen digital Anda ada di sini.

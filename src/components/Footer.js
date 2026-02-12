@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
-import { FileImage, PenTool, BookOpen, Info, HelpCircle, FileStack, Shield, Library, Mail, Heart, FileText, Github, GitBranch, Minimize2, EyeOff, User, Scissors, QrCode, Move, RotateCw, ScissorsLineDashed, ChevronUp, Grid } from 'lucide-react'
+import { FileImage, PenTool, BookOpen, Info, HelpCircle, FileStack, Shield, Library, Mail, Heart, FileText, Github, GitBranch, Minimize2, EyeOff, User, Scissors, QrCode, Move, RotateCw, ScissorsLineDashed, ChevronUp, Grid, Lock, RefreshCw, Smartphone, FileDiff, Zap, Palette, Trash2, Globe, Camera } from 'lucide-react'
 import styles from './Footer.module.css'
 
 export default function Footer() {
@@ -25,14 +25,25 @@ export default function Footer() {
     const otherProducts = [
         { href: '/redact', label: 'Sensor Data', icon: EyeOff },
         { href: '/compress', label: 'Kompres Foto', icon: Minimize2 },
+        { href: '/image-converter', label: 'Image Converter', icon: RefreshCw },
         { href: '/remove-background', label: 'Hapus Background', icon: Scissors },
-        { href: '/photo-generator', label: 'Photo Generator', icon: FileImage },
+        { href: '/photo-generator', label: 'Photo Generator', icon: Camera },
         { href: '/merge', label: 'Gabung Dokumen', icon: FileStack },
         { href: '/nik-parser', label: 'Cek NIK', icon: User },
         { href: '/qrcode', label: 'QR Generator', icon: QrCode },
+
         { href: '/split', label: 'Split Dokumen', icon: ScissorsLineDashed },
         { href: '/rearrange', label: 'Rearrange Dokumen', icon: Move },
         { href: '/rotate', label: 'Rotate Dokumen', icon: RotateCw },
+        { href: '/mockup-generator', label: 'Device Mockup', icon: Smartphone },
+        { href: '/diff-checker', label: 'Diff Checker', icon: FileDiff },
+        { href: '/speed-test', label: 'Speed Test', icon: Zap },
+        { href: '/color-picker', label: 'Color Picker', icon: Palette },
+        { href: '/exif-remover', label: 'Hapus EXIF', icon: Trash2 },
+        { href: '/ip-check', label: 'Cek IP', icon: Globe },
+
+        { href: '/password-generator', label: 'Password Generator', icon: Shield },
+        { href: '/encrypt', label: 'File Encryptor', icon: Lock },
     ]
 
     return (

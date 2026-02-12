@@ -340,15 +340,21 @@ select {
 }
 
 .neu-btn.primary {
-    color: var(--primary-dark);
+    background: linear-gradient(145deg, var(--primary-dark), var(--primary-color));
+    color: #FFFFFF;
+    box-shadow: 0 4px 10px rgba(123, 163, 224, 0.4);
+    border: none;
 }
 
 .neu-btn.primary:hover {
-    background: linear-gradient(145deg, var(--primary-light), var(--bg-primary));
+    background: linear-gradient(145deg, var(--primary-color), var(--primary-dark));
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(123, 163, 224, 0.6);
 }
 
 .neu-btn.secondary {
     color: var(--secondary-dark);
+    background: var(--bg-primary);
 }
 
 .neu-btn.accent {
@@ -360,8 +366,14 @@ select {
 }
 
 .neu-btn.cta {
-    background: linear-gradient(145deg, var(--accent-light), var(--accent-color));
-    color: var(--text-primary);
+    background: linear-gradient(145deg, var(--accent-color), #F0A090);
+    color: #FFFFFF;
+    box-shadow: 0 4px 10px rgba(247, 197, 184, 0.5);
+}
+
+.neu-btn.cta:hover {
+    background: linear-gradient(145deg, #F0A090, var(--accent-color));
+    box-shadow: 0 6px 15px rgba(247, 197, 184, 0.7);
 }
 
 .neu-btn:disabled {

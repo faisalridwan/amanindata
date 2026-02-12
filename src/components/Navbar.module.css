@@ -184,7 +184,7 @@
     left: 50%;
     transform: translateX(-50%);
     width: 100%;
-    max-width: 1200px;
+    max-width: 1400px;
     /* Standard container width */
     background: var(--bg-primary);
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
@@ -210,15 +210,15 @@
 }
 
 .dropdownInner {
-    max-width: 1000px;
+    max-width: 1350px;
     margin: 0 auto;
-    padding: 0 2rem;
+    padding: 0 1.5rem;
 }
 
 .dropdownGrid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    /* 3 columns for better spacing */
+    grid-template-columns: repeat(4, 1fr);
+    /* 4 columns for better spacing */
     gap: 1.5rem;
     margin-bottom: 2rem;
 }

@@ -136,11 +136,11 @@
 }
 
 .colorCard {
-    background: var(--bg-secondary);
+    background: var(--bg-card);
     border-radius: 20px;
     border: 1px solid var(--border-color);
     padding: 24px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    box-shadow: var(--shadow-dark), var(--shadow-light);
 }
 
 .previewBox {
