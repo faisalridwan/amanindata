@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react'
 import {
     Layout, Smartphone, Monitor, Upload, Download, Palette, Layers,
     Maximize, Type, ImageIcon, Check, X, Shield, Tablet, Laptop,
-    Smartphone as PhoneIcon, ChevronDown, ChevronUp
+    Smartphone as PhoneIcon, ChevronDown, ChevronUp, GripHorizontal
 } from 'lucide-react'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
@@ -12,40 +12,93 @@ import TrustSection from '@/components/TrustSection'
 import GuideSection from '@/components/GuideSection'
 import styles from './page.module.css'
 import PhoneMockup from '@/components/mockups/PhoneMockup'
+import AndroidMockup from '@/components/mockups/AndroidMockup'
+import TabletMockup from '@/components/mockups/TabletMockup'
+import DesktopMockup from '@/components/mockups/DesktopMockup'
 import LaptopMockup from '@/components/mockups/LaptopMockup'
 import BrowserMockup from '@/components/mockups/BrowserMockup'
 import * as htmlToImage from 'html-to-image'
 
 // --- Device Definitions ---
 const DEVICES = {
+    // --- Phones ---
     iphone15: {
         id: 'iphone15',
         name: 'iPhone 15 Pro',
         type: 'phone',
+        category: 'phone',
         color: 'titanium'
     },
     iphone14: {
         id: 'iphone14',
         name: 'iPhone 14',
         type: 'phone',
+        category: 'phone',
         color: 'black'
     },
+    pixel8: {
+        id: 'pixel8',
+        name: 'Pixel 8 Pro',
+        type: 'android',
+        category: 'phone',
+        deviceType: 'pixel8',
+        frameColor: '#3c4043'
+    },
+    s24ultra: {
+        id: 's24ultra',
+        name: 'Galaxy S24 Ultra',
+        type: 'android',
+        category: 'phone',
+        deviceType: 's24ultra',
+        frameColor: '#2C2C2C'
+    },
+    // --- Tablets ---
+    ipadPro: {
+        id: 'ipadPro',
+        name: 'iPad Pro 11"',
+        type: 'tablet',
+        category: 'tablet',
+        frameColor: '#282828'
+    },
+    // --- Computers ---
     macbook: {
         id: 'macbook',
-        name: 'MacBook Pro',
+        name: 'MacBook Pro 16"',
         type: 'laptop',
+        category: 'desktop',
         color: 'space-gray'
+    },
+    winLaptop: {
+        id: 'winLaptop',
+        name: 'Windows Laptop',
+        type: 'desktop-laptop',
+        category: 'desktop',
+    },
+    imac: {
+        id: 'imac',
+        name: 'iMac 24"',
+        type: 'desktop-iMac',
+        category: 'desktop',
+        deviceType: 'imac'
     },
     browser: {
         id: 'browser',
         name: 'Safari Browser',
-        type: 'browser'
+        type: 'browser',
+        category: 'desktop'
     }
 }
+
+const CATEGORIES = [
+    { id: 'phone', label: 'Smartphones', icon: Smartphone },
+    { id: 'tablet', label: 'Tablets', icon: Tablet },
+    { id: 'desktop', label: 'Computers', icon: Monitor },
+]
 
 export default function MockupGeneratorPage() {
     const [image, setImage] = useState(null)
     const [selectedDevice, setSelectedDevice] = useState('iphone15')
+    const [selectedCategory, setSelectedCategory] = useState('phone')
 
     // Customization State
     const [bgColor, setBgColor] = useState('#f3f4f6')
@@ -73,6 +126,14 @@ export default function MockupGeneratorPage() {
         setImageOffset({ x: 0, y: 0 })
     }, [image, selectedDevice, fitMode])
 
+    // Update selected category if device changes externally (fallback)
+    useEffect(() => {
+        const device = DEVICES[selectedDevice]
+        if (device && device.category !== selectedCategory) {
+            setSelectedCategory(device.category)
+        }
+    }, [selectedDevice])
+
     const handleDragOver = (e) => { e.preventDefault(); setIsDragging(true) }
     const handleDragLeave = (e) => { e.preventDefault(); setIsDragging(false) }
     const handleDrop = (e) => {
@@ -98,6 +159,7 @@ export default function MockupGeneratorPage() {
         setIsPanning(true)
         setStartPan({ x: e.clientX, y: e.clientY })
     }
+
     const handleMouseMove = (e) => {
         if (!isPanning) return
         const dx = e.clientX - startPan.x
@@ -131,13 +193,10 @@ export default function MockupGeneratorPage() {
         }
     }
 
-    const getDeviceIcon = (type) => {
-        switch (type) {
-            case 'phone': return <Smartphone size={20} />
-            case 'laptop': return <Laptop size={20} />
-            case 'browser': return <Monitor size={20} />
-            default: return <Maximize size={20} />
-        }
+    const getCategoryIcon = (id) => {
+        const cat = CATEGORIES.find(c => c.id === id)
+        const Icon = cat ? cat.icon : Smartphone
+        return <Icon size={18} />
     }
 
     const currentDevice = DEVICES[selectedDevice]
@@ -156,10 +215,16 @@ export default function MockupGeneratorPage() {
             device: currentDevice
         }
 
-        if (currentDevice.type === 'phone') return <PhoneMockup {...props} />
-        if (currentDevice.type === 'laptop') return <LaptopMockup {...props} />
-        if (currentDevice.type === 'browser') return <BrowserMockup {...props} />
-        return null
+        switch (currentDevice.type) {
+            case 'phone': return <PhoneMockup {...props} />
+            case 'android': return <AndroidMockup {...props} />
+            case 'tablet': return <TabletMockup {...props} />
+            case 'laptop': return <LaptopMockup {...props} />
+            case 'desktop-laptop': return <DesktopMockup {...props} />
+            case 'desktop-iMac': return <DesktopMockup {...props} />
+            case 'browser': return <BrowserMockup {...props} />
+            default: return null
+        }
     }
 
     return (
@@ -171,7 +236,7 @@ export default function MockupGeneratorPage() {
                         <Layers size={32} /> Device <span>Mockup</span>
                     </h1>
                     <p className={styles.heroSubtitle}>
-                        Buat mockup profesional dengan frame iPhone, Android, Macbook, dan Browser.
+                        Buat mockup profesional dengan frame premium.
                     </p>
                     <div className={styles.trustBadge}>
                         <Shield size={16} /> 100% Client-Side Processing
@@ -189,10 +254,8 @@ export default function MockupGeneratorPage() {
                                 style={{
                                     padding: `${padding}px`,
                                     background: bgColor === 'transparent' ? 'transparent' : bgColor,
-                                    transform: `scale(${1 / scale})`, // Counter-scale if we want visual fit, but here we just let it be responsive
-                                    // Actually, let's keep it simple. The user sees 1x, we export 2x/3x. 
-                                    // Or we scale the visual preview down to fit.
-                                    zoom: 0.6 // Quick hack to fit large mockups in preview
+                                    transform: `scale(${1 / scale})`,
+                                    zoom: 0.6
                                 }}
                             >
                                 {!image ? (
@@ -218,27 +281,39 @@ export default function MockupGeneratorPage() {
                         <div className={styles.sidebar}>
                             <div className={styles.controlsCard}>
 
-                                {/* 1. Visual Device Selector */}
+                                {/* 1. Category Tabs */}
+                                <div className={styles.categoryTabs}>
+                                    {CATEGORIES.map(cat => (
+                                        <button
+                                            key={cat.id}
+                                            className={`${styles.categoryTab} ${selectedCategory === cat.id ? styles.categoryTabActive : ''}`}
+                                            onClick={() => setSelectedCategory(cat.id)}
+                                        >
+                                            {getCategoryIcon(cat.id)}
+                                            <span>{cat.label}</span>
+                                        </button>
+                                    ))}
+                                </div>
+
+                                {/* 2. Device Selection (Filtered) */}
                                 <div className={styles.controlGroup}>
-                                    <label className={styles.label}>Pilih Perangkat</label>
                                     <div className={styles.deviceGrid}>
-                                        {Object.values(DEVICES).map(device => (
-                                            <div
-                                                key={device.id}
-                                                className={`${styles.deviceCard} ${selectedDevice === device.id ? styles.deviceCardActive : ''}`}
-                                                onClick={() => setSelectedDevice(device.id)}
-                                                title={device.name}
-                                            >
-                                                <div className={styles.deviceIcon}>
-                                                    {getDeviceIcon(device.type)}
+                                        {Object.values(DEVICES)
+                                            .filter(d => d.category === selectedCategory)
+                                            .map(device => (
+                                                <div
+                                                    key={device.id}
+                                                    className={`${styles.deviceCard} ${selectedDevice === device.id ? styles.deviceCardActive : ''}`}
+                                                    onClick={() => setSelectedDevice(device.id)}
+                                                    title={device.name}
+                                                >
+                                                    <span className={styles.deviceName}>{device.name}</span>
                                                 </div>
-                                                <span className={styles.deviceName}>{device.name}</span>
-                                            </div>
-                                        ))}
+                                            ))}
                                     </div>
                                 </div>
 
-                                {/* 2. Layout Controls */}
+                                {/* 3. Layout Controls */}
                                 <div className={styles.accordion}>
                                     <div className={styles.controlGroup}>
                                         <div className={styles.sliderHeader}>
@@ -287,20 +362,6 @@ export default function MockupGeneratorPage() {
                                             <p className={styles.dropSubtext} style={{ marginTop: '8px' }}>*Geser gambar di preview untuk mengatur posisi</p>
                                         </div>
                                     )}
-
-                                    {/* 3. Style Controls */}
-                                    <div className={styles.controlGroup}>
-                                        <label className={styles.label}>Warna Frame</label>
-                                        <div className={styles.colorRow}>
-                                            <input
-                                                type="color"
-                                                value={frameColor}
-                                                onChange={(e) => setFrameColor(e.target.value)}
-                                                className={styles.colorInput}
-                                            />
-                                            <span className={styles.colorHex}>{frameColor}</span>
-                                        </div>
-                                    </div>
 
                                     <div className={styles.controlGroup}>
                                         <label className={styles.label}>Background</label>
