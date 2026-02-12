@@ -121,6 +121,12 @@ export default function MockupGeneratorPage() {
     // Fit Mode: 'cover' (Crop to fill) or 'contain' (Fit whole image)
     const [fitMode, setFitMode] = useState('cover')
 
+    // Image Positioning & Scaling
+    const [imageScale, setImageScale] = useState(1) // Zoom inside frame
+    const [imageOffset, setImageOffset] = useState({ x: 0, y: 0 })
+    const [isPanning, setIsPanning] = useState(false)
+    const [startPan, setStartPan] = useState({ x: 0, y: 0 })
+
     // Shadow
     const [shadowBlur, setShadowBlur] = useState(40)
     const [shadowOpacity, setShadowOpacity] = useState(0.3)
@@ -133,6 +139,12 @@ export default function MockupGeneratorPage() {
     useEffect(() => {
         setFrameColor(DEVICES[selectedDevice].frameColor)
     }, [selectedDevice])
+
+    // Reset panning/zooming when image or device changes
+    useEffect(() => {
+        setImageScale(1)
+        setImageOffset({ x: 0, y: 0 })
+    }, [image, selectedDevice, fitMode])
 
     const handleDragOver = (e) => {
         e.preventDefault()
@@ -167,11 +179,40 @@ export default function MockupGeneratorPage() {
         img.src = url
     }
 
+    // --- Panning Handlers ---
+    const handleMouseDown = (e) => {
+        if (!image) return
+        setIsPanning(true)
+        setStartPan({ x: e.clientX, y: e.clientY })
+    }
+
+    const handleMouseMove = (e) => {
+        if (!isPanning) return
+        const dx = e.clientX - startPan.x
+        const dy = e.clientY - startPan.y
+        setStartPan({ x: e.clientX, y: e.clientY })
+
+        // Adjust sensitivity based on canvas display size vs internal size??
+        // Ideally mapped 1:1 visually but canvas is high res. 
+        // For now, raw pixels is okay, user can just drag more.
+        // Actually, we should probably scale delta by `scale` to match canvas pixels.
+        const deltaMult = scale
+
+        setImageOffset(prev => ({
+            x: prev.x + (dx * deltaMult),
+            y: prev.y + (dy * deltaMult)
+        }))
+    }
+
+    const handleMouseUp = () => {
+        setIsPanning(false)
+    }
+
     useEffect(() => {
         if (image) {
             drawMockup()
         }
-    }, [image, selectedDevice, bgColor, padding, borderRadius, shadowBlur, shadowOpacity, shadowOffsetY, frameColor, scale, fitMode])
+    }, [image, selectedDevice, bgColor, padding, borderRadius, shadowBlur, shadowOpacity, shadowOffsetY, frameColor, scale, fitMode, imageScale, imageOffset])
 
     const drawMockup = () => {
         const canvas = canvasRef.current
@@ -334,41 +375,56 @@ export default function MockupGeneratorPage() {
             ctx.clip()
         }
 
-        // Draw Image - Object Fit Logic
-        // Destination Rect: screenX, screenY, screenW, screenH
-        // Source Image: image.width, image.height
+        // Draw Image - Object Fit & Position Logic
+        // Destination: screenX, screenY, screenW, screenH
 
         let sX = 0, sY = 0, sW = image.width, sH = image.height
+        let dX = screenX, dY = screenY, dW = screenW, dH = screenH
 
         if (fitMode === 'cover') {
-            // Scale crop
+            // 1. Calculate base scale to COVER the area
             const scaleW = screenW / image.width
             const scaleH = screenH / image.height
-            const scale = Math.max(scaleW, scaleH)
+            const baseScale = Math.max(scaleW, scaleH)
 
-            const w = screenW / scale
-            const h = screenH / scale
+            // 2. Apply User Zoom
+            const finalScale = baseScale * imageScale
 
-            sX = (image.width - w) / 2
-            sY = (image.height - h) / 2
-            sW = w
-            sH = h
+            // 3. Calculate Dimensions
+            dW = image.width * finalScale
+            dH = image.height * finalScale
 
-            ctx.drawImage(image, sX, sY, sW, sH, screenX, screenY, screenW, screenH)
+            // 4. Calculate Position (Center Default changed to TOP Default)
+            // Default X: Center
+            const defaultX = screenX + (screenW - dW) / 2
+            // Default Y: Top (0 relative to screen)
+            const defaultY = screenY // TOP ALIGN
+
+            // 5. Apply User Offset
+            dX = defaultX + imageOffset.x
+            dY = defaultY + imageOffset.y
+
+            ctx.drawImage(image, 0, 0, image.width, image.height, dX, dY, dW, dH)
+
         } else {
             // Contain
-            // Fill background black for letterboxing
             ctx.fillStyle = '#000'
             ctx.fillRect(screenX, screenY, screenW, screenH)
 
             const scaleW = screenW / image.width
             const scaleH = screenH / image.height
-            const scale = Math.min(scaleW, scaleH)
+            const baseScale = Math.min(scaleW, scaleH)
 
-            const dW = image.width * scale
-            const dH = image.height * scale
-            const dX = screenX + (screenW - dW) / 2
-            const dY = screenY + (screenH - dH) / 2
+            const finalScale = baseScale * imageScale
+
+            dW = image.width * finalScale
+            dH = image.height * finalScale
+
+            const defaultX = screenX + (screenW - dW) / 2
+            const defaultY = screenY + (screenH - dH) / 2
+
+            dX = defaultX + imageOffset.x
+            dY = defaultY + imageOffset.y
 
             ctx.drawImage(image, 0, 0, image.width, image.height, dX, dY, dW, dH)
         }
@@ -519,7 +575,18 @@ export default function MockupGeneratorPage() {
                                     <input type="file" id="image-upload" accept="image/*" onChange={handleFileSelect} hidden />
                                 </div>
                             ) : (
-                                <canvas ref={canvasRef} className={styles.previewCanvas} />
+                                <canvas
+                                    ref={canvasRef}
+                                    className={styles.previewCanvas}
+                                    style={{
+                                        cursor: isPanning ? 'grabbing' : 'grab',
+                                        touchAction: 'none'
+                                    }}
+                                    onMouseDown={handleMouseDown}
+                                    onMouseMove={handleMouseMove}
+                                    onMouseUp={handleMouseUp}
+                                    onMouseLeave={handleMouseUp}
+                                />
                             )}
                         </div>
 
@@ -565,8 +632,9 @@ export default function MockupGeneratorPage() {
 
                                     {(DEVICES[selectedDevice].width) && (
                                         <div className={styles.controlGroup}>
-                                            <label className={styles.label}>Mode Gambar</label>
-                                            <div className={styles.scaleButtons}>
+                                            <label className={styles.label}>Posisi Gambar</label>
+
+                                            <div className={styles.scaleButtons} style={{ marginBottom: '12px' }}>
                                                 <button
                                                     className={`${styles.scaleBtn} ${fitMode === 'cover' ? styles.scaleBtnActive : ''}`}
                                                     onClick={() => setFitMode('cover')}
@@ -580,6 +648,19 @@ export default function MockupGeneratorPage() {
                                                     Fit (Utuh)
                                                 </button>
                                             </div>
+
+                                            <div className={styles.sliderHeader}>
+                                                <span className={styles.sliderLabel}>Zoom Gambar</span>
+                                                <span className={styles.sliderValue}>{Math.round(imageScale * 100)}%</span>
+                                            </div>
+                                            <input
+                                                type="range"
+                                                min="0.5" max="3" step="0.1"
+                                                value={imageScale}
+                                                onChange={(e) => setImageScale(parseFloat(e.target.value))}
+                                                className={styles.slider}
+                                            />
+                                            <p className={styles.dropSubtext} style={{ marginTop: '8px' }}>*Geser gambar di preview untuk mengatur posisi</p>
                                         </div>
                                     )}
 
