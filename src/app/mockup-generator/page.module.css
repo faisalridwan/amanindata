@@ -342,6 +342,111 @@
     background: rgba(239, 68, 68, 0.05);
 }
 
+/* ... existing styles ... */
+
+.deviceGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    /* 3 Columns */
+    gap: 12px;
+}
+
+.deviceCard {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 12px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+    text-align: center;
+}
+
+.deviceCard:hover {
+    border-color: var(--primary-dark);
+    transform: translateY(-2px);
+}
+
+.deviceCardActive {
+    border-color: var(--primary-dark);
+    background: rgba(37, 99, 235, 0.05);
+    /* Light blue tint */
+}
+
+.deviceIcon {
+    color: var(--text-secondary);
+}
+
+.deviceCardActive .deviceIcon {
+    color: var(--primary-dark);
+}
+
+.deviceName {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.2;
+}
+
+.scaleButtons {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.scaleBtn {
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-primary);
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    flex: 1;
+}
+
+.scaleBtn:hover {
+    border-color: var(--primary-dark);
+}
+
+.scaleBtnActive {
+    background: var(--primary-dark);
+    color: white;
+    border-color: var(--primary-dark);
+}
+
+.resolutionHint {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin-left: auto;
+}
+
+.downloadBtn {
+    /* Base styles, color handled inline */
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: 14px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.2s;
+    box-shadow: var(--shadow-dark);
+}
+
+.downloadBtn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    filter: brightness(110%);
+    /* Brighten slightly on hover */
+}
+
 /* Ensure global styles don't conflict */
 .previewCanvas {
     max-width: 100%;

@@ -103,6 +103,9 @@ export default function MockupGeneratorPage() {
     const [padding, setPadding] = useState(50)
     const [borderRadius, setBorderRadius] = useState(12) // For simple frame
 
+    // Scale / Resolution
+    const [scale, setScale] = useState(2) // 1x, 2x, 3x, 4x
+
     // Shadow
     const [shadowBlur, setShadowBlur] = useState(40)
     const [shadowOpacity, setShadowOpacity] = useState(0.3)
@@ -153,7 +156,7 @@ export default function MockupGeneratorPage() {
         if (image) {
             drawMockup()
         }
-    }, [image, selectedDevice, bgColor, padding, borderRadius, shadowBlur, shadowOpacity, shadowOffsetY, frameColor])
+    }, [image, selectedDevice, bgColor, padding, borderRadius, shadowBlur, shadowOpacity, shadowOffsetY, frameColor, scale])
 
     const drawMockup = () => {
         const canvas = canvasRef.current
@@ -161,50 +164,48 @@ export default function MockupGeneratorPage() {
         if (!canvas || !ctx || !image) return
 
         const device = DEVICES[selectedDevice]
-        const scale = 2 // Upscale for high res
+        // Use user selected scale
+        const pixelRatio = scale
 
         // 1. Calculate Content Size & Canvas Size
-        const MAX_WIDTH = 1200
+        // Base max width for 1x
+        const BASE_WIDTH = 1200
         let contentW = image.width
         let contentH = image.height
 
         // Constrain width if too large
-        if (contentW > MAX_WIDTH) {
-            contentH = contentH * (MAX_WIDTH / contentW)
-            contentW = MAX_WIDTH
+        if (contentW > BASE_WIDTH) {
+            contentH = contentH * (BASE_WIDTH / contentW)
+            contentW = BASE_WIDTH
         }
 
-        // Adjust dimensions based on device type constraints if strict aspect ratio needed
-        // For phones/tablets, we often fit image to width and let height flow, OR fit to device aspect ratio
-        // Here we'll fit image to Content Width 
+        // Scale up dimensions
+        contentW *= pixelRatio
+        contentH *= pixelRatio
 
         let frameW, frameH, screenX, screenY, screenW, screenH
 
         // Calculate geometry
         if (device.type === 'phone' || device.type === 'tablet') {
             screenW = contentW
-            screenH = contentH // Allow adaptable height for scrolling screenshots
+            screenH = contentH
+            // Allow adaptable height for scrolling screenshots
 
-            // Hard constraint if we want to force device aspect (optional, enabled for realism usually)
-            // But for mocking scrolling screenshots, we adapt height.
-            // Let's stick to adaptable height for utility, but maybe enforce min-ratio?
-
-            frameW = screenW + (device.bezel * 2)
-            frameH = screenH + (device.bezel * 2)
-            screenX = device.bezel
-            screenY = device.bezel
+            frameW = screenW + (device.bezel * pixelRatio * 2)
+            frameH = screenH + (device.bezel * pixelRatio * 2)
+            screenX = device.bezel * pixelRatio
+            screenY = device.bezel * pixelRatio
 
         } else if (device.type === 'laptop') {
-            // MacBook Bottom base
             const headerH = 0
             // We draw image as screen
             screenW = contentW
             screenH = contentH
 
             // Screen Bezel
-            const topBezel = device.bezel
-            const sideBezel = device.bezel
-            const bottomBezel = device.bezel * 1.5 // Chin
+            const topBezel = device.bezel * pixelRatio
+            const sideBezel = device.bezel * pixelRatio
+            const bottomBezel = device.bezel * 1.5 * pixelRatio
 
             frameW = screenW + (sideBezel * 2)
             frameH = screenH + topBezel + bottomBezel
@@ -213,7 +214,7 @@ export default function MockupGeneratorPage() {
             screenY = topBezel
 
         } else if (device.type === 'browser') {
-            const headerH = 40
+            const headerH = 40 * pixelRatio
             screenW = contentW
             screenH = contentH
             frameW = screenW
@@ -229,14 +230,14 @@ export default function MockupGeneratorPage() {
             screenY = 0
         }
 
-        const viewPadding = parseInt(padding) * 2
+        const viewPadding = parseInt(padding) * pixelRatio
         const totalW = frameW + (viewPadding * 2)
         const totalH = frameH + (viewPadding * 2)
 
         // Lower Base (Keyboard) for Laptop
         let baseH = 0
         if (device.type === 'laptop') {
-            baseH = 16
+            baseH = 16 * pixelRatio
         }
 
         canvas.width = totalW
@@ -247,7 +248,6 @@ export default function MockupGeneratorPage() {
         if (bgColor === 'transparent') {
             ctx.clearRect(0, 0, canvas.width, canvas.height)
         } else if (bgColor.includes('gradient')) {
-            const grad = ctx.createLinearGradient(0, 0, 0, totalH)
             // Simple parsing for demo (needs better color picker for gradients)
             // Fallback to solid for now until UI ready
             ctx.fillStyle = bgColor
@@ -261,25 +261,22 @@ export default function MockupGeneratorPage() {
         ctx.translate(viewPadding, viewPadding)
 
         // 3. Draw Shadow (Behind Frame)
+        const cornerRadius = device.cornerRadius * pixelRatio
+
         ctx.save()
         if (device.type !== 'simple' || shadowOpacity > 0) {
             ctx.shadowColor = `rgba(0, 0, 0, ${shadowOpacity})`
-            ctx.shadowBlur = parseInt(shadowBlur)
-            ctx.shadowOffsetY = parseInt(shadowOffsetY)
+            ctx.shadowBlur = parseInt(shadowBlur) * pixelRatio
+            ctx.shadowOffsetY = parseInt(shadowOffsetY) * pixelRatio
 
             // Draw a shape to cast shadow
             ctx.fillStyle = frameColor || device.frameColor
 
-            if (device.type === 'browser') {
-                roundRect(ctx, 0, 0, frameW, frameH, device.cornerRadius)
+            if (device.type === 'browser' || device.type === 'laptop' || device.type === 'simple') {
+                roundRect(ctx, 0, 0, frameW, frameH, cornerRadius)
                 ctx.fill()
-            } else if (device.type === 'laptop') {
-                // Laptop Screen
-                roundRect(ctx, 0, 0, frameW, frameH, device.cornerRadius)
-                ctx.fill()
-                // Laptop Base not shadowed same way usually, but let's simple it
             } else {
-                roundRect(ctx, 0, 0, frameW, frameH, device.cornerRadius)
+                roundRect(ctx, 0, 0, frameW, frameH, cornerRadius)
                 ctx.fill()
             }
         }
@@ -290,46 +287,41 @@ export default function MockupGeneratorPage() {
         ctx.fillStyle = frameColor || device.frameColor
         if (device.type === 'laptop') {
             // Screen Body
-            roundRect(ctx, 0, 0, frameW, frameH, device.cornerRadius)
+            roundRect(ctx, 0, 0, frameW, frameH, cornerRadius)
             ctx.fill()
 
             // Base (Keyboard area projection)
-            ctx.fillStyle = adjustColor(frameColor || device.frameColor, -20)
-            const baseX = -20
-            const baseY = frameH
-            const baseW = frameW + 40
-            const baseDepth = 12
+            const baseDepth = 12 * pixelRatio
+            const baseX = -20 * pixelRatio
+            const baseWNew = frameW + (40 * pixelRatio)
+            const hingeH = 10 * pixelRatio
 
-            // Base Top
+            ctx.fillStyle = adjustColor(frameColor || device.frameColor, -20)
+
             ctx.beginPath()
-            ctx.moveTo(0, frameH - 10) // Hinge left
-            ctx.lineTo(frameW, frameH - 10) // Hinge right
-            ctx.lineTo(baseX + baseW, baseY + baseDepth)
-            ctx.lineTo(baseX, baseY + baseDepth)
+            ctx.moveTo(0, frameH - hingeH) // Hinge left
+            ctx.lineTo(frameW, frameH - hingeH) // Hinge right
+            ctx.lineTo(baseX + baseWNew, frameH + baseDepth)
+            ctx.lineTo(baseX, frameH + baseDepth)
             ctx.fill()
 
             // Base Front
             ctx.fillStyle = adjustColor(frameColor || device.frameColor, -40)
-            ctx.fillRect(baseX, baseY + baseDepth, baseW, 4)
+            ctx.fillRect(baseX, frameH + baseDepth, baseWNew, 4 * pixelRatio)
 
             // Reset for Screen
             ctx.fillStyle = frameColor || device.frameColor
 
         } else {
-            roundRect(ctx, 0, 0, frameW, frameH, device.cornerRadius)
+            roundRect(ctx, 0, 0, frameW, frameH, cornerRadius)
             ctx.fill()
         }
 
         // 5. Side Buttons (Phones)
         if (device.features.sideButtons) {
             ctx.fillStyle = adjustColor(frameColor || device.frameColor, -20)
-
-            // Left Buttons (Volume)
-            // ctx.fillRect(-2, 120, 2, 40)
-            // ctx.fillRect(-2, 170, 2, 40)
-
-            // Right Button (Power)
-            // ctx.fillRect(frameW, 140, 2, 60)
+            // Simple representation if needed, usually mostly visible from front
+            // drawing omitted for cleaner vector look unless requested
         }
 
         // 6. Draw Content (Screen)
@@ -338,29 +330,31 @@ export default function MockupGeneratorPage() {
         // Define Screen Path for Clipping
         ctx.beginPath()
         if (device.type === 'browser') {
+            const headerH = 40 * pixelRatio
             // Header
             ctx.fillStyle = '#1e1e1e' // Fixed header color
             // Clip top
-            roundRect(ctx, 0, 0, frameW, 40, device.cornerRadius, true, false)
+            roundRect(ctx, 0, 0, frameW, headerH, cornerRadius, true, false)
             ctx.fill()
 
             // Buttons
-            drawTrafficLights(ctx, 20, 20)
+            drawTrafficLights(ctx, 20 * pixelRatio, 20 * pixelRatio, pixelRatio)
 
             // Content Clip
-            roundRect(ctx, 0, 40, screenW, screenH, device.cornerRadius, false, true)
+            roundRect(ctx, 0, headerH, screenW, screenH, cornerRadius, false, true)
             ctx.clip()
 
-            ctx.drawImage(image, 0, 40, screenW, screenH)
+            ctx.drawImage(image, 0, headerH, screenW, screenH)
 
         } else if (device.type === 'simple') {
-            roundRect(ctx, 0, 0, screenW, screenH, parseInt(borderRadius))
+            const r = parseInt(borderRadius) * pixelRatio
+            roundRect(ctx, 0, 0, screenW, screenH, r)
             ctx.clip()
             ctx.drawImage(image, 0, 0, screenW, screenH)
         } else {
             // Phone/Tablet/Laptop Screen Area
             // Inner Radius calculation
-            const innerRadius = Math.max(0, device.cornerRadius - device.bezel + 2)
+            const innerRadius = Math.max(0, cornerRadius - (device.bezel * pixelRatio) + 2)
 
             roundRect(ctx, screenX, screenY, screenW, screenH, innerRadius)
             ctx.clip()
@@ -369,12 +363,13 @@ export default function MockupGeneratorPage() {
         ctx.restore()
 
         // 7. Post-Pro Features (Notch, Dynamic Island, Reflections)
+        const cx = frameW / 2
         if (device.features.dynamicIsland) {
-            drawDynamicIsland(ctx, frameW / 2, device.bezel + 10)
+            drawDynamicIsland(ctx, cx, (device.bezel * pixelRatio) + (10 * pixelRatio), pixelRatio)
         } else if (device.features.notch) {
-            drawNotch(ctx, frameW / 2, device.bezel)
+            drawNotch(ctx, cx, device.bezel * pixelRatio, pixelRatio)
         } else if (device.features.punchHole) {
-            drawPunchHole(ctx, frameW / 2, device.bezel + 15)
+            drawPunchHole(ctx, cx, (device.bezel * pixelRatio) + (15 * pixelRatio), pixelRatio)
         }
 
         // 8. Gloss/Reflection (Subtle)
@@ -387,7 +382,7 @@ export default function MockupGeneratorPage() {
 
             ctx.fillStyle = grad
             ctx.beginPath()
-            roundRect(ctx, 0, 0, frameW, frameH, device.cornerRadius)
+            roundRect(ctx, 0, 0, frameW, frameH, cornerRadius)
             ctx.fill()
         }
     }
@@ -413,55 +408,70 @@ export default function MockupGeneratorPage() {
         ctx.closePath()
     }
 
-    const drawTrafficLights = (ctx, x, y) => {
+    const drawTrafficLights = (ctx, x, y, scale = 1) => {
         const colors = ['#ff5f56', '#ffbd2e', '#27c93f']
+        const r = 6 * scale
+        const gap = 20 * scale
         colors.forEach((c, i) => {
             ctx.beginPath()
             ctx.fillStyle = c
-            ctx.arc(x + (i * 20), y, 6, 0, Math.PI * 2)
+            ctx.arc(x + (i * gap), y, r, 0, Math.PI * 2)
             ctx.fill()
         })
     }
 
-    const drawDynamicIsland = (ctx, x, y) => {
+    const drawDynamicIsland = (ctx, x, y, scale = 1) => {
         ctx.fillStyle = '#000'
         ctx.beginPath()
-        ctx.roundRect(x - 60, y, 120, 36, 18)
+        ctx.roundRect(x - (60 * scale), y, 120 * scale, 36 * scale, 18 * scale)
         ctx.fill()
     }
 
-    const drawNotch = (ctx, x, y) => {
+    const drawNotch = (ctx, x, y, scale = 1) => {
         ctx.fillStyle = '#000'
         ctx.beginPath()
-        // Simple Notch shape (Laptop/Phone)
-        ctx.moveTo(x - 60, 0)
-        ctx.lineTo(x - 50, y + 25)
-        ctx.lineTo(x + 50, y + 25)
-        ctx.lineTo(x + 60, 0)
+        const w = 60 * scale
+        const h = 25 * scale
+
+        ctx.moveTo(x - w, 0)
+        ctx.lineTo(x - (w - 10 * scale), y + h)
+        ctx.lineTo(x + (w - 10 * scale), y + h)
+        ctx.lineTo(x + w, 0)
         ctx.fill()
     }
 
-    const drawPunchHole = (ctx, x, y) => {
+    const drawPunchHole = (ctx, x, y, scale = 1) => {
         ctx.fillStyle = '#000'
         ctx.beginPath()
-        ctx.arc(x, y, 10, 0, Math.PI * 2)
+        ctx.arc(x, y, 10 * scale, 0, Math.PI * 2)
         ctx.fill()
     }
 
     const adjustColor = (color, amount) => {
         // Simple Hex Darken/Lighten
-        // For production, use utility lib. 
+        // For production, use utility lib.
         // Hacky implementation for "darker version":
-        return color === '#53504C' ? '#3e3c39' : '#000'
+        return color === '#53504C' ? '#3e3c39' : '#111'
     }
 
     const downloadMockup = () => {
         const canvas = canvasRef.current
         if (!canvas) return
         const link = document.createElement('a')
-        link.download = `mockup-${selectedDevice}-${Date.now()}.png`
+        link.download = `mockup-${selectedDevice}-${scale}x-${Date.now()}.png`
         link.href = canvas.toDataURL('image/png', 1.0)
         link.click()
+    }
+
+    // Helper to get device icon
+    const getDeviceIcon = (type) => {
+        switch (type) {
+            case 'phone': return <Smartphone size={20} />
+            case 'tablet': return <Tablet size={20} />
+            case 'laptop': return <Laptop size={20} />
+            case 'browser': return <Monitor size={20} />
+            default: return <Maximize size={20} />
+        }
     }
 
     return (
@@ -506,67 +516,59 @@ export default function MockupGeneratorPage() {
                         <div className={styles.sidebar}>
                             <div className={styles.controlsCard}>
 
-                                {/* 1. Device Selection */}
+                                {/* 1. Visual Device Selector */}
                                 <div className={styles.controlGroup}>
                                     <label className={styles.label}>Pilih Perangkat</label>
-                                    <div className={styles.selectWrapper}>
-                                        <select
-                                            value={selectedDevice}
-                                            onChange={(e) => setSelectedDevice(e.target.value)}
-                                            className={styles.selectInput}
-                                        >
-                                            <optgroup label="Phones">
-                                                <option value="iphone15">iPhone 15 Pro</option>
-                                                <option value="iphone14">iPhone 14</option>
-                                                <option value="pixel8">Pixel 8 Pro</option>
-                                                <option value="s24ultra">Galaxy S24 Ultra</option>
-                                            </optgroup>
-                                            <optgroup label="Tablets & Computers">
-                                                <option value="ipad">iPad Pro</option>
-                                                <option value="macbook">MacBook Pro</option>
-                                            </optgroup>
-                                            <optgroup label="Other">
-                                                <option value="browser">Browser Window</option>
-                                                <option value="simple">Simple Frame</option>
-                                            </optgroup>
-                                        </select>
-                                        <ChevronDown className={styles.selectIcon} size={16} />
+                                    <div className={styles.deviceGrid}>
+                                        {Object.values(DEVICES).map(device => (
+                                            <div
+                                                key={device.id}
+                                                className={`${styles.deviceCard} ${selectedDevice === device.id ? styles.deviceCardActive : ''}`}
+                                                onClick={() => setSelectedDevice(device.id)}
+                                                title={device.name}
+                                            >
+                                                <div className={styles.deviceIcon}>
+                                                    {getDeviceIcon(device.type)}
+                                                </div>
+                                                <span className={styles.deviceName}>{device.name}</span>
+                                            </div>
+                                        ))}
                                     </div>
                                 </div>
 
                                 {/* 2. Layout Controls */}
-                                <div className={styles.controlGroup}>
-                                    <div className={styles.sliderHeader}>
-                                        <span className={styles.sliderLabel}>Padding (Jarak)</span>
-                                        <span className={styles.sliderValue}>{padding}px</span>
-                                    </div>
-                                    <input
-                                        type="range"
-                                        min="0" max="200"
-                                        value={padding}
-                                        onChange={(e) => setPadding(e.target.value)}
-                                        className={styles.slider}
-                                    />
-                                </div>
-
-                                {selectedDevice === 'simple' && (
+                                <div className={styles.accordion}>
                                     <div className={styles.controlGroup}>
                                         <div className={styles.sliderHeader}>
-                                            <span className={styles.sliderLabel}>Radius Sudut</span>
-                                            <span className={styles.sliderValue}>{borderRadius}px</span>
+                                            <span className={styles.sliderLabel}>Padding (Jarak)</span>
+                                            <span className={styles.sliderValue}>{padding}px</span>
                                         </div>
                                         <input
                                             type="range"
-                                            min="0" max="100"
-                                            value={borderRadius}
-                                            onChange={(e) => setBorderRadius(e.target.value)}
+                                            min="0" max="200"
+                                            value={padding}
+                                            onChange={(e) => setPadding(e.target.value)}
                                             className={styles.slider}
                                         />
                                     </div>
-                                )}
 
-                                {/* 3. Style Controls */}
-                                <div className={styles.accordion}>
+                                    {selectedDevice === 'simple' && (
+                                        <div className={styles.controlGroup}>
+                                            <div className={styles.sliderHeader}>
+                                                <span className={styles.sliderLabel}>Radius Sudut</span>
+                                                <span className={styles.sliderValue}>{borderRadius}px</span>
+                                            </div>
+                                            <input
+                                                type="range"
+                                                min="0" max="100"
+                                                value={borderRadius}
+                                                onChange={(e) => setBorderRadius(e.target.value)}
+                                                className={styles.slider}
+                                            />
+                                        </div>
+                                    )}
+
+                                    {/* 3. Style Controls */}
                                     <div className={styles.controlGroup}>
                                         <label className={styles.label}>Warna Frame</label>
                                         <div className={styles.colorRow}>
@@ -631,6 +633,29 @@ export default function MockupGeneratorPage() {
                                             onChange={(e) => setShadowOpacity(e.target.value)}
                                             className={styles.slider}
                                         />
+                                    </div>
+
+                                    {/* 4. Export Settings */}
+                                    <div className={styles.controlGroup}>
+                                        <div className={styles.sliderHeader}>
+                                            <span className={styles.sliderLabel}>Kualitas (Scale)</span>
+                                            <span className={styles.sliderValue}>{scale}x</span>
+                                        </div>
+                                        <div className={styles.scaleButtons}>
+                                            {[1, 2, 3, 4].map(s => (
+                                                <button
+                                                    key={s}
+                                                    className={`${styles.scaleBtn} ${scale === s ? styles.scaleBtnActive : ''}`}
+                                                    onClick={() => setScale(s)}
+                                                >
+                                                    {s}x
+                                                </button>
+                                            ))}
+                                            <span className={styles.resolutionHint}>
+                                                {(1200 * scale)}px wide
+                                            </span>
+                                        </div>
+
                                     </div>
                                 </div>
 
