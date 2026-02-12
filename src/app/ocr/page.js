@@ -46,7 +46,9 @@ export default function OCRPage() {
         setText('')
 
         try {
-            const worker = await createWorker({
+            // Tesseract.js v6+ / v7 pattern: createWorker(langs, oem, options)
+            // OEM 1 (LSTM) is default.
+            const worker = await createWorker(language, 1, {
                 logger: m => {
                     if (m.status === 'recognizing text') {
                         setProgress(parseInt(m.progress * 100))
@@ -57,9 +59,7 @@ export default function OCRPage() {
                 }
             })
 
-            await worker.loadLanguage(language)
-            await worker.initialize(language)
-
+            // Worker is already initialized with language when created this way
             const { data: { text } } = await worker.recognize(imagePreview)
 
             setText(text)
