@@ -247,39 +247,39 @@ export default function MockupGeneratorPage() {
                     <div className={styles.grid}>
                         {/* Preview Area */}
                         <div className={styles.previewContainer}>
-                            <div
-                                id="capture-container"
-                                ref={containerRef}
-                                className={styles.captureArea}
-                                style={{
-                                    padding: `${padding}px`,
-                                    background: bgColor === 'transparent' ? 'transparent' : bgColor,
-                                    transform: `scale(${1 / scale})`,
-                                    zoom: 0.6
-                                }}
-                            >
-                                {!image ? (
-                                    <div
-                                        className={`${styles.uploadArea} ${isDragging ? styles.uploadAreaActive : ''}`}
-                                        onDragOver={handleDragOver}
-                                        onDragLeave={handleDragLeave}
-                                        onDrop={handleDrop}
-                                        onClick={() => document.getElementById('image-upload').click()}
-                                    >
-                                        <div className={styles.iconCircle}>
-                                            <ImageIcon size={40} strokeWidth={1.5} />
-                                        </div>
-                                        <h3 className={styles.uploadTitle}>Upload Screenshot</h3>
-                                        <p className={styles.uploadSubtitle}>Drag & drop atau klik untuk memilih</p>
-                                        <div className={styles.supportedTypes}>
-                                            <span>JPG</span><span>PNG</span><span>WEBP</span>
-                                        </div>
-                                        <input type="file" id="image-upload" accept="image/*" onChange={handleFileSelect} hidden />
+                            {!image ? (
+                                <div
+                                    className={`${styles.uploadArea} ${isDragging ? styles.uploadAreaActive : ''}`}
+                                    onDragOver={handleDragOver}
+                                    onDragLeave={handleDragLeave}
+                                    onDrop={handleDrop}
+                                    onClick={() => document.getElementById('image-upload').click()}
+                                >
+                                    <div className={styles.iconCircle}>
+                                        <ImageIcon size={40} strokeWidth={1.5} />
                                     </div>
-                                ) : (
-                                    renderMockup()
-                                )}
-                            </div>
+                                    <h3 className={styles.uploadTitle}>Upload Screenshot</h3>
+                                    <p className={styles.uploadSubtitle}>Drag & drop atau klik untuk memilih</p>
+                                    <div className={styles.supportedTypes}>
+                                        <span>JPG</span><span>PNG</span><span>WEBP</span>
+                                    </div>
+                                    <input type="file" id="image-upload" accept="image/*" onChange={handleFileSelect} hidden />
+                                </div>
+                            ) : (
+                                <div
+                                    id="capture-container"
+                                    ref={containerRef}
+                                    className={styles.captureArea}
+                                    style={{
+                                        padding: `${padding}px`,
+                                        background: bgColor === 'transparent' ? 'transparent' : bgColor,
+                                        transform: `scale(${1 / scale})`,
+                                        zoom: 0.6 // Keep zoom for preview context
+                                    }}
+                                >
+                                    {renderMockup()}
+                                </div>
+                            )}
                         </div>
 
                         {/* Controls Sidebar */}
