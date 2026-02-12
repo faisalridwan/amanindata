@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import {
     Layout, Smartphone, Monitor, Upload, Download, Palette, Layers,
-    Maximize, Type, Image as ImageIcon, Check, X, Shield, Tablet, Laptop,
+    Maximize, Type, ImageIcon, Check, X, Shield, Tablet, Laptop,
     Smartphone as PhoneIcon, ChevronDown, ChevronUp
 } from 'lucide-react'
 import Navbar from '@/components/Navbar'
@@ -11,58 +11,48 @@ import Footer from '@/components/Footer'
 import TrustSection from '@/components/TrustSection'
 import GuideSection from '@/components/GuideSection'
 import styles from './page.module.css'
+import PhoneMockup from '@/components/mockups/PhoneMockup'
+import LaptopMockup from '@/components/mockups/LaptopMockup'
+import BrowserMockup from '@/components/mockups/BrowserMockup'
 import * as htmlToImage from 'html-to-image'
 
 // --- Device Definitions ---
-// Uses @devmansam/device-mockup types
 const DEVICES = {
+    iphone15: {
+        id: 'iphone15',
+        name: 'iPhone 15 Pro',
+        type: 'phone',
+        color: 'titanium'
+    },
     iphone14: {
         id: 'iphone14',
         name: 'iPhone 14',
         type: 'phone',
-        deviceType: 'iphone-14',
         color: 'black'
-    },
-    pixel6: {
-        id: 'pixel6',
-        name: 'Pixel 6 Pro',
-        type: 'phone',
-        deviceType: 'pixel-6-pro',
-        color: 'cloudy-white'
-    },
-    s21ultra: {
-        id: 's21ultra',
-        name: 'Galaxy S21 Ultra',
-        type: 'phone',
-        deviceType: 's21-ultra', // Fallback orcheck support
-        color: 'phantom-black'
-    },
-    ipad: {
-        id: 'ipad',
-        name: 'iPad Pro',
-        type: 'tablet',
-        deviceType: 'ipad-pro',
-        color: 'space-gray'
     },
     macbook: {
         id: 'macbook',
         name: 'MacBook Pro',
         type: 'laptop',
-        deviceType: 'macbook-pro',
         color: 'space-gray'
+    },
+    browser: {
+        id: 'browser',
+        name: 'Safari Browser',
+        type: 'browser'
     }
 }
 
 export default function MockupGeneratorPage() {
     const [image, setImage] = useState(null)
-    const [selectedDevice, setSelectedDevice] = useState('iphone14')
+    const [selectedDevice, setSelectedDevice] = useState('iphone15')
 
     // Customization State
     const [bgColor, setBgColor] = useState('#f3f4f6')
-    const [frameColor, setFrameColor] = useState('#000000')
+    const [frameColor, setFrameColor] = useState('#1c1c1e')
     const [padding, setPadding] = useState(50)
 
-    // Scale / Resolution (Quality)
+    // Scale for Export (Quality)
     const [scale, setScale] = useState(2)
 
     // Fit Mode: 'cover' (Crop to fill) or 'contain' (Fit whole image)
@@ -77,47 +67,28 @@ export default function MockupGeneratorPage() {
     const [isDragging, setIsDragging] = useState(false)
     const containerRef = useRef(null)
 
-    // Load the web component
-    useEffect(() => {
-        import('@devmansam/device-mockup')
-    }, [])
-
     // Reset panning/zooming when image or device changes
     useEffect(() => {
         setImageScale(1)
         setImageOffset({ x: 0, y: 0 })
     }, [image, selectedDevice, fitMode])
 
-    const handleDragOver = (e) => {
-        e.preventDefault()
-        setIsDragging(true)
-    }
-
-    const handleDragLeave = (e) => {
-        e.preventDefault()
-        setIsDragging(false)
-    }
-
+    const handleDragOver = (e) => { e.preventDefault(); setIsDragging(true) }
+    const handleDragLeave = (e) => { e.preventDefault(); setIsDragging(false) }
     const handleDrop = (e) => {
         e.preventDefault()
         setIsDragging(false)
-        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-            loadImage(e.dataTransfer.files[0])
-        }
+        if (e.dataTransfer.files && e.dataTransfer.files[0]) loadImage(e.dataTransfer.files[0])
     }
 
     const handleFileSelect = (e) => {
-        if (e.target.files && e.target.files[0]) {
-            loadImage(e.target.files[0])
-        }
+        if (e.target.files && e.target.files[0]) loadImage(e.target.files[0])
     }
 
     const loadImage = (file) => {
         const url = URL.createObjectURL(file)
         const img = new Image()
-        img.onload = () => {
-            setImage(img)
-        }
+        img.onload = () => setImage(img)
         img.src = url
     }
 
@@ -127,7 +98,6 @@ export default function MockupGeneratorPage() {
         setIsPanning(true)
         setStartPan({ x: e.clientX, y: e.clientY })
     }
-
     const handleMouseMove = (e) => {
         if (!isPanning) return
         const dx = e.clientX - startPan.x
@@ -140,15 +110,14 @@ export default function MockupGeneratorPage() {
         }))
     }
 
-    const handleMouseUp = () => {
-        setIsPanning(false)
-    }
+    const handleMouseUp = () => setIsPanning(false)
 
     // Download action
     const downloadMockup = async () => {
         if (!containerRef.current) return
 
         try {
+            // Force higher resolution
             const dataUrl = await htmlToImage.toPng(containerRef.current, {
                 pixelRatio: scale,
                 backgroundColor: bgColor === 'transparent' ? null : bgColor,
@@ -165,7 +134,6 @@ export default function MockupGeneratorPage() {
     const getDeviceIcon = (type) => {
         switch (type) {
             case 'phone': return <Smartphone size={20} />
-            case 'tablet': return <Tablet size={20} />
             case 'laptop': return <Laptop size={20} />
             case 'browser': return <Monitor size={20} />
             default: return <Maximize size={20} />
@@ -173,6 +141,26 @@ export default function MockupGeneratorPage() {
     }
 
     const currentDevice = DEVICES[selectedDevice]
+
+    const renderMockup = () => {
+        const props = {
+            image,
+            fitMode,
+            scale,
+            imageScale,
+            imageOffset,
+            isPanning,
+            onMouseDown: handleMouseDown,
+            onMouseMove: handleMouseMove,
+            onMouseUp: handleMouseUp,
+            device: currentDevice
+        }
+
+        if (currentDevice.type === 'phone') return <PhoneMockup {...props} />
+        if (currentDevice.type === 'laptop') return <LaptopMockup {...props} />
+        if (currentDevice.type === 'browser') return <BrowserMockup {...props} />
+        return null
+    }
 
     return (
         <>
@@ -200,7 +188,11 @@ export default function MockupGeneratorPage() {
                                 className={styles.captureArea}
                                 style={{
                                     padding: `${padding}px`,
-                                    background: bgColor === 'transparent' ? 'transparent' : bgColor
+                                    background: bgColor === 'transparent' ? 'transparent' : bgColor,
+                                    transform: `scale(${1 / scale})`, // Counter-scale if we want visual fit, but here we just let it be responsive
+                                    // Actually, let's keep it simple. The user sees 1x, we export 2x/3x. 
+                                    // Or we scale the visual preview down to fit.
+                                    zoom: 0.6 // Quick hack to fit large mockups in preview
                                 }}
                             >
                                 {!image ? (
@@ -217,28 +209,7 @@ export default function MockupGeneratorPage() {
                                         <input type="file" id="image-upload" accept="image/*" onChange={handleFileSelect} hidden />
                                     </div>
                                 ) : (
-                                    <device-mockup
-                                        device={currentDevice.deviceType}
-                                        color={frameColor} // Some devices support custom color via props or css
-                                        scale="1"
-                                    >
-                                        <div
-                                            className={styles.screenContent}
-                                            style={{
-                                                backgroundImage: `url(${image.src})`,
-                                                backgroundSize: fitMode === 'cover' ? 'cover' : 'contain',
-                                                backgroundPosition: 'top center',
-                                                backgroundRepeat: 'no-repeat',
-                                                transform: `scale(${imageScale}) translate(${imageOffset.x}px, ${imageOffset.y}px)`,
-                                                cursor: isPanning ? 'grabbing' : 'grab',
-                                                transformOrigin: 'top center'
-                                            }}
-                                            onMouseDown={handleMouseDown}
-                                            onMouseMove={handleMouseMove}
-                                            onMouseUp={handleMouseUp}
-                                            onMouseLeave={handleMouseUp}
-                                        />
-                                    </device-mockup>
+                                    renderMockup()
                                 )}
                             </div>
                         </div>

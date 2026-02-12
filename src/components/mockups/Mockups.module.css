@@ -1,0 +1,224 @@
+/* Shared */
+.wrapper {
+    position: relative;
+    display: inline-block;
+    transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.screen {
+    position: relative;
+    overflow: hidden;
+    background-color: #000;
+    /* Default screen black */
+    z-index: 1;
+}
+
+.screenContent {
+    width: 100%;
+    height: 100%;
+    transform-origin: top center;
+    background-repeat: no-repeat;
+}
+
+/* --- Phone (iPhone 15 Pro Style) --- */
+.phoneFrame {
+    box-sizing: border-box;
+    position: relative;
+    border-radius: 56px;
+    background: #1c1c1e;
+    box-shadow:
+        inset 0 0 0 2px #444,
+        /* Inner rim */
+        inset 0 0 0 6px #000,
+        /* Screen bezel */
+        0 0 0 2px #2a2a2a,
+        /* Outer frame */
+        0 20px 40px -10px rgba(0, 0, 0, 0.5);
+    /* Drop shadow */
+    padding: 14px;
+    /* Bezel thickness */
+}
+
+/* Titanium Finish Variant */
+.titanium {
+    background: linear-gradient(135deg, #bdc3c7, #2c3e50);
+    box-shadow:
+        inset 0 0 0 2px rgba(255, 255, 255, 0.2),
+        inset 0 0 0 6px #000,
+        0 0 0 1px #555,
+        0 20px 50px -12px rgba(0, 0, 0, 0.6);
+}
+
+.dynamicIsland {
+    position: absolute;
+    top: 22px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 35px;
+    background: #000;
+    border-radius: 20px;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 12px;
+}
+
+.cameraDot {
+    width: 10px;
+    height: 10px;
+    background: #1a1a1a;
+    border-radius: 50%;
+    box-shadow: inset 0 0 2px rgba(255, 255, 255, 0.1);
+}
+
+.phoneReflection {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 46px;
+    /* Match screen radius */
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0) 40%);
+    pointer-events: none;
+    z-index: 20;
+    margin: 14px;
+    /* Offset by padding */
+}
+
+/* --- Laptop (MacBook Pro Style) --- */
+.laptopWrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.laptopLid {
+    position: relative;
+    background: #0d0d0d;
+    border-radius: 18px 18px 0 0;
+    padding: 14px 14px 0 14px;
+    /* Bezel */
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.laptopScreen {
+    background: #000;
+    border-radius: 6px 6px 0 0;
+    overflow: hidden;
+    position: relative;
+}
+
+.laptopNotch {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 140px;
+    height: 30px;
+    background: #0d0d0d;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    z-index: 10;
+}
+
+.laptopBase {
+    width: 120%;
+    /* Wider than lid */
+    height: 16px;
+    background: linear-gradient(to bottom, #bdc3c7, #95a5a6);
+    border-radius: 0 0 20px 20px;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.3),
+        0 10px 30px rgba(0, 0, 0, 0.3);
+    position: relative;
+    margin-top: -1px;
+    /* Overlap */
+}
+
+.laptopIndent {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 15%;
+    height: 6px;
+    background: rgba(0, 0, 0, 0.1);
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+}
+
+/* --- Browser (Safari Style) --- */
+.browserFrame {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow:
+        0 0 0 1px rgba(0, 0, 0, 0.05),
+        0 20px 40px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+[data-theme="dark"] .browserFrame {
+    background: #1e1e1e;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.05), 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+.browserHeader {
+    height: 44px;
+    background: #f3f4f6;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    gap: 16px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="dark"] .browserHeader {
+    background: #2a2a2a;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.trafficLights {
+    display: flex;
+    gap: 8px;
+}
+
+.trafficDot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.close {
+    background: #ff5f56;
+}
+
+.min {
+    background: #ffbd2e;
+}
+
+.max {
+    background: #27c93f;
+}
+
+.addressBar {
+    flex: 1;
+    height: 28px;
+    background: #fff;
+    border-radius: 6px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    color: #9ca3af;
+}
+
+[data-theme="dark"] .addressBar {
+    background: #3a3a3a;
+    color: #6b7280;
+}
