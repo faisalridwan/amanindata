@@ -66,7 +66,6 @@ export default function SpeedTestPage() {
 
     const measureLatency = async () => {
         const pings = []
-        // Use a very small resource for more accurate ping
         const endpoint = '/favicon.ico'
 
         for (let i = 0; i < 15; i++) {
@@ -87,17 +86,43 @@ export default function SpeedTestPage() {
         }
     }
 
+    // Fast.com discovery helpers
+    const fetchFastUrls = async () => {
+        try {
+            // 1. Get token from Fast.com app JS via AllOrigins proxy
+            const proxy = 'https://api.allorigins.win/get?url='
+            const appUrl = encodeURIComponent('https://fast.com/app-a.js')
+            const appRes = await fetch(`${proxy}${appUrl}`)
+            const appData = await appRes.json()
+            const tokenMatch = appData.contents.match(/token:"([^"]+)"/)
+            
+            if (!tokenMatch) throw new Error('Token not found')
+            const token = tokenMatch[1]
+
+            // 2. Get server targets
+            const authUrl = encodeURIComponent(`https://api.fast.com/netflix/speedtest/v2?https=true&token=${token}&urlCount=5`)
+            const authRes = await fetch(`${proxy}${authUrl}`)
+            const authData = await authRes.json()
+            const targets = JSON.parse(authData.contents).targets
+            
+            return targets.map(t => t.url)
+        } catch (e) {
+            console.error('Fast.com discovery failed, using fallback', e)
+            return [
+                'https://upload.wikimedia.org/wikipedia/commons/3/3a/A_vivid_sunset_on_the_Pacific_Ocean._(5_MB).jpg',
+                'https://upload.wikimedia.org/wikipedia/commons/e/ea/The_Earth_at_Night_-_View_from_Space_Panorama.jpg'
+            ]
+        }
+    }
+
     const measureDownload = async () => {
-        const totalDuration = 10000 
+        const totalDuration = 15000 // Fast.com style longer test for stability
         const startTime = performance.now()
-        let snapshots = [] // For sliding window
+        let snapshots = []
         let activeStreams = new Map()
-        
-        const resources = [
-            'https://upload.wikimedia.org/wikipedia/commons/3/3a/A_vivid_sunset_on_the_Pacific_Ocean._(5_MB).jpg',
-            'https://upload.wikimedia.org/wikipedia/commons/2/2d/Snake_River_%285mb%29.jpg',
-            'https://upload.wikimedia.org/wikipedia/commons/e/ea/The_Earth_at_Night_-_View_from_Space_Panorama.jpg'
-        ]
+        let cumulativeBytes = 0
+
+        const resources = await fetchFastUrls()
 
         return new Promise((resolve) => {
             let running = true
@@ -108,11 +133,10 @@ export default function SpeedTestPage() {
                 const now = performance.now()
                 const elapsed = (now - startTime) / 1000
 
-                // Aggregate bytes from all active streams
-                let totalLoaded = 0
-                activeStreams.forEach(bytes => totalLoaded += bytes)
+                let currentActive = 0
+                activeStreams.forEach(bytes => currentActive += bytes)
+                const totalLoaded = cumulativeBytes + currentActive
 
-                // Push snapshot for sliding window (last 1000ms)
                 snapshots.push({ time: now, bytes: totalLoaded })
                 const windowSize = 1000 
                 snapshots = snapshots.filter(s => now - s.time <= windowSize)
@@ -123,15 +147,15 @@ export default function SpeedTestPage() {
                     const timeDiff = (last.time - first.time) / 1000
                     const byteDiff = last.bytes - first.bytes
                     
-                    if (timeDiff > 0) {
+                    if (timeDiff > 100 / 1000) { // at least 100ms diff
                         const mbps = (byteDiff * 8 / 1000000) / timeDiff
                         setDownloadSpeed(parseFloat(mbps.toFixed(1)))
                         setGaugeValue(mbps)
                     }
                 }
                 
-                setProgress(Math.min((elapsed / 10) * 100, 100))
-                if (elapsed >= 10) {
+                setProgress(Math.min((elapsed / 15) * 100, 100))
+                if (elapsed >= 15) {
                     running = false
                     resolve()
                 } else {
@@ -144,29 +168,7 @@ export default function SpeedTestPage() {
                 const xhr = new XMLHttpRequest()
                 const url = resources[Math.floor(Math.random() * resources.length)]
                 
-                xhr.open('GET', `${url}?t=${Date.now()}`, true)
-                xhr.responseType = 'blob'
-                xhr.onprogress = (event) => {
-                    if (running) activeStreams.set(id, event.loaded)
-                }
-                xhr.onload = xhr.onerror = () => {
-                    // Start new stream if still testing
-                    if (running) {
-                        // Reset progress for this stream slot so we don't overcount when combining in activeStreams
-                        // Actually, we should only add finished chunks to a global counter
-                        // Let's refine the accounting.
-                        startRequest(id)
-                    }
-                }
-                xhr.send()
-            }
-            // Refined accounting: we need to track cumulative bytes + current active bytes
-            let cumulativeBytes = 0
-            const startRequestRefined = (id) => {
-                if (!running) return
-                const xhr = new XMLHttpRequest()
-                const url = resources[Math.floor(Math.random() * resources.length)]
-                xhr.open('GET', `${url}?t=${Date.now()}`, true)
+                xhr.open('GET', `${url}&t=${Date.now()}`, true)
                 xhr.responseType = 'blob'
                 xhr.onprogress = (event) => {
                     if (running) activeStreams.set(id, event.loaded)
@@ -175,55 +177,21 @@ export default function SpeedTestPage() {
                     if (running) {
                         cumulativeBytes += activeStreams.get(id) || 0
                         activeStreams.set(id, 0)
-                        startRequestRefined(id)
+                        startRequest(id)
                     }
                 }
                 xhr.onerror = () => {
                     if (running) {
                         activeStreams.set(id, 0)
-                        startRequestRefined(id)
+                        startRequest(id)
                     }
                 }
                 xhr.send()
             }
 
-            const updateSpeedRefined = () => {
-                if (!running) return
-                const now = performance.now()
-                const elapsed = (now - startTime) / 1000
-
-                let currentActive = 0
-                activeStreams.forEach(bytes => currentActive += bytes)
-                const totalLoaded = cumulativeBytes + currentActive
-
-                snapshots.push({ time: now, bytes: totalLoaded })
-                snapshots = snapshots.filter(s => now - s.time <= 1000)
-
-                if (snapshots.length > 1) {
-                    const first = snapshots[0]
-                    const last = snapshots[snapshots.length - 1]
-                    const timeDiff = (last.time - first.time) / 1000
-                    const byteDiff = last.bytes - first.bytes
-                    
-                    if (timeDiff > 0) {
-                        const mbps = (byteDiff * 8 / 1000000) / timeDiff
-                        setDownloadSpeed(parseFloat(mbps.toFixed(1)))
-                        setGaugeValue(mbps)
-                    }
-                }
-                
-                setProgress(Math.min((elapsed / 10) * 100, 100))
-                if (elapsed >= 10) {
-                    running = false
-                    resolve()
-                } else {
-                    setTimeout(updateSpeedRefined, 100)
-                }
-            }
-
-            updateSpeedRefined()
+            updateSpeed()
             for (let i = 0; i < maxParallel; i++) {
-                startRequestRefined(i)
+                startRequest(i)
             }
         })
     }
@@ -275,9 +243,7 @@ export default function SpeedTestPage() {
             const sendData = (id) => {
                 if (!running) return
                 const size = 1024 * 1024 // 1MB chunks
-                const buffer = new Uint8Array(size)
-                for(let i=0; i<size; i++) buffer[i] = Math.floor(Math.random() * 255)
-                const blob = new Blob([buffer])
+                const blob = new Blob([new Uint8Array(size).map(() => Math.floor(Math.random() * 255))])
                 const xhr = new XMLHttpRequest()
                 
                 xhr.open('POST', `https://speed.cloudflare.com/__up?t=${Date.now()}`, true)
@@ -301,7 +267,7 @@ export default function SpeedTestPage() {
             }
 
             updateSpeed()
-            for (let i = 0; i < 2; i++) { // Max parallel uploads
+            for (let i = 0; i < 2; i++) {
                 sendData(i)
             }
         })
@@ -328,7 +294,7 @@ export default function SpeedTestPage() {
                         <Zap size={32} /> Speed <span>Test</span>
                     </h1>
                     <p className={styles.heroSubtitle}>
-                        Ukur kecepatan internet Anda secara akurat dengan teknologi sliding-window measurement.
+                        Ukur kecepatan internet Anda secara akurat dengan teknologi Fast.com-style measurement.
                     </p>
                     <div className={styles.trustBadge}>
                         <Shield size={16} /> Secure Client-Side Measurement
@@ -441,7 +407,7 @@ export default function SpeedTestPage() {
                                     <span className={styles.infoLabel}>Measurement</span>
                                     <span className={styles.infoValue}>
                                         <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#10B981', marginRight: 10 }} /> 
-                                        Sliding Window Logic
+                                        Netflix CDN Optimized
                                     </span>
                                 </div>
                             </div>
