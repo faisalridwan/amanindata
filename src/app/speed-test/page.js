@@ -50,18 +50,11 @@ export default function SpeedTestPage() {
         setGaugeValue(0)
 
         try {
-            // 1. PING & JITTER
             await measureLatency()
-
-            // 2. DOWNLOAD
             setCurrentPhase('download')
             await measureDownload()
-
-            // 3. UPLOAD
             setCurrentPhase('upload')
             await measureUpload()
-
-            // DONE
             setCurrentPhase('complete')
             setGaugeValue(0)
         } catch (error) {
@@ -73,17 +66,17 @@ export default function SpeedTestPage() {
 
     const measureLatency = async () => {
         const pings = []
-        // Use a highly available endpoint for ping
-        const endpoint = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'
+        // Use a very small resource for more accurate ping
+        const endpoint = '/favicon.ico'
 
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < 15; i++) {
             const start = performance.now()
             try {
-                await fetch(`${endpoint}?t=${Date.now()}`, { method: 'HEAD', mode: 'no-cors', cache: 'no-store' })
+                await fetch(`${endpoint}?t=${Date.now()}`, { method: 'HEAD', cache: 'no-store' })
                 const end = performance.now()
                 pings.push(end - start)
             } catch (e) { }
-            await new Promise(r => setTimeout(r, 100))
+            await new Promise(r => setTimeout(r, 60))
         }
 
         if (pings.length > 0) {
@@ -95,92 +88,222 @@ export default function SpeedTestPage() {
     }
 
     const measureDownload = async () => {
-        const totalDuration = 8000
+        const totalDuration = 10000 
         const startTime = performance.now()
-        let totalBytes = 0
+        let snapshots = [] // For sliding window
+        let activeStreams = new Map()
         
         const resources = [
             'https://upload.wikimedia.org/wikipedia/commons/3/3a/A_vivid_sunset_on_the_Pacific_Ocean._(5_MB).jpg',
             'https://upload.wikimedia.org/wikipedia/commons/2/2d/Snake_River_%285mb%29.jpg',
-            'https://upload.wikimedia.org/wikipedia/commons/b/b2/City_of_Ottawa_Skyline_Panoramic_2019.jpg' 
+            'https://upload.wikimedia.org/wikipedia/commons/e/ea/The_Earth_at_Night_-_View_from_Space_Panorama.jpg'
         ]
 
         return new Promise((resolve) => {
-            let activeRequests = 0
-            const maxParallel = 3 
+            let running = true
+            const maxParallel = 4
 
-            const startRequest = () => {
+            const updateSpeed = () => {
+                if (!running) return
                 const now = performance.now()
-                if (now - startTime > totalDuration) {
-                    if (activeRequests === 0) resolve()
-                    return
-                }
+                const elapsed = (now - startTime) / 1000
 
-                activeRequests++
+                // Aggregate bytes from all active streams
+                let totalLoaded = 0
+                activeStreams.forEach(bytes => totalLoaded += bytes)
+
+                // Push snapshot for sliding window (last 1000ms)
+                snapshots.push({ time: now, bytes: totalLoaded })
+                const windowSize = 1000 
+                snapshots = snapshots.filter(s => now - s.time <= windowSize)
+
+                if (snapshots.length > 1) {
+                    const first = snapshots[0]
+                    const last = snapshots[snapshots.length - 1]
+                    const timeDiff = (last.time - first.time) / 1000
+                    const byteDiff = last.bytes - first.bytes
+                    
+                    if (timeDiff > 0) {
+                        const mbps = (byteDiff * 8 / 1000000) / timeDiff
+                        setDownloadSpeed(parseFloat(mbps.toFixed(1)))
+                        setGaugeValue(mbps)
+                    }
+                }
+                
+                setProgress(Math.min((elapsed / 10) * 100, 100))
+                if (elapsed >= 10) {
+                    running = false
+                    resolve()
+                } else {
+                    setTimeout(updateSpeed, 100)
+                }
+            }
+
+            const startRequest = (id) => {
+                if (!running) return
                 const xhr = new XMLHttpRequest()
                 const url = resources[Math.floor(Math.random() * resources.length)]
                 
                 xhr.open('GET', `${url}?t=${Date.now()}`, true)
+                xhr.responseType = 'blob'
                 xhr.onprogress = (event) => {
-                    const elapsed = (performance.now() - startTime) / 1000
-                    if (elapsed > 0) {
-                        const mbps = ((totalBytes + event.loaded) * 8 / 1000000) / elapsed
-                        setDownloadSpeed(mbps.toFixed(1))
-                        setGaugeValue(mbps)
-                        setProgress(Math.min((elapsed / 8) * 100, 100))
-                    }
+                    if (running) activeStreams.set(id, event.loaded)
                 }
                 xhr.onload = xhr.onerror = () => {
-                    totalBytes += xhr.response?.size || 5000000 
-                    activeRequests--
-                    startRequest()
+                    // Start new stream if still testing
+                    if (running) {
+                        // Reset progress for this stream slot so we don't overcount when combining in activeStreams
+                        // Actually, we should only add finished chunks to a global counter
+                        // Let's refine the accounting.
+                        startRequest(id)
+                    }
+                }
+                xhr.send()
+            }
+            // Refined accounting: we need to track cumulative bytes + current active bytes
+            let cumulativeBytes = 0
+            const startRequestRefined = (id) => {
+                if (!running) return
+                const xhr = new XMLHttpRequest()
+                const url = resources[Math.floor(Math.random() * resources.length)]
+                xhr.open('GET', `${url}?t=${Date.now()}`, true)
+                xhr.responseType = 'blob'
+                xhr.onprogress = (event) => {
+                    if (running) activeStreams.set(id, event.loaded)
+                }
+                xhr.onload = () => {
+                    if (running) {
+                        cumulativeBytes += activeStreams.get(id) || 0
+                        activeStreams.set(id, 0)
+                        startRequestRefined(id)
+                    }
+                }
+                xhr.onerror = () => {
+                    if (running) {
+                        activeStreams.set(id, 0)
+                        startRequestRefined(id)
+                    }
                 }
                 xhr.send()
             }
 
+            const updateSpeedRefined = () => {
+                if (!running) return
+                const now = performance.now()
+                const elapsed = (now - startTime) / 1000
+
+                let currentActive = 0
+                activeStreams.forEach(bytes => currentActive += bytes)
+                const totalLoaded = cumulativeBytes + currentActive
+
+                snapshots.push({ time: now, bytes: totalLoaded })
+                snapshots = snapshots.filter(s => now - s.time <= 1000)
+
+                if (snapshots.length > 1) {
+                    const first = snapshots[0]
+                    const last = snapshots[snapshots.length - 1]
+                    const timeDiff = (last.time - first.time) / 1000
+                    const byteDiff = last.bytes - first.bytes
+                    
+                    if (timeDiff > 0) {
+                        const mbps = (byteDiff * 8 / 1000000) / timeDiff
+                        setDownloadSpeed(parseFloat(mbps.toFixed(1)))
+                        setGaugeValue(mbps)
+                    }
+                }
+                
+                setProgress(Math.min((elapsed / 10) * 100, 100))
+                if (elapsed >= 10) {
+                    running = false
+                    resolve()
+                } else {
+                    setTimeout(updateSpeedRefined, 100)
+                }
+            }
+
+            updateSpeedRefined()
             for (let i = 0; i < maxParallel; i++) {
-                startRequest()
+                startRequestRefined(i)
             }
         })
     }
 
     const measureUpload = async () => {
-        const totalDuration = 8000
+        const totalDuration = 10000
         const startTime = performance.now()
-        let totalBytes = 0
-        const chunkSize = 1 * 1024 * 1024 
+        let snapshots = []
+        let cumulativeUploaded = 0
+        let activeUploads = new Map()
 
         return new Promise((resolve) => {
-            const startRequest = async () => {
-                const now = performance.now()
-                if (now - startTime > totalDuration) {
-                    resolve()
-                    return
-                }
+            let running = true
 
-                const buffer = new Uint8Array(chunkSize)
-                for(let i=0; i<chunkSize; i++) buffer[i] = Math.random() * 255
-                const blob = new Blob([buffer])
-                
-                const xhr = new XMLHttpRequest()
-                xhr.open('POST', `https://speed.cloudflare.com/__up?t=${Date.now()}`, true)
-                
-                xhr.upload.onprogress = (event) => {
-                    const elapsed = (performance.now() - startTime) / 1000
-                    if (elapsed > 0) {
-                        const mbps = ((totalBytes + event.loaded) * 8 / 1000000) / elapsed
-                        setUploadSpeed(mbps.toFixed(1))
+            const updateSpeed = () => {
+                if (!running) return
+                const now = performance.now()
+                const elapsed = (now - startTime) / 1000
+
+                let currentActive = 0
+                activeUploads.forEach(bytes => currentActive += bytes)
+                const totalTotal = cumulativeUploaded + currentActive
+
+                snapshots.push({ time: now, bytes: totalTotal })
+                snapshots = snapshots.filter(s => now - s.time <= 1000)
+
+                if (snapshots.length > 1) {
+                    const first = snapshots[0]
+                    const last = snapshots[snapshots.length - 1]
+                    const timeDiff = (last.time - first.time) / 1000
+                    const byteDiff = last.bytes - first.bytes
+                    
+                    if (timeDiff > 0) {
+                        const mbps = (byteDiff * 8 / 1000000) / timeDiff
+                        setUploadSpeed(parseFloat(mbps.toFixed(1)))
                         setGaugeValue(mbps)
-                        setProgress(Math.min((elapsed / 8) * 100, 100))
                     }
                 }
-                xhr.onload = xhr.onerror = () => {
-                    totalBytes += chunkSize
-                    startRequest()
+
+                setProgress(Math.min((elapsed / 10) * 100, 100))
+                if (elapsed >= 10) {
+                    running = false
+                    resolve()
+                } else {
+                    setTimeout(updateSpeed, 100)
+                }
+            }
+
+            const sendData = (id) => {
+                if (!running) return
+                const size = 1024 * 1024 // 1MB chunks
+                const buffer = new Uint8Array(size)
+                for(let i=0; i<size; i++) buffer[i] = Math.floor(Math.random() * 255)
+                const blob = new Blob([buffer])
+                const xhr = new XMLHttpRequest()
+                
+                xhr.open('POST', `https://speed.cloudflare.com/__up?t=${Date.now()}`, true)
+                xhr.upload.onprogress = (event) => {
+                    if (running) activeUploads.set(id, event.loaded)
+                }
+                xhr.onload = () => {
+                    if (running) {
+                        cumulativeUploaded += size
+                        activeUploads.set(id, 0)
+                        sendData(id)
+                    }
+                }
+                xhr.onerror = () => {
+                    if (running) {
+                        activeUploads.set(id, 0)
+                        sendData(id)
+                    }
                 }
                 xhr.send(blob)
             }
-            startRequest()
+
+            updateSpeed()
+            for (let i = 0; i < 2; i++) { // Max parallel uploads
+                sendData(i)
+            }
         })
     }
 
@@ -190,21 +313,11 @@ export default function SpeedTestPage() {
             angle = (gaugeValue / 10) * 60 
         } else if (gaugeValue <= 100) {
             angle = 60 + ((gaugeValue - 10) / 90) * 120 
-        } else {
+        } else if (gaugeValue > 100) {
             angle = 180 + Math.min(((gaugeValue - 100) / 900) * 60, 60) 
         }
         return angle - 120 
     }
-
-    // Helper for Gauge Color
-    const getGaugeColor = () => {
-        if (currentPhase === 'download') return '#10B981' // Green
-        if (currentPhase === 'upload') return '#8B5CF6' // Purple
-        return '#CBD5E1'
-    }
-
-    const gaugeRotation = Math.min((gaugeValue / 100) * 180, 180) // Max 100mbps for visual scale? Or log scale?
-    // Simple linear for now: 100mbps max visual
 
     return (
         <>
@@ -215,7 +328,7 @@ export default function SpeedTestPage() {
                         <Zap size={32} /> Speed <span>Test</span>
                     </h1>
                     <p className={styles.heroSubtitle}>
-                        Ukur kecepatan internet Anda secara akurat dengan teknologi adaptive parallel streaming.
+                        Ukur kecepatan internet Anda secara akurat dengan teknologi sliding-window measurement.
                     </p>
                     <div className={styles.trustBadge}>
                         <Shield size={16} /> Secure Client-Side Measurement
@@ -225,33 +338,28 @@ export default function SpeedTestPage() {
                 <div className={styles.workspace}>
                     <div className={styles.card}>
                         
-                        {/* Advanced SVG Gauge */}
                         <div className={styles.gaugeWrapper}>
                             <svg className={styles.gaugeSvg} viewBox="0 0 200 150">
-                                {/* Background Arc */}
                                 <path 
                                     className={styles.gaugePath} 
                                     d="M 40 130 A 70 70 0 1 1 160 130" 
                                 />
-                                {/* Progress Arc */}
                                 <path 
                                     className={styles.gaugeProgress}
                                     d="M 40 130 A 70 70 0 1 1 160 130"
                                     style={{ 
-                                        strokeDashoffset: 283 - (getGaugeRotation() + 120) / 240 * 283,
+                                        strokeDashoffset: 283 - ((getGaugeRotation() + 120) / 240) * 283,
                                         stroke: currentPhase === 'download' ? '#10B981' : currentPhase === 'upload' ? '#8B5CF6' : '#3b82f6'
                                     }}
                                 />
-                                {/* Glow Effect */}
                                 <path 
                                     className={`${styles.gaugeProgress} ${styles.gaugeGlow}`}
                                     d="M 40 130 A 70 70 0 1 1 160 130"
                                     style={{ 
-                                        strokeDashoffset: 283 - (getGaugeRotation() + 120) / 240 * 283,
+                                        strokeDashoffset: 283 - ((getGaugeRotation() + 120) / 240) * 283,
                                         stroke: currentPhase === 'download' ? '#10B981' : currentPhase === 'upload' ? '#8B5CF6' : '#3b82f6'
                                     }}
                                 />
-                                {/* Needle */}
                                 <g transform={`rotate(${getGaugeRotation()} 100 100)`}>
                                     <path 
                                         className={styles.gaugeNeedle}
@@ -261,7 +369,6 @@ export default function SpeedTestPage() {
                                     <circle cx="100" cy="100" r="5" fill="#1e293b" />
                                 </g>
                                 
-                                {/* Labels */}
                                 <text x="40" y="145" fontSize="8" fill="#94a3b8" textAnchor="middle">0</text>
                                 <text x="70" y="55" fontSize="8" fill="#94a3b8" textAnchor="middle">10</text>
                                 <text x="130" y="55" fontSize="8" fill="#94a3b8" textAnchor="middle">100</text>
@@ -270,7 +377,7 @@ export default function SpeedTestPage() {
 
                             <div className={styles.gaugeInfo}>
                                 <div className={styles.speedValue}>
-                                    {currentPhase === 'idle' ? '0.0' : parseFloat(gaugeValue).toFixed(1)}
+                                    {currentPhase === 'idle' ? '0.0' : gaugeValue.toFixed(1)}
                                 </div>
                                 <div className={styles.unit}>Mbps</div>
                                 <div className={styles.statusText}>
@@ -283,7 +390,6 @@ export default function SpeedTestPage() {
                             </div>
                         </div>
 
-                        {/* Detailed Metrics */}
                         <div className={styles.metrics}>
                             <div className={`${styles.metricCard} ${currentPhase === 'ping' ? styles.metricCardActive : ''}`}>
                                 <div className={styles.metricLabel}><Activity size={14} /> PING</div>
@@ -311,7 +417,6 @@ export default function SpeedTestPage() {
                             </div>
                         </div>
 
-                        {/* Info Section */}
                         <div className={styles.infoSection}>
                             <div className={styles.infoGrid}>
                                 <div className={styles.infoItem}>
@@ -336,7 +441,7 @@ export default function SpeedTestPage() {
                                     <span className={styles.infoLabel}>Measurement</span>
                                     <span className={styles.infoValue}>
                                         <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#10B981', marginRight: 10 }} /> 
-                                        Adaptive CDN Optimization
+                                        Sliding Window Logic
                                     </span>
                                 </div>
                             </div>
