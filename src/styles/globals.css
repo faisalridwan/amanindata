@@ -803,8 +803,9 @@ input[type="color"]::-webkit-color-swatch {
     }
 
     h1 span, h2 span, h3 span, h4 span, h5 span, h6 span {
-        display: block;
-        margin-top: 4px;
+        display: inline-block;
+        white-space: nowrap;
+        margin-top: 0;
     }
 
     .neu-card {
