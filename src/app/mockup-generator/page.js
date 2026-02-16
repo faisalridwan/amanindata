@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react'
 import {
     Layout, Smartphone, Monitor, Upload, Download, Palette, Layers,
     Maximize, Type, ImageIcon, Check, X, Shield, Tablet, Laptop,
-    Smartphone as PhoneIcon, ChevronDown, ChevronUp, GripHorizontal
+    Smartphone as PhoneIcon, ChevronDown, ChevronUp, GripHorizontal, Info
 } from 'lucide-react'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
@@ -12,93 +12,33 @@ import TrustSection from '@/components/TrustSection'
 import GuideSection from '@/components/GuideSection'
 import styles from './page.module.css'
 import PhoneMockup from '@/components/mockups/PhoneMockup'
-import AndroidMockup from '@/components/mockups/AndroidMockup'
 import TabletMockup from '@/components/mockups/TabletMockup'
 import DesktopMockup from '@/components/mockups/DesktopMockup'
 import LaptopMockup from '@/components/mockups/LaptopMockup'
 import BrowserMockup from '@/components/mockups/BrowserMockup'
 import * as htmlToImage from 'html-to-image'
 
-// --- Device Definitions ---
-const DEVICES = {
-    // --- Phones ---
-    iphone15: {
-        id: 'iphone15',
-        name: 'iPhone 15 Pro',
-        type: 'phone',
-        category: 'phone',
-        color: 'titanium'
-    },
-    iphone14: {
-        id: 'iphone14',
-        name: 'iPhone 14',
-        type: 'phone',
-        category: 'phone',
-        color: 'black'
-    },
-    pixel8: {
-        id: 'pixel8',
-        name: 'Pixel 8 Pro',
-        type: 'android',
-        category: 'phone',
-        deviceType: 'pixel8',
-        frameColor: '#3c4043'
-    },
-    s24ultra: {
-        id: 's24ultra',
-        name: 'Galaxy S24 Ultra',
-        type: 'android',
-        category: 'phone',
-        deviceType: 's24ultra',
-        frameColor: '#2C2C2C'
-    },
-    // --- Tablets ---
-    ipadPro: {
-        id: 'ipadPro',
-        name: 'iPad Pro 11"',
-        type: 'tablet',
-        category: 'tablet',
-        frameColor: '#282828'
-    },
-    // --- Computers ---
-    macbook: {
-        id: 'macbook',
-        name: 'MacBook Pro 16"',
-        type: 'laptop',
-        category: 'desktop',
-        color: 'space-gray'
-    },
-    winLaptop: {
-        id: 'winLaptop',
-        name: 'Windows Laptop',
-        type: 'desktop-laptop',
-        category: 'desktop',
-    },
-    imac: {
-        id: 'imac',
-        name: 'iMac 24"',
-        type: 'desktop-iMac',
-        category: 'desktop',
-        deviceType: 'imac'
-    },
-    browser: {
-        id: 'browser',
-        name: 'Safari Browser',
-        type: 'browser',
-        category: 'desktop'
-    }
-}
+import { ALL_DEVICES as DEVICES, CATEGORIES } from './registry'
 
-const CATEGORIES = [
-    { id: 'phone', label: 'Smartphones', icon: Smartphone },
-    { id: 'tablet', label: 'Tablets', icon: Tablet },
-    { id: 'desktop', label: 'Computers', icon: Monitor },
-]
+const ControlSection = ({ title, tooltip, children, className }) => (
+    <div className={`${styles.controlSection} ${className || ''}`}>
+        <div className={styles.sectionHeader}>
+            <span className={styles.sectionTitle}>{title}</span>
+            {tooltip && (
+                <div className={styles.tooltipContainer} title={tooltip}>
+                    <Info size={14} className={styles.tooltipIcon} />
+                </div>
+            )}
+        </div>
+        {children}
+    </div>
+)
 
 export default function MockupGeneratorPage() {
     const [image, setImage] = useState(null)
-    const [selectedDevice, setSelectedDevice] = useState('iphone15')
+    const [selectedDevice, setSelectedDevice] = useState('iphone14ProMax')
     const [selectedCategory, setSelectedCategory] = useState('phone')
+    const [customUrl, setCustomUrl] = useState('amanindata.com')
 
     // Customization State
     const [bgColor, setBgColor] = useState('#f3f4f6')
@@ -116,6 +56,10 @@ export default function MockupGeneratorPage() {
     const [imageOffset, setImageOffset] = useState({ x: 0, y: 0 })
     const [isPanning, setIsPanning] = useState(false)
     const [startPan, setStartPan] = useState({ x: 0, y: 0 })
+
+    // New Controls
+    const [isSidebarHidden, setIsSidebarHidden] = useState(false)
+    const [imagePos, setImagePos] = useState({ x: 50, y: 50 }) // Center by default (50% 50%)
 
     const [isDragging, setIsDragging] = useState(false)
     const containerRef = useRef(null)
@@ -179,10 +123,16 @@ export default function MockupGeneratorPage() {
         if (!containerRef.current) return
 
         try {
-            // Force higher resolution
+            // Force higher resolution export
             const dataUrl = await htmlToImage.toPng(containerRef.current, {
-                pixelRatio: scale,
+                pixelRatio: scale, // Multiply the REAL resolution if needed (usually 1x is enough now)
                 backgroundColor: bgColor === 'transparent' ? null : bgColor,
+                style: {
+                    transform: 'scale(1)', // Reset preview scale to full size
+                    transformOrigin: 'top center'
+                },
+                width: containerRef.current.offsetWidth, // Ensure full width captured
+                height: containerRef.current.offsetHeight
             })
             const link = document.createElement('a')
             link.download = `mockup-${selectedDevice}-${Date.now()}.png`
@@ -199,30 +149,55 @@ export default function MockupGeneratorPage() {
         return <Icon size={18} />
     }
 
-    const currentDevice = DEVICES[selectedDevice]
+    const currentDevice = DEVICES[selectedDevice] || Object.values(DEVICES)[0] || {}
+
+    // STABLE PREVIEW LOGIC
+    // We calculate the scale to fit the mockup within a fixed visual box (e.g. 500x600)
+    // This ensures adding padding 'zooms out' the preview instead of expanding the layout (which causes jitter)
+    const MAX_PREVIEW_WIDTH = 550
+    const MAX_PREVIEW_HEIGHT = 650
+
+    const deviceWidth = currentDevice?.w || currentDevice?.width || 400
+    const deviceHeight = currentDevice?.h || currentDevice?.height || 800
+
+    const rawWidth = (deviceWidth * scale) + (padding * 2)
+    const rawHeight = (deviceHeight * scale) + (padding * 2)
+
+    // Check which dimension is the bottleneck
+    const scaleX = MAX_PREVIEW_WIDTH / rawWidth
+    const scaleY = MAX_PREVIEW_HEIGHT / rawHeight
+
+    // Choose the smaller scale to ensure it fits both dimensions
+    const previewScale = Math.min(scaleX, scaleY, 1) // Never scale UP for preview quality
+
+    // Wrapper dimensions follow the visual size
+    const previewWrapperWidth = rawWidth * previewScale
+    const previewWrapperHeight = rawHeight * previewScale
 
     const renderMockup = () => {
         const props = {
+            deviceType: selectedDevice, // Pass the ID string
             image,
             fitMode,
             scale,
             imageScale,
-            imageOffset,
+            imageOffset, // Keeping for backward compatibility or pan
+            imagePos, // New prop for position
             isPanning,
             onMouseDown: handleMouseDown,
             onMouseMove: handleMouseMove,
             onMouseUp: handleMouseUp,
-            device: currentDevice
+            // device object is no longer passed as 'device', but we use it for type checking below
         }
 
-        switch (currentDevice.type) {
+        const type = currentDevice?.type
+
+        switch (type) {
             case 'phone': return <PhoneMockup {...props} />
-            case 'android': return <AndroidMockup {...props} />
             case 'tablet': return <TabletMockup {...props} />
             case 'laptop': return <LaptopMockup {...props} />
-            case 'desktop-laptop': return <DesktopMockup {...props} />
-            case 'desktop-iMac': return <DesktopMockup {...props} />
-            case 'browser': return <BrowserMockup {...props} />
+            case 'desktop': return <DesktopMockup {...props} />
+            case 'browser': return <BrowserMockup {...props} browserType={selectedDevice} url={customUrl} />
             default: return null
         }
     }
@@ -244,7 +219,20 @@ export default function MockupGeneratorPage() {
                 </header>
 
                 <div className={styles.workspace}>
-                    <div className={styles.grid}>
+                    {/* Toolbar for Hide Sidebar */}
+                    <div className={styles.toolbar}>
+                        <button
+                            className={styles.toolbarBtn}
+                            onClick={() => setIsSidebarHidden(!isSidebarHidden)}
+                        >
+                            {isSidebarHidden ? <Maximize size={20} /> : <Maximize size={20} />}
+                            <span>{isSidebarHidden ? 'Show Sidebar' : 'Hide Sidebar'}</span>
+                        </button>
+                    </div>
+
+                    <div className={styles.grid} style={{
+                        gridTemplateColumns: isSidebarHidden ? '1fr' : 'minmax(0, 1fr) 380px'
+                    }}>
                         {/* Preview Area */}
                         <div className={styles.previewContainer}>
                             {!image ? (
@@ -267,185 +255,252 @@ export default function MockupGeneratorPage() {
                                 </div>
                             ) : (
                                 <div
-                                    id="capture-container"
-                                    ref={containerRef}
-                                    className={styles.captureArea}
+                                    className={styles.previewStage}
                                     style={{
-                                        padding: `${padding}px`,
-                                        background: bgColor === 'transparent' ? 'transparent' : bgColor,
-                                        transform: `scale(${1 / scale})`,
-                                        zoom: 0.6 // Keep zoom for preview context
+                                        // Explicit dimensions to match the SCALED content, removing ghost margin
+                                        width: previewWrapperWidth,
+                                        height: previewWrapperHeight,
+                                        transition: 'width 0.2s ease-out, height 0.2s ease-out' // Smooth out jitter
                                     }}
                                 >
-                                    {renderMockup()}
+                                    <div
+                                        id="capture-container"
+                                        ref={containerRef}
+                                        className={styles.captureArea}
+                                        style={{
+                                            padding: `${padding}px`,
+                                            background: bgColor === 'transparent' ? 'transparent' : bgColor,
+                                            /* Dynamic Preview Scale: Consistent size regardless of resolution */
+                                            transform: `scale(${previewScale})`,
+                                            transformOrigin: 'top left', // Changed to top left to align with wrapper
+                                            width: 'fit-content'
+                                        }}
+                                    >
+                                        {renderMockup()}
+                                    </div>
                                 </div>
                             )}
                         </div>
 
+
                         {/* Controls Sidebar */}
-                        <div className={styles.sidebar}>
-                            <div className={styles.controlsCard}>
+                        {!isSidebarHidden && (
+                            <div className={styles.sidebar}>
+                                <div className={styles.sidebarScroll}>
 
-                                {/* 1. Category Tabs */}
-                                <div className={styles.categoryTabs}>
-                                    {CATEGORIES.map(cat => (
-                                        <button
-                                            key={cat.id}
-                                            className={`${styles.categoryTab} ${selectedCategory === cat.id ? styles.categoryTabActive : ''}`}
-                                            onClick={() => setSelectedCategory(cat.id)}
-                                        >
-                                            {getCategoryIcon(cat.id)}
-                                            <span>{cat.label}</span>
-                                        </button>
-                                    ))}
-                                </div>
-
-                                {/* 2. Device Selection (Filtered) */}
-                                <div className={styles.controlGroup}>
-                                    <div className={styles.deviceGrid}>
-                                        {Object.values(DEVICES)
-                                            .filter(d => d.category === selectedCategory)
-                                            .map(device => (
-                                                <div
-                                                    key={device.id}
-                                                    className={`${styles.deviceCard} ${selectedDevice === device.id ? styles.deviceCardActive : ''}`}
-                                                    onClick={() => setSelectedDevice(device.id)}
-                                                    title={device.name}
-                                                >
-                                                    <span className={styles.deviceName}>{device.name}</span>
-                                                </div>
-                                            ))}
-                                    </div>
-                                </div>
-
-                                {/* 3. Layout Controls */}
-                                <div className={styles.accordion}>
-                                    <div className={styles.controlGroup}>
-                                        <div className={styles.sliderHeader}>
-                                            <span className={styles.sliderLabel}>Padding (Jarak)</span>
-                                            <span className={styles.sliderValue}>{padding}px</span>
+                                    {/* Card 1: Device Selection */}
+                                    <div className={styles.controlsCard}>
+                                        <div className={styles.cardHeader}>
+                                            <h3 className={styles.cardTitle}>Pilih Device</h3>
                                         </div>
-                                        <input
-                                            type="range"
-                                            min="0" max="200"
-                                            value={padding}
-                                            onChange={(e) => setPadding(e.target.value)}
-                                            className={styles.slider}
-                                        />
+
+                                        <div className={styles.categoryTabs}>
+                                            {CATEGORIES.map(cat => (
+                                                <button
+                                                    key={cat.id}
+                                                    className={`${styles.categoryTab} ${selectedCategory === cat.id ? styles.categoryTabActive : ''}`}
+                                                    onClick={() => setSelectedCategory(cat.id)}
+                                                >
+                                                    {getCategoryIcon(cat.id)}
+                                                    <span>{cat.label}</span>
+                                                </button>
+                                            ))}
+                                        </div>
+
+                                        <div className={styles.deviceGrid}>
+                                            {Object.values(DEVICES)
+                                                .filter(d => d.category === selectedCategory)
+                                                .map(device => (
+                                                    <div
+                                                        key={device.id}
+                                                        className={`${styles.deviceCard} ${selectedDevice === device.id ? styles.deviceCardActive : ''}`}
+                                                        onClick={() => setSelectedDevice(device.id)}
+                                                        title={device.name}
+                                                    >
+                                                        <span className={styles.deviceName}>{device.name}</span>
+                                                    </div>
+                                                ))}
+                                        </div>
                                     </div>
 
-                                    {image && (
-                                        <div className={styles.controlGroup}>
-                                            <label className={styles.label}>Posisi Gambar</label>
+                                    {/* Card 2: Customization */}
+                                    <div className={styles.controlsCard}>
+                                        <div className={styles.cardHeader}>
+                                            <h3 className={styles.cardTitle}>Kustomisasi</h3>
+                                        </div>
 
-                                            <div className={styles.scaleButtons} style={{ marginBottom: '12px' }}>
-                                                <button
-                                                    className={`${styles.scaleBtn} ${fitMode === 'cover' ? styles.scaleBtnActive : ''}`}
-                                                    onClick={() => setFitMode('cover')}
-                                                >
-                                                    Penuh (Crop)
-                                                </button>
-                                                <button
-                                                    className={`${styles.scaleBtn} ${fitMode === 'contain' ? styles.scaleBtnActive : ''}`}
-                                                    onClick={() => setFitMode('contain')}
-                                                >
-                                                    Fit (Utuh)
-                                                </button>
-                                            </div>
+                                        {/* Browser URL Input */}
+                                        {currentDevice?.type === 'browser' && (
+                                            <ControlSection title="Website URL" tooltip="Ganti alamat website di address bar">
+                                                <input
+                                                    type="text"
+                                                    value={customUrl}
+                                                    onChange={(e) => setCustomUrl(e.target.value)}
+                                                    className={styles.input}
+                                                    placeholder="example.com"
+                                                />
+                                            </ControlSection>
+                                        )}
 
+                                        {/* Padding Control */}
+                                        <ControlSection title="Layout" tooltip="Atur jarak (padding) antara frame dan tepi gambar">
                                             <div className={styles.sliderHeader}>
-                                                <span className={styles.sliderLabel}>Zoom Gambar</span>
-                                                <span className={styles.sliderValue}>{Math.round(imageScale * 100)}%</span>
+                                                <span className={styles.sliderLabel}>Padding (Jarak)</span>
+                                                <span className={styles.sliderValue}>{padding}px</span>
                                             </div>
                                             <input
                                                 type="range"
-                                                min="0.5" max="3" step="0.1"
-                                                value={imageScale}
-                                                onChange={(e) => setImageScale(parseFloat(e.target.value))}
+                                                min="0" max="200"
+                                                value={padding}
+                                                onChange={(e) => setPadding(e.target.value)}
                                                 className={styles.slider}
                                             />
-                                            <p className={styles.dropSubtext} style={{ marginTop: '8px' }}>*Geser gambar di preview untuk mengatur posisi</p>
-                                        </div>
-                                    )}
+                                        </ControlSection>
 
-                                    <div className={styles.controlGroup}>
-                                        <label className={styles.label}>Background</label>
-                                        <div className={styles.colorGrid}>
-                                            {['#f3f4f6', '#1e293b', '#ef4444', '#3b82f6', '#10b981', '#f59e0b', 'transparent'].map(color => (
-                                                <div
-                                                    key={color}
-                                                    className={`${styles.colorBtn} ${bgColor === color ? styles.colorBtnActive : ''}`}
-                                                    style={{
-                                                        backgroundColor: color === 'transparent' ? 'white' : color,
-                                                        backgroundImage: color === 'transparent' ? 'linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%)' : 'none',
-                                                        backgroundSize: '10px 10px'
-                                                    }}
-                                                    onClick={() => setBgColor(color)}
-                                                    title={color}
+                                        {/* Image Controls */}
+                                        {image && (
+                                            <ControlSection title="Posisi Gambar" tooltip="Sesuaikan posisi, zoom, dan cropping gambar">
+                                                <div className={styles.scaleButtons} style={{ marginBottom: '16px' }}>
+                                                    <button
+                                                        className={`${styles.scaleBtn} ${fitMode === 'cover' ? styles.scaleBtnActive : ''}`}
+                                                        onClick={() => setFitMode('cover')}
+                                                    >
+                                                        Penuh (Crop)
+                                                    </button>
+                                                    <button
+                                                        className={`${styles.scaleBtn} ${fitMode === 'contain' ? styles.scaleBtnActive : ''}`}
+                                                        onClick={() => setFitMode('contain')}
+                                                    >
+                                                        Fit (Utuh)
+                                                    </button>
+                                                </div>
+
+                                                <div className={styles.sliderGroup}>
+                                                    <div className={styles.sliderHeader}>
+                                                        <span className={styles.sliderLabel}>Posisi Horizontal (X)</span>
+                                                        <span className={styles.sliderValue}>{imagePos.x}%</span>
+                                                    </div>
+                                                    <input
+                                                        type="range"
+                                                        min="0" max="100"
+                                                        value={imagePos.x}
+                                                        onChange={(e) => setImagePos(prev => ({ ...prev, x: parseInt(e.target.value) }))}
+                                                        className={styles.slider}
+                                                    />
+                                                </div>
+
+                                                <div className={styles.sliderGroup}>
+                                                    <div className={styles.sliderHeader}>
+                                                        <span className={styles.sliderLabel}>Posisi Vertikal (Y)</span>
+                                                        <span className={styles.sliderValue}>{imagePos.y}%</span>
+                                                    </div>
+                                                    <input
+                                                        type="range"
+                                                        min="0" max="100"
+                                                        value={imagePos.y}
+                                                        onChange={(e) => setImagePos(prev => ({ ...prev, y: parseInt(e.target.value) }))}
+                                                        className={styles.slider}
+                                                    />
+                                                </div>
+
+                                                <div className={styles.sliderGroup}>
+                                                    <div className={styles.sliderHeader}>
+                                                        <span className={styles.sliderLabel}>Zoom Gambar</span>
+                                                        <span className={styles.sliderValue}>{Math.round(imageScale * 100)}%</span>
+                                                    </div>
+                                                    <input
+                                                        type="range"
+                                                        min="0.5" max="3" step="0.1"
+                                                        value={imageScale}
+                                                        onChange={(e) => setImageScale(parseFloat(e.target.value))}
+                                                        className={styles.slider}
+                                                    />
+                                                </div>
+                                                <p className={styles.dropSubtext}>*Gunakan slider untuk mengatur posisi gambar</p>
+                                            </ControlSection>
+                                        )}
+
+                                        {/* Background Control */}
+                                        <ControlSection title="Background" tooltip="Ganti warna latar belakang mockup">
+                                            <div className={styles.colorGrid}>
+                                                {['#f3f4f6', '#1e293b', '#ef4444', '#3b82f6', '#10b981', '#f59e0b', 'transparent'].map(color => (
+                                                    <div
+                                                        key={color}
+                                                        className={`${styles.colorBtn} ${bgColor === color ? styles.colorBtnActive : ''}`}
+                                                        style={{
+                                                            backgroundColor: color === 'transparent' ? 'white' : color,
+                                                            backgroundImage: color === 'transparent' ? 'linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%)' : 'none',
+                                                            backgroundSize: '10px 10px'
+                                                        }}
+                                                        onClick={() => setBgColor(color)}
+                                                        title={color}
+                                                    />
+                                                ))}
+                                                <input
+                                                    type="color"
+                                                    value={bgColor === 'transparent' ? '#ffffff' : bgColor}
+                                                    onChange={(e) => setBgColor(e.target.value)}
+                                                    className={styles.colorBtnInput}
                                                 />
-                                            ))}
-                                            <input
-                                                type="color"
-                                                value={bgColor === 'transparent' ? '#ffffff' : bgColor}
-                                                onChange={(e) => setBgColor(e.target.value)}
-                                                className={styles.colorBtnInput}
-                                            />
-                                        </div>
-                                    </div>
+                                            </div>
+                                        </ControlSection>
 
-                                    {/* 4. Export Settings */}
-                                    <div className={styles.controlGroup}>
-                                        <div className={styles.sliderHeader}>
-                                            <span className={styles.sliderLabel}>Kualitas (Output)</span>
-                                            <span className={styles.sliderValue}>{scale}x</span>
-                                        </div>
-                                        <div className={styles.scaleButtons}>
-                                            {[1, 2, 3, 4].map(s => (
+                                        {/* Export / Quality */}
+                                        <ControlSection title="Kualitas (Output)" tooltip="Resolusi gambar hasil download">
+                                            <div className={styles.sliderHeader}>
+                                                <span className={styles.sliderLabel}>Multiplier</span>
+                                                <span className={styles.sliderValue}>{scale}x</span>
+                                            </div>
+                                            <div className={styles.scaleButtons}>
+                                                {[1, 2, 3, 4].map(s => (
+                                                    <button
+                                                        key={s}
+                                                        className={`${styles.scaleBtn} ${scale === s ? styles.scaleBtnActive : ''}`}
+                                                        onClick={() => setScale(s)}
+                                                    >
+                                                        {s}x
+                                                    </button>
+                                                ))}
+                                            </div>
+                                            <div className={styles.resolutionHint}>
+                                                {(currentDevice?.w * scale) || 0} x {(currentDevice?.h * scale) || 0} px
+                                            </div>
+                                        </ControlSection>
+
+                                        {/* Actions */}
+                                        <div className={styles.actions}>
+                                            <button
+                                                className={styles.downloadBtn}
+                                                onClick={downloadMockup}
+                                                disabled={!image}
+                                                style={{
+                                                    backgroundColor: 'var(--primary-dark)',
+                                                    color: 'white',
+                                                }}
+                                            >
+                                                <Download size={20} /> Download PNG
+                                            </button>
+
+                                            {image && (
                                                 <button
-                                                    key={s}
-                                                    className={`${styles.scaleBtn} ${scale === s ? styles.scaleBtnActive : ''}`}
-                                                    onClick={() => setScale(s)}
+                                                    className={styles.resetBtn}
+                                                    onClick={() => {
+                                                        setImage(null)
+                                                        // Reset file input
+                                                        const fileInput = document.getElementById('image-upload')
+                                                        if (fileInput) fileInput.value = ''
+                                                    }}
                                                 >
-                                                    {s}x
+                                                    Reset Gambar
                                                 </button>
-                                            ))}
+                                            )}
                                         </div>
                                     </div>
-                                </div>
-
-                                {/* Actions */}
-                                <div className={styles.actions}>
-                                    <button
-                                        className={styles.downloadBtn}
-                                        onClick={downloadMockup}
-                                        disabled={!image}
-                                        style={{
-                                            backgroundColor: 'var(--primary-dark)',
-                                            color: 'white',
-                                        }}
-                                    >
-                                        <Download size={20} /> Download PNG
-                                    </button>
-
-                                    {image && (
-                                        <button
-                                            className={styles.resetBtn}
-                                            onClick={() => {
-                                                setImage(null)
-                                                // Reset file input
-                                                const fileInput = document.getElementById('image-upload')
-                                                if (fileInput) fileInput.value = ''
-                                            }}
-                                        >
-                                            Reset Gambar
-                                        </button>
-                                    )}
                                 </div>
                             </div>
-                        </div>
+                        )}
                     </div>
                 </div>
-
                 <TrustSection />
                 <GuideSection toolId="mockup-generator" />
             </main>

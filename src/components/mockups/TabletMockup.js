@@ -1,48 +1,42 @@
-import styles from './Mockups.module.css'
+import styles from "./Mockups.module.css"
 
-export default function TabletMockup({ image, fitMode, imageScale = 1, imageOffset = { x: 0, y: 0 }, isPanning, onMouseDown, onMouseMove, onMouseUp, device }) {
-    // iPad Pro 11" 
-    const width = 590
-    const height = 820
+import { TABLETS } from '@/app/mockup-generator/registry'
+
+export default function TabletMockup({
+    deviceType = "ipadPro",
+    image,
+    scale = 0.5,
+    fitMode = "cover",
+    imagePos
+}) {
+    const d = TABLETS[deviceType]
+    const width = d.w * scale
+    const height = d.h * scale
 
     return (
         <div
-            className={`${styles.wrapper} ${styles.ipadFrame}`}
+            className={styles.tabletFrame}
             style={{
-                width: `${width}px`,
-                height: `${height}px`,
-                backgroundColor: device?.frameColor || '#282828'
+                width,
+                height,
+                borderRadius: d.r * scale,
+                padding: d.bezel * scale
             }}
         >
-            {/* Gloss Reflection */}
-            <div className={styles.phoneReflection} style={{ borderRadius: '18px' }} />
-
-            {/* Screen Content */}
-            <div
-                className={styles.screen}
-                style={{
-                    width: '100%',
-                    height: '100%',
-                    borderRadius: '16px'
-                }}
-            >
+            <div className={styles.tabletCamera} />
+            <div className={styles.screen}>
                 {image && (
                     <div
                         className={styles.screenContent}
                         style={{
                             backgroundImage: `url(${image.src})`,
-                            backgroundSize: fitMode === 'cover' ? 'cover' : 'contain',
-                            backgroundPosition: 'top center',
-                            transform: `scale(${imageScale}) translate(${imageOffset.x}px, ${imageOffset.y}px)`,
-                            cursor: isPanning ? 'grabbing' : 'grab',
+                            backgroundSize: fitMode,
+                            backgroundPosition: `${imagePos?.x || 50}% ${imagePos?.y || 50}%`
                         }}
-                        onMouseDown={onMouseDown}
-                        onMouseMove={onMouseMove}
-                        onMouseUp={onMouseUp}
-                        onMouseLeave={onMouseUp}
                     />
                 )}
             </div>
+            <div className={styles.glassReflection} />
         </div>
     )
 }

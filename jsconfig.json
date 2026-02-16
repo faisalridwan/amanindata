@@ -32,7 +32,7 @@
         "**/*.js",
         "**/*.jsx",
         ".next/types/**/*.ts"
-    ],
+, "src/app/page.js.bak", "src/app/page.js.bakk"    ],
     "exclude": [
         "node_modules",
         "_backup"

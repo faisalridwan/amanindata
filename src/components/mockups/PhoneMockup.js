@@ -1,60 +1,98 @@
-import styles from './Mockups.module.css'
+import styles from "./Mockups.module.css"
 
-export default function PhoneMockup({ image, scale = 1, fitMode, imageScale = 1, imageOffset = { x: 0, y: 0 }, isPanning, onMouseDown, onMouseMove, onMouseUp, device }) {
-    // Dynamic dimensions based on device type in parent, but here we can just use 
-    // basic relative sizing or fixed pixels. 
-    // Approach: The container is sized by the parent or fixed.
-    // Let's use fixed dimensions from our constants for the "inner" part and scale the whole thing.
+/*
+MOCKUP ENGINE V3 – PHONE
+Fully parametric physical device renderer
+Accurate ratios, notch/island logic, curved OLED simulation,
+fold support, dual screen, material shading.
+*/
 
-    // iPhone 15 Pro logical res: 393 x 852.
-    // Frame adds padding.
-    const width = 393
-    const height = 852
+import { PHONES as DEVICES } from '@/app/mockup-generator/registry'
+
+export default function PhoneMockup({
+    deviceType = "iphone14ProMax",
+    image,
+    scale = 0.55,
+    fitMode = "cover",
+    imagePos
+}) {
+    const d = DEVICES[deviceType]
+    if (!d) return null
+
+    const width = d.w * scale
+    const height = d.h * scale
+    const frameRadius = d.frameRadius * scale
+    const screenRadius = d.screenRadius * scale
+    const bezel = d.bezel * scale
+
+    const notchW = width * 0.52
+    const notchH = height * 0.045
+    const islandW = width * 0.33
+    const islandH = height * 0.04
+    const punchSize = width * 0.035
 
     return (
         <div
-            className={`${styles.wrapper} ${styles.phoneFrame} ${device?.color === 'titanium' ? styles.titanium : ''}`}
+            className={`${styles.phoneFrame} ${styles[d.material] || ""}`}
             style={{
-                width: `${width}px`,
-                // Height auto or fixed? Fixed allows dynamic island to position correctly.
-                height: `${height}px`,
-                backgroundColor: device?.frameColor || '#1c1c1e'
+                width,
+                height,
+                borderRadius: frameRadius,
+                padding: bezel
             }}
         >
-            {/* Dynamic Island */}
-            <div className={styles.dynamicIsland}>
-                <div className={styles.cameraDot} />
-            </div>
+            {d.dynamicIsland && (
+                <div
+                    className={styles.dynamicIsland}
+                    style={{ width: islandW, height: islandH }}
+                />
+            )}
 
-            {/* Reflection Overlay */}
-            <div className={styles.phoneReflection} />
+            {d.notch && (
+                <div
+                    className={styles.notch}
+                    style={{ width: notchW, height: notchH }}
+                />
+            )}
 
-            {/* Screen Content */}
+            {d.punch && (
+                <div
+                    className={styles.punchHole}
+                    style={{ width: punchSize, height: punchSize }}
+                />
+            )}
+
+            {d.homeButton && <div className={styles.homeButton} />}
+
+            {/* Physical Buttons (Only on flat edge/pro devices usually) */}
+            {d.flatEdges && (
+                <>
+                    <div className={`${styles.button} ${styles.volumeUp}`} />
+                    <div className={`${styles.button} ${styles.volumeDown}`} />
+                    <div className={`${styles.button} ${styles.powerBtn}`} />
+                </>
+            )}
+
             <div
-                className={styles.screen}
-                style={{
-                    width: '100%',
-                    height: '100%',
-                    borderRadius: '46px'
-                }}
+                className={`${styles.screen} ${d.curvedOLED ? styles.curvedOLED : ""}`}
+                style={{ borderRadius: screenRadius }}
             >
                 {image && (
                     <div
                         className={styles.screenContent}
                         style={{
                             backgroundImage: `url(${image.src})`,
-                            backgroundSize: fitMode === 'cover' ? 'cover' : 'contain',
-                            backgroundPosition: 'top center',
-                            transform: `scale(${imageScale}) translate(${imageOffset.x}px, ${imageOffset.y}px)`,
-                            cursor: isPanning ? 'grabbing' : 'grab',
+                            backgroundSize: fitMode,
+                            backgroundPosition: `${imagePos?.x || 50}% ${imagePos?.y || 50}%`
                         }}
-                        onMouseDown={onMouseDown}
-                        onMouseMove={onMouseMove}
-                        onMouseUp={onMouseUp}
-                        onMouseLeave={onMouseUp}
                     />
                 )}
             </div>
+
+            {d.fold && <div className={styles.foldHinge} />}
+            {d.dual && <div className={styles.dualGap} />}
+
+            <div className={styles.glassReflection} />
         </div>
     )
 }
