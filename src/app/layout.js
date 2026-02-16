@@ -1,5 +1,6 @@
 import { Poppins } from 'next/font/google'
 import '@/styles/globals.css'
+import Script from 'next/script'
 import GoogleAnalytics from '@/components/GoogleAnalytics'
 import ConsentModal from '@/components/ConsentModal'
 import JsonLd from '@/components/JsonLd'
@@ -52,6 +53,7 @@ export const metadata = {
     },
     verification: {
         google: 'google-site-verification-code',
+        'google-adsense-account': 'ca-pub-9738454984006701',
     },
 }
 
@@ -60,6 +62,12 @@ export default function RootLayout({ children }) {
         <html lang="id" suppressHydrationWarning>
             <body className={poppins.className}>
                 <ThemeProvider>
+                    <Script
+                        async
+                        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9738454984006701"
+                        crossOrigin="anonymous"
+                        strategy="afterInteractive"
+                    />
                     <JsonLd />
                     <GoogleAnalytics />
                     <ConsentModal />
