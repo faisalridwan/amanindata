@@ -151,6 +151,7 @@ export default function PdfSecurityClient() {
                                 title={mode === 'protect' ? "Upload PDF untuk Dikunci" : "Upload PDF Terkunci"}
                                 description="Seret & lepas atau klik untuk memilih file PDF"
                                 icon={mode === 'protect' ? Lock : Unlock}
+                                formats={['PDF']}
                             />
                             {error && (
                                 <div className={styles.errorBanner}>
