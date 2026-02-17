@@ -98,14 +98,14 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
     return (
-        <html lang="id" suppressHydrationWarning>
+        <html lang="id" suppressHydrationWarning data-scroll-behavior="smooth">
             <body className={poppins.className}>
                 <ThemeProvider>
                     <Script
                         async
                         src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9738454984006701"
                         crossOrigin="anonymous"
-                        strategy="afterInteractive"
+                        strategy="lazyOnload"
                     />
                     <Script
                         src="https://www.googletagmanager.com/gtag/js?id=G-YN17XSBEMY"
@@ -116,6 +116,7 @@ export default function RootLayout({ children }) {
                             window.dataLayer = window.dataLayer || [];
                             function gtag(){dataLayer.push(arguments);}
                             gtag('js', new Date());
+
                             gtag('config', 'G-YN17XSBEMY');
                         `}
                     </Script>
