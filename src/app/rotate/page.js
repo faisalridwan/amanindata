@@ -1,28 +1,15 @@
-'use client'
 
-import dynamic from 'next/dynamic'
+import RotateWrapper from './RotateWrapper'
 
-const RotateClient = dynamic(() => import('./RotateClient'), {
-    ssr: false,
-    loading: () => (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: 'var(--bg-primary)' }}>
-            <div className="spinner"></div>
-            <p style={{ marginLeft: '12px', fontWeight: 600, color: 'var(--text-secondary)' }}>Loading Rotate PDF...</p>
-            <style jsx>{`
-                .spinner {
-                    width: 30px;
-                    height: 30px;
-                    border: 4px solid var(--border-color);
-                    border-top-color: var(--primary-dark);
-                    border-radius: 50%;
-                    animation: spin 1s linear infinite;
-                }
-                @keyframes spin { to { transform: rotate(360deg); } }
-            `}</style>
-        </div>
-    )
-})
+export const metadata = {
+    title: 'Putar PDF Online Gratis - Rotasi Halaman PDF Permanen | Amanin Data',
+    description: 'Putar orientasi halaman PDF (Portrait/Landscape) secara mudah dan permanen. Simpan hasil rotasi sebagai file PDF baru. Gratis, tanpa watermark, dan aman karena diproses di browser Anda.',
+    keywords: 'putar pdf, rotasi pdf, rotate pdf, ubah orientasi pdf, pdf landscape, pdf portrait, amanin data, tanpa upload, client-side',
+    alternates: {
+        canonical: '/rotate',
+    },
+}
 
-export default function Page() {
-    return <RotateClient />
+export default function RotatePage() {
+    return <RotateWrapper />
 }

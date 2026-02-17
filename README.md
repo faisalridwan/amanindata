@@ -42,23 +42,17 @@ In today's digital age, identity theft and the misuse of personal data through s
 *   **Smart Compression**: Reduce file size significantly while maintaining quality using advanced algorithms.
 *   **Flexible Presets**: Choose from High, Medium, or Low quality presets, or use Advanced Mode for custom control.
 *   **PDF Support**: Compress PDF documents alongside images.
-*   **Privacy Focused**: All compression happens locally in your browser.
 
-### 🙈 Sensor Data (Redaction)
-*   **Secure Redaction**: Blocks out or blurs sensitive information (NIK, names, photos) permanently.
-*   **Multi-Page PDF**: Support for redacting multi-page PDF documents.
-*   **Customization**: Choose custom colors for redaction blocks to match document background.
-*   **Export Options**: Save redacted documents as PDF or PNG.
+### 🛠️ More Utility Tools
+*   **Split & Merge PDF**: Organize your PDF pages easily with drag-and-drop.
+*   **OCR Image to Text**: Extract text from images using Tesseract.js (Offline capable).
+*   **Mockup Generator**: Create professional device mockups (iPhone, Mac, Browser) for your screenshots.
+*   **Speed Test**: Check your internet connection speed (Download, Upload, Ping) accurately.
+*   **Color Picker**: Extract colors from images or use the eyedropper tool.
+*   **Diff Checker**: Compare text differences side-by-side.
+*   **Bulk Renamer**: Rename huge lists of files with patterns (Prefix/Suffix/Numbering).
+*   **Privacy Tools**: EXIF Remover, Redact PDF, and NIK Parser (Offline validation).
 
-### ✂️ Background Remover
-*   **AI-Powered Removal**: Instantly remove backgrounds from photos using advanced AI models directly in the browser.
-*   **100% Client-Side**: No image uploads to servers; everything is processed locally for maximum privacy.
-*   **High Precision**: Accurately separates subjects from backgrounds.
-
-### 🔄 Efficient Workflow
-*   **Insta-Reset**: Revert all changes to default with a single click if a mistake occurs.
-*   **Real-Time Preview**: See every change you make instantly before saving the document.
-*   **Multi-Export**: Save the final result in high-quality **PNG** format or secure **PDF**.
 
 ---
 
@@ -85,7 +79,13 @@ The project utilizes modern web technologies for high performance and security:
 *   **PDF.js**: Used for high-performance rendering of PDF files into the browser canvas.
 *   **@imgly/background-removal**: AI-based background removal running entirely in the browser.
 *   **browser-image-compression**: Efficient client-side image compression.
+*   **Tesseract.js**: AI OCR engine for text extraction from images.
 *   **Vanilla CSS (CSS Modules)**: A calming **Neumorphic** design without heavy CSS library dependencies.
+
+### 🏗️ Architecture
+*   **Server Components (`page.js`)**: Used for SEO metadata (Title, Description, JSON-LD) and initial HTML shell.
+*   **Client Components (`*Client.js`)**: Handles all interactive logic and data processing in the browser.
+
 
 ---
 
