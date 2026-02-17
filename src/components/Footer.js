@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
-import { FileImage, PenTool, BookOpen, Info, HelpCircle, FileStack, Shield, Library, Mail, Heart, FileText, Github, GitBranch, Minimize2, EyeOff, User, Scissors, QrCode, Move, RotateCw, ScissorsLineDashed, ChevronUp, Grid, Lock, RefreshCw, Smartphone, FileDiff, Zap, Palette, Trash2, Globe, Camera, Sigma, FileEdit, ListOrdered, Fingerprint, Braces } from 'lucide-react'
+import { FileImage, PenTool, BookOpen, Info, HelpCircle, FileStack, Shield, Library, Mail, Heart, FileText, Github, GitBranch, Minimize2, EyeOff, User, Scissors, QrCode, Move, RotateCw, ScissorsLineDashed, ChevronUp, Grid, Lock, RefreshCw, Smartphone, FileDiff, Zap, Palette, Trash2, Globe, Camera, Sigma, FileEdit, ListOrdered, Fingerprint, Braces, ScanText, ArrowLeftRight, Key, Type, TextCursor } from 'lucide-react'
 import styles from './Footer.module.css'
 
 export default function Footer() {
@@ -23,6 +23,8 @@ export default function Footer() {
     }, [])
 
     const otherProducts = [
+ 
+        { href: '/ocr', label: 'OCR (Image to Text)', icon: ScanText },
         { href: '/redact', label: 'Sensor Data', icon: EyeOff },
         { href: '/compress', label: 'Kompres Foto', icon: Minimize2 },
         { href: '/image-converter', label: 'Image Converter', icon: RefreshCw },
@@ -47,6 +49,10 @@ export default function Footer() {
         { href: '/css-gradient', label: 'CSS Gradient', icon: Palette },
         { href: '/hash-generator', label: 'Hash Generator', icon: Fingerprint },
         { href: '/json-formatter', label: 'JSON Formatter', icon: Braces },
+        { href: '/pdf-word', label: 'PDF <-> Word', icon: ArrowLeftRight },
+        { href: '/pdf-security', label: 'Protect/Unlock PDF', icon: Key },
+        { href: '/case-converter', label: 'Case Converter', icon: Type },
+        { href: '/word-counter', label: 'Word Counter', icon: TextCursor },
     ]
 
     return (

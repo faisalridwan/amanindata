@@ -22,6 +22,10 @@ export default function sitemap() {
 
     // Product/Tool pages - Priority 0.8
     const tools = [
+        '/pdf-word',
+        '/case-converter',
+        '/word-counter',
+        '/pdf-security',
         '/signature',
         '/pdf-page-number',
         '/password-generator',

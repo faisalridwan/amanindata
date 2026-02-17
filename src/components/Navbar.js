@@ -7,7 +7,7 @@ import {
     FileImage, PenTool, BookOpen, Shield, Info, Heart, Menu, X, Minimize2,
     EyeOff, User, Camera, ChevronDown, FileStack, Grid, Scissors, QrCode,
     Move, RotateCw, ScissorsLineDashed, Lock, Globe, RefreshCw, Trash2,
-    Palette, Smartphone, FileDiff, Zap, ScanText, Sigma, FileEdit, ListOrdered, Fingerprint, Braces
+    Palette, Smartphone, FileDiff, Zap, ScanText, Sigma, FileEdit, ListOrdered, FileText, Braces, Fingerprint, ArrowLeftRight, Key, Type, TextCursor
 } from 'lucide-react'
 import styles from './Navbar.module.css'
 import ThemeToggle from './ThemeToggle'
@@ -26,6 +26,7 @@ export default function Navbar() {
 
     // Product Dropdown Items
     const productItems = [
+     
         { href: '/', label: 'Watermark Dokumen', icon: FileImage, desc: 'Tambahkan watermark pada scan dokumen agar aman.' },
         { href: '/signature', label: 'Tanda Tangan', icon: PenTool, desc: 'Buat tanda tangan digital transparan.' },
         { href: '/compress', label: 'Kompres Foto', icon: Minimize2, desc: 'Perkecil ukuran foto tanpa kurangi kualitas.' },
@@ -50,7 +51,11 @@ export default function Navbar() {
         { href: '/pdf-page-number', label: 'PDF Numberer', icon: ListOrdered, desc: 'Tambah nomor halaman PDF otomatis.' },
         { href: '/css-gradient', label: 'CSS Gradient', icon: Palette, desc: 'Buat & copy kode gradasi warna CSS.' },
         { href: '/hash-generator', label: 'Hash Generator', icon: Fingerprint, desc: 'Generate MD5/SHA checksum.' },
-        { href: '/json-formatter', label: 'JSON Formatter', icon: Braces, desc: 'Format, validate, & minify JSON.' }
+        { href: '/json-formatter', label: 'JSON Formatter', icon: Braces, desc: 'Format, validate, & minify JSON.' },
+        { href: '/case-converter', label: 'Case Converter', icon: Type, desc: 'Ubah huruf besar/kecil teks otomatis.' },
+        { href: '/word-counter', label: 'Word Counter', icon: TextCursor, desc: 'Hitung kata, karakter & estimasi baca.' },
+        { href: '/pdf-word', label: 'PDF <-> Word', icon: ArrowLeftRight, desc: 'Konversi PDF ke Word & sebaliknya.' },
+        { href: '/pdf-security', label: 'Protect/Unlock PDF', icon: Key, desc: 'Kunci atau Buka password PDF aman.' },
     ]
 
     // Info/Footer Items in Dropdown

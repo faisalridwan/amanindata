@@ -1,0 +1,141 @@
+.container {
+  min-height: 100vh;
+  background-color: var(--background);
+  color: var(--text-primary);
+  display: flex;
+  flex-direction: column;
+}
+
+.main {
+  flex: 1;
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.heroTitle {
+  font-size: var(--font-size-4xl);
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.heroTitle span {
+  color: var(--primary);
+}
+
+.description {
+  color: var(--text-secondary);
+  text-align: center;
+  margin-bottom: 40px;
+  font-size: 1.1rem;
+  max-width: 600px;
+}
+
+.toolContainer {
+  width: 100%;
+  max-width: 800px;
+  background: var(--card-bg);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  border: 1px solid var(--border-color);
+}
+
+.textArea {
+  width: 100%;
+  height: 200px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  background: var(--background);
+  color: var(--text-primary);
+  padding: 15px;
+  font-size: 1rem;
+  resize: vertical;
+  outline: none;
+  font-family: inherit;
+}
+
+.textArea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(91, 141, 239, 0.1);
+}
+
+.controls {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.button {
+  background: var(--background);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.button:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: rgba(91, 141, 239, 0.05);
+}
+
+.actionButtons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.copyButton {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.copyButton:hover {
+  opacity: 0.9;
+}
+
+.clearButton {
+  background: transparent;
+  color: #ff4d4f;
+  border: 1px solid #ff4d4f;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.clearButton:hover {
+  background: rgba(255, 77, 79, 0.05);
+}
+
+@media (max-width: 768px) {
+  .title { font-size: 2rem; }
+  .toolContainer { padding: 20px; }
+  .controls { gap: 8px; }
+  .button { padding: 8px 16px; font-size: 0.9rem; }
+}
