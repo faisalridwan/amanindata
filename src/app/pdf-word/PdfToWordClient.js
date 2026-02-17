@@ -7,7 +7,7 @@ import TrustSection from '@/components/TrustSection'
 import GuideSection from '@/components/GuideSection'
 import UploadArea from '@/components/UploadArea'
 import styles from './page.module.css'
-import { FileText, Download, Loader2, ArrowRight, RefreshCcw, File as FileIcon, ArrowLeftRight, ShieldCheck } from 'lucide-react'
+import { FileText, Download, Loader2, ArrowRight, RefreshCcw, File as FileIcon, ArrowLeftRight, ShieldCheck, Check } from 'lucide-react'
 import { Document, Packer, Paragraph, TextRun } from 'docx'
 import { saveAs } from 'file-saver'
 import mammoth from 'mammoth'
@@ -248,11 +248,15 @@ export default function PdfToWordClient() {
                                     </p>
                                 </div>
                             ) : isSuccess ? (
-                                <div style={{ textAlign: 'center' }}>
-                                    <p style={{ color: '#52c41a', fontWeight: '600', marginBottom: '15px' }}>
-                                        Konversi Berhasil! File telah didownload.
-                                    </p>
-                                    <button onClick={reset} className={styles.convertButton} style={{ background: 'var(--text-secondary)' }}>
+                                <div className={styles.successState}>
+                                    <div className={styles.successIcon}>
+                                        <Check size={32} strokeWidth={3} />
+                                    </div>
+                                    <div>
+                                        <h3 className={styles.successTitle}>Konversi Berhasil!</h3>
+                                        <p className={styles.successDesc}>File Anda telah otomatis didownload.</p>
+                                    </div>
+                                    <button onClick={reset} className={styles.secondaryButton}>
                                         <RefreshCcw size={18} /> Konversi File Lain
                                     </button>
                                 </div>

@@ -55,7 +55,7 @@ export default function Navbar() {
         { href: '/case-converter', label: 'Case Converter', icon: Type, desc: 'Ubah huruf besar/kecil teks otomatis.' },
         { href: '/word-counter', label: 'Word Counter', icon: TextCursor, desc: 'Hitung kata, karakter & estimasi baca.' },
         { href: '/pdf-word', label: 'PDF <-> Word', icon: ArrowLeftRight, desc: 'Konversi PDF ke Word & sebaliknya.' },
-        { href: '/pdf-security', label: 'Protect/Unlock PDF', icon: Key, desc: 'Kunci atau Buka password PDF aman.' },
+        { href: '/pdf-security', label: 'Protect & Unlock PDF', icon: Key, desc: 'Kunci atau Buka password PDF aman.' },
     ]
 
     // Info/Footer Items in Dropdown

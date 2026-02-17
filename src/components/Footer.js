@@ -50,7 +50,7 @@ export default function Footer() {
         { href: '/hash-generator', label: 'Hash Generator', icon: Fingerprint },
         { href: '/json-formatter', label: 'JSON Formatter', icon: Braces },
         { href: '/pdf-word', label: 'PDF <-> Word', icon: ArrowLeftRight },
-        { href: '/pdf-security', label: 'Protect/Unlock PDF', icon: Key },
+        { href: '/pdf-security', label: 'Protect & Unlock PDF', icon: Key },
         { href: '/case-converter', label: 'Case Converter', icon: Type },
         { href: '/word-counter', label: 'Word Counter', icon: TextCursor },
     ]
