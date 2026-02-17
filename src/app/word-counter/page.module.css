@@ -225,3 +225,16 @@
   .toolContainer { padding: 20px; }
   .statsGrid { grid-template-columns: repeat(2, 1fr); }
 }
+
+.safeTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: #DCFCE7;
+  color: #166534;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-top: 12px;
+}

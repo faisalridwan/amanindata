@@ -122,8 +122,10 @@ export default function PdfSecurityClient() {
                     {mode === 'protect' 
                         ? 'Enkripsi dokumen PDF Anda dengan password yang aman dalam hitungan detik.' 
                         : 'Hapus password dari file PDF Anda agar bisa diakses dengan mudah.'}
-                    <br/>100% Aman, diproses Client-Side di browser Anda.
                 </p>
+                <div className={styles.safeTag}>
+                    <ShieldCheck size={16} /> 100% Aman, diproses Client-Side
+                </div>
 
                 <div className={styles.toolContainer}>
                     <div className={styles.tabsContainer}>

@@ -7,7 +7,7 @@ import TrustSection from '@/components/TrustSection'
 import GuideSection from '@/components/GuideSection'
 import UploadArea from '@/components/UploadArea'
 import styles from './page.module.css'
-import { FileText, Download, Loader2, ArrowRight, RefreshCcw, File as FileIcon, ArrowLeftRight } from 'lucide-react'
+import { FileText, Download, Loader2, ArrowRight, RefreshCcw, File as FileIcon, ArrowLeftRight, ShieldCheck } from 'lucide-react'
 import { Document, Packer, Paragraph, TextRun } from 'docx'
 import { saveAs } from 'file-saver'
 import mammoth from 'mammoth'
@@ -173,8 +173,10 @@ export default function PdfToWordClient() {
                     {mode === 'pdf-to-word' 
                         ? 'Ubah dokumen PDF Anda menjadi format Word (.docx) yang bisa diedit.' 
                         : 'Simpan dokumen Word (.docx) Anda menjadi file PDF yang aman dan portabel.'}
-                    <br/>100% Aman, diproses di browser Anda tanpa upload ke server.
                 </p>
+                <div className={styles.safeTag}>
+                    <ShieldCheck size={16} /> 100% Aman, diproses Client-Side
+                </div>
 
                 <div className={styles.toolContainer}>
                     <div className={styles.tabs}>

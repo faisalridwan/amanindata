@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { Facebook, Twitter } from 'lucide-react'
+import { Facebook, Twitter, ShieldCheck } from 'lucide-react'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import TrustSection from '@/components/TrustSection'
@@ -37,6 +37,9 @@ export default function WordCounterClient() {
                 <p className={styles.description}>
                     Hitung jumlah kata, karakter, dan estimasi waktu baca secara real-time.
                 </p>
+                <div className={styles.safeTag}>
+                    <ShieldCheck size={16} /> 100% Aman, diproses Client-Side
+                </div>
 
                 <div className={styles.toolContainer}>
                     <div className={styles.statsGrid}>

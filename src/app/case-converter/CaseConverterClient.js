@@ -6,7 +6,7 @@ import Footer from '@/components/Footer'
 import TrustSection from '@/components/TrustSection'
 import GuideSection from '@/components/GuideSection'
 import styles from './page.module.css'
-import { Copy, Trash2, Check } from 'lucide-react'
+import { Copy, Trash2, Check, ShieldCheck } from 'lucide-react'
 
 export default function CaseConverterClient() {
     const [text, setText] = useState('')
@@ -63,6 +63,9 @@ export default function CaseConverterClient() {
                 <p className={styles.description}>
                     Ubah format teks Anda menjadi berbagai gaya penulisan secara instan.
                 </p>
+                <div className={styles.safeTag}>
+                    <ShieldCheck size={16} /> 100% Aman, diproses Client-Side
+                </div>
 
                 <div className={styles.toolContainer}>
                     <textarea 
