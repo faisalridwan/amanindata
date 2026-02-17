@@ -20,7 +20,8 @@ export default function PdfSecurityClient() {
     const [error, setError] = useState(null)
     const [isSuccess, setIsSuccess] = useState(false)
 
-    const handleFileSelect = (selectedFile) => {
+    const handleFileSelect = (e) => {
+        const selectedFile = e.target.files && e.target.files[0]
         if (selectedFile?.type === 'application/pdf') {
             setFile(selectedFile)
             setError(null)
@@ -115,8 +116,7 @@ export default function PdfSecurityClient() {
             <Navbar />
             <main className={styles.main}>
                 <h1 className={styles.heroTitle}>
-                    {mode === 'protect' ? <Lock className={styles.heroIcon} /> : <Unlock className={styles.heroIcon} />}
-                    {mode === 'protect' ? 'Protect' : 'Unlock'} <span>PDF</span>
+                    🔒 Protect & Unlock <span>PDF</span>
                 </h1>
                 <p className={styles.description}>
                     {mode === 'protect' 

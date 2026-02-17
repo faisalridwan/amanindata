@@ -34,16 +34,21 @@ export default function PdfToWordClient() {
         loadPdfWorker()
     }, [])
 
-    const handleFileSelect = (selectedFile) => {
+    const handleFileSelect = (e) => {
+        const selectedFile = e.target.files && e.target.files[0]
         if (mode === 'pdf-to-word') {
             if (selectedFile?.type === 'application/pdf') {
-                setFile(selectedFile); setError(null); setIsSuccess(false)
+                setFile(selectedFile)
+                setError('')
+                setIsSuccess(false)
             } else {
                 setError('Mohon upload file PDF yang valid.')
             }
         } else {
-            if (selectedFile?.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
-                setFile(selectedFile); setError(null); setIsSuccess(false)
+            if (selectedFile?.name.endsWith('.docx') || selectedFile?.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+                setFile(selectedFile)
+                setError('')
+                setIsSuccess(false)
             } else {
                 setError('Mohon upload file Word (.docx) yang valid.')
             }
@@ -199,9 +204,10 @@ export default function PdfToWordClient() {
                             <UploadArea
                                 onFileSelect={handleFileSelect}
                                 accept={mode === 'pdf-to-word' ? ".pdf" : ".docx"}
-                                title={`Upload File ${mode === 'pdf-to-word' ? 'PDF' : 'Word'}`}
-                                description={`Seret & lepas atau klik untuk memilih file ${mode === 'pdf-to-word' ? '.pdf' : '.docx'}`}
-                                icon={mode === 'pdf-to-word' ? FileIcon : FileText}
+                                title={mode === 'pdf-to-word' ? "Upload File PDF" : "Upload File Word"}
+                                description="Tarik file atau klik untuk memilih"
+                                icon={mode === 'pdf-to-word' ? FileText : FileText}
+                                formats={mode === 'pdf-to-word' ? ['PDF'] : ['DOCX']}
                             />
                             {error && <div className={styles.errorMessage}>{error}</div>}
                         </div>

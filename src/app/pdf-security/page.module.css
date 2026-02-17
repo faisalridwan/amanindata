@@ -38,10 +38,7 @@
 }
 
 .heroTitle span {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: var(--primary-dark);
 }
 
 .description {
