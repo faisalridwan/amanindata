@@ -141,7 +141,7 @@ export default function Navbar() {
                             style={{ width: '100%', justifyContent: 'flex-start' }} // Mobile adjustment
                         >
                             <Grid size={16} />
-                            <span>Produk Lainnya</span>
+                            <span>Tools Lainnya</span>
                             <span style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
                                 <ChevronDown size={14} style={{ transform: isDropdownOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
                             </span>

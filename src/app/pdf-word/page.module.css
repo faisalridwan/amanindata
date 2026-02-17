@@ -1,3 +1,4 @@
+/* Container */
 .container {
   min-height: 100vh;
   background-color: var(--background);
@@ -8,7 +9,7 @@
 
 .main {
   flex: 1;
-  padding: 40px 20px;
+  padding: 60px 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -17,6 +18,7 @@
   width: 100%;
 }
 
+/* Hero Section */
 .heroTitle {
   font-size: 3rem;
   font-weight: 800;
@@ -30,128 +32,16 @@
 }
 
 .heroTitle span {
-  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--primary-dark);
 }
 
 .description {
   color: var(--text-secondary);
   text-align: center;
   margin-bottom: 40px;
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   max-width: 600px;
-}
-
-.toolContainer {
-  width: 100%;
-  max-width: 800px;
-  background: var(--card-bg);
-  border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05); /* Soft shadow */
-  padding: 40px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 30px;
-  border: 1px solid var(--border-color);
-}
-
-.uploadArea {
-  width: 100%;
-}
-
-.previewArea {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-  padding: 20px;
-  background: var(--background);
-  border-radius: 12px;
-  border: 1px solid var(--border-color);
-}
-
-.fileInfo {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  font-weight: 500;
-  color: var(--text-primary);
-}
-
-.convertButton {
-  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-  color: white;
-  border: none;
-  padding: 16px 32px;
-  border-radius: 12px;
-  font-size: 1.1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  box-shadow: 0 4px 15px rgba(91, 141, 239, 0.3);
-}
-
-.convertButton:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(91, 141, 239, 0.4);
-}
-
-.convertButton:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.tabs {
-  display: flex;
-  gap: 10px;
-  background: var(--background);
-  padding: 5px;
-  border-radius: 12px;
-  border: 1px solid var(--border-color);
-  margin-bottom: 20px;
-}
-
-.tab {
-  padding: 10px 20px;
-  border-radius: 8px;
-  border: none;
-  background: transparent;
-  color: var(--text-secondary);
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-  flex: 1;
-}
-
-.tab.active {
-  background: var(--primary);
-  color: white;
-  box-shadow: 0 2px 8px rgba(91, 141, 239, 0.3);
-}
-
-.errorMessage {
-  color: #ff4d4f;
-  background: rgba(255, 77, 79, 0.1);
-  padding: 10px 20px;
-  border-radius: 8px;
-  font-size: 0.9rem;
-}
-
-@media (max-width: 768px) {
-  .title {
-    font-size: 2rem;
-  }
-  .toolContainer {
-    padding: 20px;
-  }
+  line-height: 1.6;
 }
 
 .safeTag {
@@ -164,5 +54,169 @@
   border-radius: 20px;
   font-size: 0.85rem;
   font-weight: 600;
-  margin-bottom: 24px; 
+  margin-bottom: 32px;
+}
+
+/* Tool Container */
+.toolContainer {
+  width: 100%;
+  max-width: 800px;
+  background: var(--card-bg);
+  border-radius: 24px;
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.08), 0 0 1px rgba(0, 0, 0, 0.05);
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+[data-theme="dark"] .toolContainer {
+  background: #1e293b;
+  border-color: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.3);
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  padding: 6px;
+  background: var(--bg-secondary);
+  border-radius: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  margin-bottom: 24px;
+}
+
+[data-theme="dark"] .tabs {
+  background: #0f172a;
+  border-color: rgba(255, 255, 255, 0.05);
+}
+
+.tab {
+  padding: 10px 24px;
+  border-radius: 12px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.tab:hover {
+  color: var(--text-primary);
+  background: rgba(0, 0, 0, 0.03);
+}
+
+[data-theme="dark"] .tab:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.tab.active {
+  background: white;
+  color: var(--primary);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="dark"] .tab.active {
+  background: var(--primary);
+  color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.uploadArea {
+  width: 100%;
+}
+
+/* Preview & File Info */
+.previewArea {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  padding: 24px;
+  background: var(--bg-secondary);
+  border-radius: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="dark"] .previewArea {
+  background: #0f172a;
+  border-color: rgba(255, 255, 255, 0.05);
+}
+
+.fileInfo {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  font-weight: 500;
+  color: var(--text-primary);
+  width: 100%;
+  padding: 16px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="dark"] .fileInfo {
+  background: #1e293b;
+  box-shadow: none;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.convertButton {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: white;
+  border: none;
+  padding: 14px 32px;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+}
+
+.convertButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.35);
+}
+
+.convertButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.errorMessage {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.08);
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+@media (max-width: 768px) {
+  .heroTitle { font-size: 2.2rem; }
+  .toolContainer { padding: 24px; }
+  .fileInfo { flex-direction: column; text-align: center; gap: 12px; }
+  .convertButton { width: 100%; justify-content: center; }
+  .tabs { width: 100%; justify-content: space-between; }
+  .tab { flex: 1; justify-content: center; padding: 10px 12px; }
 }

@@ -91,7 +91,7 @@ export default function Footer() {
                 <div className={styles.linksGrid}>
                     {/* Produk Utama */}
                     <div className={styles.linkSection}>
-                        <h4>Produk</h4>
+                        <h4>Tools</h4>
                         <ul>
                             <li>
                                 <Link href="/"><FileImage size={14} /> Watermark</Link>
@@ -105,7 +105,7 @@ export default function Footer() {
                                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                                 >
                                     <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-xs)' }}>
-                                        <Grid size={14} /> Produk Lainnya
+                                        <Grid size={14} /> Tools Lainnya
                                     </div>
                                     <ChevronUp size={14} style={{ transform: isDropdownOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
                                 </button>
