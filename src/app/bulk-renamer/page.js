@@ -9,6 +9,7 @@ import TrustSection from '@/components/TrustSection'
 import styles from './page.module.css'
 import JSZip from 'jszip'
 import { saveAs } from 'file-saver'
+import UploadArea from '@/components/UploadArea'
 
 export default function BulkRenamerPage() {
     const [files, setFiles] = useState([])
@@ -107,11 +108,14 @@ export default function BulkRenamerPage() {
                         </div>
 
                         {files.length === 0 ? (
-                            <div className={styles.uploadArea} onClick={() => fileInputRef.current.click()}>
-                                <File size={48} />
-                                <p>Klik atau tarik file ke sini untuk mulai rename.</p>
-                                <input type="file" multiple ref={fileInputRef} onChange={handleFileChange} hidden />
-                            </div>
+                            <UploadArea
+                                onFileSelect={handleFileChange}
+                                multiple={true}
+                                title="Upload File untuk Rename"
+                                subtitle="Tarik banyak file sekaligus atau klik untuk memilih"
+                                formats={['ALL FILES']}
+                                icon={File}
+                            />
                         ) : (
                             <>
                                 <div className={styles.actions} style={{ justifyContent: 'space-between', marginBottom: '1rem' }}>

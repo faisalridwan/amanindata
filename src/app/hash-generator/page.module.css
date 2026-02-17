@@ -119,31 +119,7 @@
     color: #e2e8f0;
 }
 
-.uploadArea {
-    border: 2px dashed #cbd5e0;
-    border-radius: 8px;
-    padding: 3rem;
-    text-align: center;
-    cursor: pointer;
-    background: #f7fafc;
-    color: #718096;
-    transition: all 0.2s;
-}
 
-.uploadArea:hover {
-    border-color: #3182ce;
-    background: #ebf8ff;
-}
-
-[data-theme='dark'] .uploadArea {
-    background: #2d3748;
-    border-color: #4a5568;
-    color: #a0aec0;
-}
-
-[data-theme='dark'] .uploadArea:hover {
-    background: #2c5282;
-}
 
 .hashResult {
     background: #fff;

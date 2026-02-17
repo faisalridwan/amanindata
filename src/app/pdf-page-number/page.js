@@ -1,3 +1,4 @@
+
 'use client'
 
 import { useState, useRef } from 'react'
@@ -7,6 +8,7 @@ import Footer from '@/components/Footer'
 import GuideSection from '@/components/GuideSection'
 import TrustSection from '@/components/TrustSection'
 import styles from './page.module.css'
+import UploadArea from '@/components/UploadArea'
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib'
 
 export default function PdfPageNumberPage() {
@@ -171,11 +173,13 @@ export default function PdfPageNumberPage() {
                         {/* Upload Section */}
                         <div className={styles.uploadSection}>
                             {!pdfFile ? (
-                                <div className={styles.uploadArea} onClick={() => fileInputRef.current.click()}>
-                                    <Upload size={48} />
-                                    <p>Klik untuk upload PDF</p>
-                                    <input type="file" accept="application/pdf" ref={fileInputRef} onChange={handleFileChange} hidden />
-                                </div>
+                                <UploadArea
+                                    onFileSelect={handleFileChange}
+                                    accept="application/pdf"
+                                    title="Upload PDF untuk Format"
+                                    subtitle="Tambahkan nomor halaman pada file PDF"
+                                    formats={['PDF']}
+                                />
                             ) : (
                                 <div style={{ textAlign: 'center' }}>
                                     <div className={styles.fileName}>

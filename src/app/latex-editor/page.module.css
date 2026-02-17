@@ -1,12 +1,12 @@
 .container {
     min-height: 100vh;
-    background-color: #f8f9fa;
+    background-color: var(--bg-primary);
     padding-bottom: 80px;
 }
 
 [data-theme='dark'] .container {
-    background-color: #1a1a1a;
-    color: #ffffff;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
 }
 
 .workspace {

@@ -1,3 +1,4 @@
+
 'use client'
 
 import { useState } from 'react'
@@ -7,6 +8,7 @@ import Footer from '@/components/Footer'
 import GuideSection from '@/components/GuideSection'
 import TrustSection from '@/components/TrustSection'
 import styles from './page.module.css'
+import UploadArea from '@/components/UploadArea'
 import CryptoJS from 'crypto-js'
 
 export default function HashGeneratorPage() {
@@ -85,11 +87,15 @@ export default function HashGeneratorPage() {
                                     onChange={handleTextChange}
                                 />
                             ) : (
-                                <div className={styles.uploadArea} onClick={() => document.getElementById('fileInput').click()}>
-                                    <File size={48} />
-                                    <p>{file ? file.name : 'Klik untuk upload file'}</p>
-                                    <input type="file" id="fileInput" onChange={handleFileChange} hidden />
-                                    {loading && <p>Processing...</p>}
+                                <div>
+                                    {loading && <p style={{ textAlign: 'center', marginBottom: '1rem', color: '#4a5568' }}>Processing...</p>}
+                                    <UploadArea
+                                        onFileSelect={handleFileChange}
+                                        title={file ? file.name : "Upload File untuk Hash"}
+                                        subtitle={file ? "Klik untuk ganti file" : "Generate checksum untuk file apapun"}
+                                        formats={['ALL FILES']}
+                                        icon={File}
+                                    />
                                 </div>
                             )}
                         </div>

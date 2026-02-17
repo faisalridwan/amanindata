@@ -1,0 +1,123 @@
+
+.uploadArea {
+    border: 2px dashed #cbd5e0;
+    border-radius: 20px;
+    padding: 3rem 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: transparent;
+    position: relative;
+    overflow: hidden;
+    min-height: 320px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+[data-theme='dark'] .uploadArea {
+    border-color: #334155;
+    background: rgba(15, 23, 42, 0.3);
+}
+
+.uploadArea:hover {
+    border-color: #3b82f6;
+    background: rgba(59, 130, 246, 0.02);
+    transform: translateY(-2px);
+}
+
+[data-theme='dark'] .uploadArea:hover {
+    border-color: #60a5fa;
+    background: rgba(30, 41, 59, 0.4);
+}
+
+.iconWrapper {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: #eff6ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    color: #3b82f6;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+    transition: all 0.3s;
+}
+
+[data-theme='dark'] .iconWrapper {
+    background: rgba(30, 41, 59, 0.8);
+    color: #60a5fa;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.uploadArea:hover .iconWrapper {
+    transform: scale(1.1);
+    background: #3b82f6;
+    color: white;
+}
+
+.title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 0.5rem;
+}
+
+[data-theme='dark'] .title {
+    color: #f8fafc;
+}
+
+.subtitle {
+    font-size: 0.95rem;
+    color: #64748b;
+    margin-bottom: 1.5rem;
+}
+
+[data-theme='dark'] .subtitle {
+    color: #94a3b8;
+}
+
+.formats {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 2rem;
+}
+
+.formatBadge {
+    padding: 4px 10px;
+    background: #f1f5f9;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    border: 1px solid #e2e8f0;
+}
+
+[data-theme='dark'] .formatBadge {
+    background: #1e293b;
+    border-color: #334155;
+    color: #94a3b8;
+}
+
+.secureBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    border-radius: 20px;
+    color: #059669;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+[data-theme='dark'] .secureBadge {
+    background: rgba(6, 78, 59, 0.3);
+    border-color: rgba(5, 150, 105, 0.3);
+    color: #34d399;
+}
