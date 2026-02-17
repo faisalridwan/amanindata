@@ -21,19 +21,111 @@ export default function IPCheckPage() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // 1. Call our own API route (bypasses CORS)
-                const res = await fetch('/api/ip')
+                // 1. Try freeipapi.com (Direct URL to avoid redirect loop/CORS issues)
+                const res = await fetch('https://free.freeipapi.com/api/json')
                 
-                if (!res.ok) throw new Error('Failed to fetch IP data')
-                
-                const data = await res.json()
-                
-                if (data.error) throw new Error(data.error)
-                
-                setIpData(data)
+                if (res.ok) {
+                    const data = await res.json()
+                    setIpData({
+                        ipAddress: data.ipAddress,
+                        ipVersion: data.ipVersion,
+                        cityName: data.cityName,
+                        regionName: data.regionName,
+                        zipCode: data.zipCode,
+                        countryName: data.countryName,
+                        countryCode: data.countryCode,
+                        latitude: data.latitude,
+                        longitude: data.longitude,
+                        asn: data.asn,
+                        asnOrganization: data.asnOrganization,
+                        isProxy: data.isProxy,
+                        timeZones: data.timeZones,
+                        currencies: data.currencies,
+                        languages: data.languages
+                    })
+                    return // Exit if successful
+                } else {
+                     console.warn(`freeipapi failed: ${res.status}, trying ipapi.co...`)
+                }
             } catch (err) {
-                console.error(err)
-                setError('Gagal memuat data IP. Silakan coba lagi nanti.')
+                 console.warn('freeipapi error:', err)
+            }
+
+            // 2. Fallback: ipapi.co
+            try {
+                const res = await fetch('https://ipapi.co/json/')
+                if (res.ok) {
+                    const data = await res.json()
+                    setIpData({
+                        ipAddress: data.ip,
+                        ipVersion: data.version === 'IPv6' ? 6 : 4,
+                        cityName: data.city,
+                        regionName: data.region,
+                        zipCode: data.postal,
+                        countryName: data.country_name,
+                        countryCode: data.country_code,
+                        latitude: data.latitude,
+                        longitude: data.longitude,
+                        asn: data.asn?.replace('AS', ''),
+                        asnOrganization: data.org,
+                        isProxy: false, 
+                        timeZones: [data.timezone],
+                        currencies: [data.currency],
+                        languages: [data.languages ? data.languages.split(',')[0] : 'en']
+                    })
+                    return
+                }
+            } catch (err) {
+                 console.warn('ipapi.co error:', err)
+            }
+
+            // 3. Fallback: ipwho.is
+            try {
+                // ipwho.is supports CORS but sometimes rate limits
+                const res = await fetch('https://ipwho.is/')
+                if (res.ok) {
+                    const data = await res.json()
+                    if (data.success) {
+                         setIpData({
+                            ipAddress: data.ip,
+                            ipVersion: 4, 
+                            cityName: data.city,
+                            regionName: data.region,
+                            zipCode: data.postal,
+                            countryName: data.country,
+                            countryCode: data.country_code,
+                            latitude: data.latitude,
+                            longitude: data.longitude,
+                            asn: data.connection?.asn,
+                            asnOrganization: data.connection?.org,
+                            isProxy: false,
+                            timeZones: [data.timezone?.id],
+                            currencies: [data.currency?.code],
+                            languages: ['en']
+                        })
+                        return
+                    }
+                }
+            } catch (err) {
+                console.warn('ipwho.is error:', err)
+            }
+
+            // 4. Final Fallback: ipify (Minimal)
+            try {
+                const res = await fetch('https://api.ipify.org?format=json')
+                if (res.ok) {
+                    const data = await res.json()
+                    setIpData({ 
+                        ipAddress: data.ip,
+                        cityName: '-', regionName: '-', countryName: '-', 
+                        ipVersion: 4 
+                    })
+                } else {
+                     throw new Error('All providers failed')
+                }
+            } catch (err) {
+                console.error('Final fallback failed', err)
+                setError('Gagal memuat data IP. Pastikan koneksi aman dan tidak ada AdBlocker.')
             } finally {
                 setLoading(false)
             }
